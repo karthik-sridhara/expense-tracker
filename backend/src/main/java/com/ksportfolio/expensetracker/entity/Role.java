@@ -18,10 +18,10 @@ public class Role {
     @Size(max=30)
     @NotNull
     @Column(name="id", nullable = false, length = 30)
-    String id;
+    private String id;
 
     @NotNull
     @Size(max = 100)
     @Column(name="name",nullable = false, length = 100)
-    String name;
+    private String name;
 }
