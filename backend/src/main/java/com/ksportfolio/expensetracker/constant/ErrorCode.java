@@ -11,7 +11,9 @@ public enum ErrorCode {
     DUPLICATE_RESOURCE("ERR-1002", HttpStatus.CONFLICT, "{0} already exists"),
     ACCESS_DENIED("ERR-1003", HttpStatus.FORBIDDEN, "Access denied"),
     DATA_INTEGRITY_VIOLATION("ERR-1005", HttpStatus.CONFLICT, "A database constraint was violated"),
-    INTERNAL_ERROR("ERR-1999", HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred");
+    INTERNAL_ERROR("ERR-1999", HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"),
+
+    USER_NOT_FOUND("ERR-2000", HttpStatus.BAD_REQUEST,"User not found with id: {0}"),;
 
     private final String code;
     private final HttpStatus httpStatus;

@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface AppUserService {
     List<AppUserDto> getUsers();
+    AppUserDto getUserById(Integer id);
+    AppUserDto getUserByEmail(String email);
 }

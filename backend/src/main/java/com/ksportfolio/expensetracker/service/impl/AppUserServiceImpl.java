@@ -1,6 +1,8 @@
 package com.ksportfolio.expensetracker.service.impl;
 
+import com.ksportfolio.expensetracker.constant.ErrorCode;
 import com.ksportfolio.expensetracker.dto.AppUserDto;
+import com.ksportfolio.expensetracker.exception.BusinessLogicException;
 import com.ksportfolio.expensetracker.mapper.AppUserMapper;
 import com.ksportfolio.expensetracker.repository.AppUserRepo;
 import com.ksportfolio.expensetracker.service.AppUserService;
@@ -22,7 +24,11 @@ public class AppUserServiceImpl implements AppUserService {
 
     public AppUserDto getUserById(Integer id) {
         return appUserRepo.findById(id).map(AppUserMapper::builder).orElseThrow(
-
+                () -> new BusinessLogicException(ErrorCode.USER_NOT_FOUND, id)
         );
+    }
+
+    public AppUserDto getUserByEmail(String email) {
+        return appUserRepo.findByEmail(email).map(AppUserMapper::builder).orElse(null);
     }
 }
