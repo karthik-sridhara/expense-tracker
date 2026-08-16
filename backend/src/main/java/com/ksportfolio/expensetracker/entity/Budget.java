@@ -17,7 +17,8 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @NamedQueries({
-        @NamedQuery(name = "Budget.findByUserId", query = "SELECT b FROM Budget b WHERE b.user.id = :userId")
+        @NamedQuery(name = "Budget.findByUserId", query = "SELECT b FROM Budget b WHERE b.user.id = :userId"),
+        @NamedQuery(name = "Budget.save", query = "INSERT INTO Budget (amount, durationType, category, user) VALUES (:amount, :durationType, :category, :user)")
 })
 public class Budget extends BaseEntity {
     @Id

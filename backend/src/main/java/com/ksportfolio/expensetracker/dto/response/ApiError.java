@@ -35,7 +35,11 @@ public class ApiError {
     }
 
     public ApiError(ErrorCode errorCode, String traceId) {
-        this(errorCode, null, traceId);
+        this(errorCode.getCode(), errorCode.formatMessage(), errorCode.getHttpStatus(), traceId);
+    }
+
+    public ApiError(ErrorCode errorCode,String message, String traceId) {
+        this(errorCode.getCode(), message, errorCode.getHttpStatus(), traceId);
     }
 
     public ResponseEntity<ApiError> toResponseEntity() {
