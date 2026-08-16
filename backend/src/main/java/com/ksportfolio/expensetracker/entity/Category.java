@@ -3,12 +3,18 @@ package com.ksportfolio.expensetracker.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.NamedQuery;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 
 @Entity
 @Table(name="CATEGORY")
+@Getter
+@Setter
+@NamedQuery(name = "Category.findByUserId", query = "SELECT c FROM Category c WHERE c.user.id = :userId  OR c.isUniversal = true")
 public class Category extends BaseEntity {
 
     @Id

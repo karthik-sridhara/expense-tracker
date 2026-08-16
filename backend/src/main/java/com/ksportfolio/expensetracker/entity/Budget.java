@@ -1,13 +1,24 @@
 package com.ksportfolio.expensetracker.entity;
 
+import com.ksportfolio.expensetracker.mapper.DurationTypeConverter;
+import com.ksportfolio.expensetracker.type.DurationType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.NamedQueries;
+import org.hibernate.annotations.NamedQuery;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "BUDGET")
+@Getter
+@Setter
+@NamedQueries({
+        @NamedQuery(name = "Budget.findByUserId", query = "SELECT b FROM Budget b WHERE b.user.id = :userId")
+})
 public class Budget extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,15 +26,14 @@ public class Budget extends BaseEntity {
     private Integer id;
 
     @NotNull
-    @DecimalMin("0")
+    @DecimalMin(value = "0", inclusive = false)
     @Column(name = "limit_amount", nullable = false)
     private BigDecimal amount;
 
     @NotNull
-    @Size(min = 1, max = 1)
-    @Pattern(regexp = "[DWMY]")
     @Column(name = "type", nullable = false)
-    private Character type;
+    @Convert(converter = DurationTypeConverter.class)
+    private DurationType durationType;
 
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER)

@@ -6,8 +6,6 @@ import com.ksportfolio.expensetracker.entity.AppUser;
 
 public class AppUserMapper {
 
-
-
     public static AppUserDto builder(AppUser entity) {
         AppUserDto dto = new AppUserDto();
         dto.setId(entity.getId());

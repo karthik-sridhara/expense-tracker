@@ -13,7 +13,11 @@ public enum ErrorCode {
     DATA_INTEGRITY_VIOLATION("ERR-1005", HttpStatus.CONFLICT, "A database constraint was violated"),
     INTERNAL_ERROR("ERR-1999", HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"),
 
-    USER_NOT_FOUND("ERR-2000", HttpStatus.BAD_REQUEST,"User not found with id: {0}"),;
+    USER_NOT_FOUND("ERR-2000", HttpStatus.BAD_REQUEST,"User not found with id: {0}"),
+    USER_NOT_FOUND_WITH_EMAIL("ERR-2001", HttpStatus.BAD_REQUEST,"User not found with email: {0}"),
+    CATEGORY_NOT_FOUND("ERR-2002", HttpStatus.BAD_REQUEST,"Category not found with id: {0}"),
+    BUDGET_NOT_FOUND("ERR-2003", HttpStatus.BAD_REQUEST,"Budget not found with id: {0}"),
+    ;
 
     private final String code;
     private final HttpStatus httpStatus;
