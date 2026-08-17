@@ -8,11 +8,13 @@ import com.ksportfolio.expensetracker.repository.AppUserRepo;
 import com.ksportfolio.expensetracker.service.AppUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AppUserServiceImpl implements AppUserService {
 
     private final AppUserRepo appUserRepo;
@@ -22,12 +24,14 @@ public class AppUserServiceImpl implements AppUserService {
         return appUserRepo.findAll().stream().map(AppUserMapper::builder).toList();
     }
 
+    @Override
     public AppUserDto getUserById(Integer id) {
         return appUserRepo.findById(id).map(AppUserMapper::builder).orElseThrow(
                 () -> new BusinessLogicException(ErrorCode.USER_NOT_FOUND, id)
         );
     }
 
+    @Override
     public AppUserDto getUserByEmail(String email) {
         return appUserRepo.findByEmail(email).map(AppUserMapper::builder).orElseThrow(
                 ()-> new BusinessLogicException(ErrorCode.USER_NOT_FOUND_WITH_EMAIL, email)

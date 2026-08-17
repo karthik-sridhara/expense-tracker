@@ -29,6 +29,7 @@ public class BudgetServiceImpl implements BudgetService {
     private final CategoryRepo categoryRepo;
     private final AppUserRepo appUserRepo;
 
+    @Override
     public List<BudgetDto> getAll() {
         List<Budget> budgets = budgetRepo.findAll();
         List<BudgetDto> budgetDtos = new ArrayList<>();
@@ -38,6 +39,7 @@ public class BudgetServiceImpl implements BudgetService {
         return budgetDtos;
     }
 
+    @Override
     public BudgetDto getById(Integer id) {
         Optional<Budget> budget = budgetRepo.findById(id);
         return budget.map(BudgetMapper::toDto).orElseThrow(
@@ -45,6 +47,7 @@ public class BudgetServiceImpl implements BudgetService {
         );
     }
 
+    @Override
     public List<BudgetDto> getByUser(Integer userId) {
         List<Budget> budgets = budgetRepo.findByUserId(userId);
         List<BudgetDto> budgetDtos = new ArrayList<>();
@@ -54,6 +57,7 @@ public class BudgetServiceImpl implements BudgetService {
         return budgetDtos;
     }
 
+    @Override
     @Transactional
     public void addBudget(BudgetRequestDto request, Integer userId) {
         Category category = categoryRepo.findById(request.getCategory()).orElseThrow(
@@ -71,6 +75,7 @@ public class BudgetServiceImpl implements BudgetService {
         budgetRepo.save(budget);
     }
 
+    @Override
     @Transactional
     public void updateBudget(BudgetRequestDto request, Integer userId, Integer budgetId) {
         Budget budget = budgetRepo.findById(budgetId).orElseThrow(
@@ -97,6 +102,7 @@ public class BudgetServiceImpl implements BudgetService {
         budgetRepo.save(budget);
     }
 
+    @Override
     @Transactional
     public void deleteBudget(Integer budgetId, Integer userId) {
         Budget budget = budgetRepo.findById(budgetId).orElseThrow(

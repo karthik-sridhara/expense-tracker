@@ -12,16 +12,19 @@ import com.ksportfolio.expensetracker.repository.CategoryRepo;
 import com.ksportfolio.expensetracker.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepo  categoryRepo;
     private final AppUserRepo appUserRepo;
 
+    @Override
     public List<CategoryDto> getAll() {
         List<Category> categories = categoryRepo.findAll();
         List<CategoryDto> categoryDtos = new ArrayList<>();
@@ -31,6 +34,7 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryDtos;
     }
 
+    @Override
     public CategoryDto getById(Integer id) {
         Category category = categoryRepo.findById(id).orElseThrow(
                 ()-> new BusinessLogicException(ErrorCode.CATEGORY_NOT_FOUND,id)
@@ -38,6 +42,7 @@ public class CategoryServiceImpl implements CategoryService {
         return CategoryMapper.toDto(category);
     };
 
+    @Override
     public List<CategoryDto> getAllByUser(Integer userId) {
         List<Category> categories = categoryRepo.findByUserIdOrIsUniversal(userId,true);
         List<CategoryDto> categoryDtos = new ArrayList<>();
@@ -47,6 +52,8 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryDtos;
     }
 
+    @Override
+    @Transactional
     public void addCategoryByUser(CategoryRequestDto dto,Integer userId) {
         boolean isExist = categoryRepo.existsByUserIdAndName(userId, dto.getName());
         if (isExist) {
@@ -59,6 +66,8 @@ public class CategoryServiceImpl implements CategoryService {
         categoryRepo.save(category);
     }
 
+    @Override
+    @Transactional
     public void addCategory(CategoryRequestDto dto) {
         boolean isExist = categoryRepo.existsByNameAndIsUniversal(dto.getName(),true);
         if (isExist) {
@@ -70,6 +79,8 @@ public class CategoryServiceImpl implements CategoryService {
         categoryRepo.save(category);
     }
 
+    @Override
+    @Transactional
     public void editCategoryByUser(CategoryRequestDto dto,Integer userId,Integer categoryId) {
         Category category = categoryRepo.findById(categoryId).orElseThrow(
                 ()-> new BusinessLogicException(ErrorCode.CATEGORY_NOT_FOUND,categoryId)
@@ -87,6 +98,8 @@ public class CategoryServiceImpl implements CategoryService {
         categoryRepo.save(category);
     }
 
+    @Override
+    @Transactional
     public void editCategory(CategoryRequestDto dto,Integer categoryId) {
         Category category = categoryRepo.findById(categoryId).orElseThrow(
                 ()-> new BusinessLogicException(ErrorCode.CATEGORY_NOT_FOUND,categoryId)
@@ -103,6 +116,8 @@ public class CategoryServiceImpl implements CategoryService {
         categoryRepo.save(category);
     }
 
+    @Override
+    @Transactional
     public void deleteCategory(Integer categoryId) {
         Category category = categoryRepo.findById(categoryId).orElseThrow(
                 ()-> new BusinessLogicException(ErrorCode.CATEGORY_NOT_FOUND,categoryId)
@@ -113,6 +128,8 @@ public class CategoryServiceImpl implements CategoryService {
         categoryRepo.delete(category);
     }
 
+    @Override
+    @Transactional
     public void deleteCategory(Integer categoryId, Integer userId) {
         Category category = categoryRepo.findById(categoryId).orElseThrow(
                 ()-> new BusinessLogicException(ErrorCode.CATEGORY_NOT_FOUND,categoryId)
@@ -122,7 +139,5 @@ public class CategoryServiceImpl implements CategoryService {
         }
         categoryRepo.delete(category);
     }
-
-
 
 }
