@@ -13,4 +13,10 @@ public interface CategoryRepo extends JpaRepository<Category, Integer> {
 
     @Query(name="Category.findByUserId")
     List<Category> getAllByUser(@Param("userId") Integer userId);
+    List<Category> findByUserIdOrIsUniversal(Integer userId, boolean isUniversal);
+    Boolean existsByUserIdAndName(Integer userId, String name);
+    Boolean existsByNameAndIsUniversal(String name, boolean isUniversal);
+    Boolean existsByUserIdAndNameAndIdNot(Integer userId, String name, Integer id);
+    Boolean existsByNameAndIsUniversalAndIdNot(String name, boolean isUniversal, Integer id);
+
 }

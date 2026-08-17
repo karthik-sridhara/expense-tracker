@@ -59,6 +59,9 @@ public class BudgetServiceImpl implements BudgetService {
         Category category = categoryRepo.findById(request.getCategory()).orElseThrow(
                 ()->new BusinessLogicException(ErrorCode.CATEGORY_NOT_FOUND,request.getCategory())
         );
+        if(!category.getIsUniversal() && !category.getUser().getId().equals(userId)) {
+            throw new BusinessLogicException(ErrorCode.CATEGORY_NOT_FOUND, request.getCategory());
+        }
         AppUser user =  appUserRepo.getReferenceById(userId);
         boolean isExist = budgetRepo.existsByDurationTypeAndCategoryIdAndUserId(request.getDurationType(),request.getCategory(),userId);
         if (isExist) {
@@ -81,6 +84,10 @@ public class BudgetServiceImpl implements BudgetService {
         Category category = categoryRepo.findById(request.getCategory()).orElseThrow(
                 ()->new BusinessLogicException(ErrorCode.CATEGORY_NOT_FOUND,request.getCategory())
         );
+
+        if(!category.getIsUniversal() && !category.getUser().getId().equals(userId)) {
+            throw new BusinessLogicException(ErrorCode.CATEGORY_NOT_FOUND, request.getCategory());
+        }
 
         boolean isExist = budgetRepo.existsByDurationTypeAndCategoryIdAndUserIdAndIdNot(request.getDurationType(),request.getCategory(),userId,budgetId);
         if (isExist) {

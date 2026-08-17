@@ -21,6 +21,8 @@ public enum ErrorCode {
     CATEGORY_NOT_FOUND("ERR-2002", HttpStatus.BAD_REQUEST,"Category not found with id: {0}"),
     BUDGET_NOT_FOUND("ERR-2003", HttpStatus.BAD_REQUEST,"Budget not found with id: {0}"),
     BUDGET_EXISTS("ERR-2004", HttpStatus.BAD_REQUEST,"Budget already exists for category: {0} and duration type: {1}"),
+    CATEGORY_ALREADY_EXIST("ERR-2005", HttpStatus.BAD_REQUEST,"Category already exists with name: {0}"),
+
     ;
 
     private final String code;

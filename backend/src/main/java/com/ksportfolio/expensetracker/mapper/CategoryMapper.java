@@ -1,6 +1,8 @@
 package com.ksportfolio.expensetracker.mapper;
 
 import com.ksportfolio.expensetracker.dto.CategoryDto;
+import com.ksportfolio.expensetracker.dto.CategoryRequestDto;
+import com.ksportfolio.expensetracker.entity.AppUser;
 import com.ksportfolio.expensetracker.entity.Category;
 
 public class CategoryMapper {
@@ -20,5 +22,34 @@ public class CategoryMapper {
         categoryDto.setCreatedAt(category.getCreatedAt());
         categoryDto.setModifiedAt(category.getModifiedAt());
         return categoryDto;
+    }
+
+    public static Category toEntity(CategoryRequestDto categoryDto, AppUser appUser) {
+        if (categoryDto == null) {
+            return null;
+        }
+        Category category = new Category();
+        category.setName(categoryDto.getName());
+        category.setDescription(categoryDto.getDescription());
+        category.setIcon(categoryDto.getIcon());
+        category.setIsIncome(categoryDto.getIsIncome());
+        category.setIsUniversal(categoryDto.getIsUniversal());
+        category.setIsActive(categoryDto.getIsActive());
+        category.setUser(appUser);
+        return category;
+    }
+
+    public static Category toEntity(CategoryRequestDto categoryDto, AppUser appUser, Category category) {
+        if (categoryDto == null) {
+            return null;
+        }
+        category.setName(categoryDto.getName());
+        category.setDescription(categoryDto.getDescription());
+        category.setIcon(categoryDto.getIcon());
+        category.setIsIncome(categoryDto.getIsIncome());
+        category.setIsUniversal(categoryDto.getIsUniversal());
+        category.setIsActive(categoryDto.getIsActive());
+        category.setUser(appUser);
+        return category;
     }
 }
