@@ -29,6 +29,8 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     public AppUserDto getUserByEmail(String email) {
-        return appUserRepo.findByEmail(email).map(AppUserMapper::builder).orElse(null);
+        return appUserRepo.findByEmail(email).map(AppUserMapper::builder).orElseThrow(
+                ()-> new BusinessLogicException(ErrorCode.USER_NOT_FOUND_WITH_EMAIL, email)
+        );
     }
 }

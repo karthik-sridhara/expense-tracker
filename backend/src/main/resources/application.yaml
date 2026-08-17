@@ -17,3 +17,17 @@ spring:
         physical_naming_strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
         jdbc:
           time_zone: UTC
+logging:
+  console:
+    enabled: true
+  file:
+    enabled: true
+    name: logs/expense-tracker.log
+  level:
+    root: INFO
+    com.ksportfolio.expensetracker: DEBUG
+  logback:
+    rollingpolicy:
+      file-name-pattern: logs/expense-tracker-%d{yyyy-MM-dd}.%i.log
+      max-file-size: 10MB
+      max-history: 30
