@@ -21,5 +21,4 @@ public class AppUserDto {
     Instant createdAt;
     Integer modifiedBy;
     Instant modifiedAt;
-
 }
