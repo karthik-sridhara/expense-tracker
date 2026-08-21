@@ -31,3 +31,15 @@ logging:
       file-name-pattern: logs/expense-tracker-%d{yyyy-MM-dd}.%i.log
       max-file-size: 10MB
       max-history: 30
+app:
+  config:
+    cors:
+      origin: http://localhost:4800, http://localhost:3000
+springdoc:
+  swagger-ui:
+    enabled: ${SWAGGER_DOC:false}
+  api-docs:
+    enabled: ${SWAGGER_DOC:false}
+jwt:
+  expiration-ms: 3600000
+  secret: ${JWT_SECRET}

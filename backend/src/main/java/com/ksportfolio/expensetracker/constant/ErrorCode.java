@@ -14,6 +14,8 @@ public enum ErrorCode {
     HTTP_METHOD_NOT_SUPPORTED("ERR-1006", HttpStatus.METHOD_NOT_ALLOWED, "HTTP method not supported"),
     MALFORMED_REQUEST_BODY("ERR-1007", HttpStatus.BAD_REQUEST, "Malformed request body"),
     INVALID_FORMAT("ERR-1008", HttpStatus.BAD_REQUEST, "Invalid value {0} provided for field {1}"),
+    INVALID_CREDENTIALS("ERR-1009", HttpStatus.UNAUTHORIZED, "Invalid credentials"),
+    UNAUTHORIZED("ERR-1010", HttpStatus.UNAUTHORIZED, "Unauthorized"),
     INTERNAL_ERROR("ERR-1999", HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"),
 
     USER_NOT_FOUND("ERR-2000", HttpStatus.BAD_REQUEST,"User not found with id: {0}"),
@@ -22,7 +24,7 @@ public enum ErrorCode {
     BUDGET_NOT_FOUND("ERR-2003", HttpStatus.BAD_REQUEST,"Budget not found with id: {0}"),
     BUDGET_EXISTS("ERR-2004", HttpStatus.BAD_REQUEST,"Budget already exists for category: {0} and duration type: {1}"),
     CATEGORY_ALREADY_EXIST("ERR-2005", HttpStatus.BAD_REQUEST,"Category already exists with name: {0}"),
-
+    EMAIL_ALREADY_EXIST("ERR-2006", HttpStatus.BAD_REQUEST,"Email already exists : {0}"),
     ;
 
     private final String code;
