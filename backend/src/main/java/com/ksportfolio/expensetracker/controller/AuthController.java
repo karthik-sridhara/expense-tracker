@@ -26,7 +26,7 @@ public class AuthController {
     private final AuthService authService;
     private final AppUserService appUserService;
 
-    @PostMapping("/login")
+    @PostMapping(value = "/login",version = "1.0")
     public ResponseEntity<ApiResponse<LoginResponseDto>> login(@Valid @RequestBody LoginRequestDto request) {
         try {
             LoginResponseDto loginResponseDto = authService.authenticate(request.getUsername(), request.getPassword());
@@ -40,7 +40,7 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/registration")
+    @PostMapping(value = "/registration",version = "1.0")
     public ResponseEntity<ApiResponse<Void>> registration(@Valid @RequestBody RegisterRequestDto request) {
         appUserService.registerUser(request);
         ApiResponse<Void> response =   new ApiResponse<>(

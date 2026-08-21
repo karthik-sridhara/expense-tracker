@@ -20,6 +20,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class CategoryService {
+
+    private final AppContextService appContextService;
     private final CategoryRepo  categoryRepo;
     private final AppUserRepo appUserRepo;
 
@@ -37,9 +39,10 @@ public class CategoryService {
                 ()-> new BusinessLogicException(ErrorCode.CATEGORY_NOT_FOUND,id)
         );
         return CategoryMapper.toDto(category);
-    };
+    }
 
-    public List<CategoryDto> getAllByUser(Integer userId) {
+    public List<CategoryDto> getAllByUser() {
+        Integer userId = appContextService.getUserId();
         List<Category> categories = categoryRepo.findByUserIdOrIsUniversal(userId,true);
         List<CategoryDto> categoryDtos = new ArrayList<>();
         for (Category category : categories) {
@@ -49,7 +52,8 @@ public class CategoryService {
     }
 
     @Transactional
-    public void addCategoryByUser(CategoryRequestDto dto,Integer userId) {
+    public void addUserCategory(CategoryRequestDto dto) {
+        Integer userId = appContextService.getUserId();
         boolean isExist = categoryRepo.existsByUserIdAndName(userId, dto.getName());
         if (isExist) {
             throw new BusinessLogicException(ErrorCode.CATEGORY_ALREADY_EXIST,dto.getName());
@@ -74,7 +78,8 @@ public class CategoryService {
     }
 
     @Transactional
-    public void editCategoryByUser(CategoryRequestDto dto,Integer userId,Integer categoryId) {
+    public void editUserCategory(CategoryRequestDto dto,Integer categoryId) {
+        Integer userId = appContextService.getUserId();
         Category category = categoryRepo.findById(categoryId).orElseThrow(
                 ()-> new BusinessLogicException(ErrorCode.CATEGORY_NOT_FOUND,categoryId)
         );
@@ -120,7 +125,8 @@ public class CategoryService {
     }
 
     @Transactional
-    public void deleteCategory(Integer categoryId, Integer userId) {
+    public void deleteUserCategory(Integer categoryId) {
+        Integer userId = appContextService.getUserId();
         Category category = categoryRepo.findById(categoryId).orElseThrow(
                 ()-> new BusinessLogicException(ErrorCode.CATEGORY_NOT_FOUND,categoryId)
         );

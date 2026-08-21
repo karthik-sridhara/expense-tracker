@@ -13,6 +13,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import tools.jackson.databind.exc.InvalidFormatException;
 
 import java.util.HashMap;
@@ -108,6 +109,21 @@ public class GlobalExceptionHandler {
         return error.toResponseEntity();
     }
 
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ApiError> handleNoResourceFound(NoResourceFoundException ex, HttpServletRequest request) {
+        String traceId = UUID.randomUUID().toString();
+        String message = ErrorCode.NO_RESOURCE_FOUND.formatMessage(request.getMethod(), ex.getResourcePath());
+
+        log.warn("[{}] {} - {}", traceId, ErrorCode.NO_RESOURCE_FOUND.getCode(), message);
+
+        ApiError error = new ApiError(
+                ErrorCode.NO_RESOURCE_FOUND,
+                message,
+                traceId
+        );
+        return error.toResponseEntity();
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGeneral(Exception ex, HttpServletRequest request) {
         String traceId = UUID.randomUUID().toString();
@@ -119,4 +135,6 @@ public class GlobalExceptionHandler {
         );
         return error.toResponseEntity();
     }
+
+
 }

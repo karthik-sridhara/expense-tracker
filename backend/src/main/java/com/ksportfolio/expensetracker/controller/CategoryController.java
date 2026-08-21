@@ -17,7 +17,7 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
-    @GetMapping()
+    @GetMapping(value="/admin",version = "1.0")
     public ResponseEntity<ApiResponse<List<CategoryDto>>> getCategories() {
         ApiResponse<List<CategoryDto>> response =  new ApiResponse<List<CategoryDto>>(
                 "Categories retrieved successfully",
@@ -26,16 +26,16 @@ public class CategoryController {
         return response.toResponseEntity();
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<ApiResponse<List<CategoryDto>>> getCategoriesForUser(@PathVariable Integer userId) {
+    @GetMapping(version = "1.0")
+    public ResponseEntity<ApiResponse<List<CategoryDto>>> getCategoriesForUser() {
         ApiResponse<List<CategoryDto>> response =  new ApiResponse<List<CategoryDto>>(
                 "Categories retrieved successfully",
-                categoryService.getAllByUser(userId)
+                categoryService.getAllByUser()
         );
         return response.toResponseEntity();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}",version = "1.0")
     public ResponseEntity<ApiResponse<CategoryDto>> getCategoryById(@PathVariable Integer id) {
         ApiResponse<CategoryDto> response =  new ApiResponse<CategoryDto>(
                 "Category retrieved successfully",
@@ -44,51 +44,46 @@ public class CategoryController {
         return response.toResponseEntity();
     }
 
-
-    @PostMapping("/user/{userId}")
-    public ResponseEntity<ApiResponse<Void>> addCategoryForUser(@RequestBody CategoryRequestDto categoryDto, @PathVariable Integer userId) {
-        categoryService.addCategoryByUser(categoryDto, userId);
-        ApiResponse<Void> response = new ApiResponse<>("Category added successfully", null);
-        return response.toResponseEntity();
-    }
-
-    @PostMapping()
+    @PostMapping(version = "1.0",value = "/admin")
     public ResponseEntity<ApiResponse<Void>> addCategory(@RequestBody CategoryRequestDto categoryDto) {
         categoryService.addCategory(categoryDto);
         ApiResponse<Void> response = new ApiResponse<>("Category added successfully", null);
         return response.toResponseEntity();
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(version = "1.0",value = "/admin/{id}")
     public ResponseEntity<ApiResponse<Void>> editCategory(@RequestBody CategoryRequestDto categoryDto,@PathVariable Integer id) {
         categoryService.editCategory(categoryDto, id);
         ApiResponse<Void> response = new ApiResponse<>("Category edited successfully", null);
         return response.toResponseEntity();
     }
 
-    @PutMapping("/user/{userId}/categories/{id}")
-    public ResponseEntity<ApiResponse<Void>> editCategoryForUser(@RequestBody CategoryRequestDto categoryDto,@PathVariable Integer id,@PathVariable Integer userId) {
-        categoryService.editCategoryByUser(categoryDto, userId,id);
-        ApiResponse<Void> response = new ApiResponse<>("Category edited successfully", null);
-        return response.toResponseEntity();
-    }
-
-
-    @DeleteMapping("/{id}")
+    @DeleteMapping(version = "1.0",value = "/admin/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteCategory(@PathVariable Integer id) {
         categoryService.deleteCategory(id);
         ApiResponse<Void> response = new ApiResponse<>("Category deleted successfully", null);
         return response.toResponseEntity();
     }
 
-    @DeleteMapping("/user/{userId}/categories/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteCategoryForUser(@PathVariable Integer id,@PathVariable Integer userId) {
-        categoryService.deleteCategory(id, userId);
-        ApiResponse<Void> response = new ApiResponse<>("Category deleted successfully", null);
+    @PostMapping(version = "1.0")
+    public ResponseEntity<ApiResponse<Void>> addUserCategory(@RequestBody CategoryRequestDto categoryDto) {
+        categoryService.addUserCategory(categoryDto);
+        ApiResponse<Void> response = new ApiResponse<>("Category added successfully", null);
         return response.toResponseEntity();
     }
 
+    @PutMapping(version = "1.0",value = "/{id}")
+    public ResponseEntity<ApiResponse<Void>> editUserCategory(@RequestBody CategoryRequestDto categoryDto,@PathVariable Integer id) {
+        categoryService.editUserCategory(categoryDto,id);
+        ApiResponse<Void> response = new ApiResponse<>("Category edited successfully", null);
+        return response.toResponseEntity();
+    }
 
-
+    @DeleteMapping(version = "1.0",value = "/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteUserCategory(@PathVariable Integer id) {
+        categoryService.deleteUserCategory(id);
+        ApiResponse<Void> response = new ApiResponse<>("Category deleted successfully", null);
+        return response.toResponseEntity();
+    }
 
 }

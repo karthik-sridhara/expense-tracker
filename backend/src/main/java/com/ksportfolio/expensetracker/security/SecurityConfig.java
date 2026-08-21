@@ -57,7 +57,7 @@ public class SecurityConfig {
             CorsConfigurationSource corsConfigurationSource,
             @Qualifier("public-paths") List<String> publicPaths,
             @Qualifier("admin-paths") List<String> adminPaths,
-            @Qualifier("employee-paths") List<String> employeePaths,
+            @Qualifier("admin-employee-paths") List<String> adminEmployeePaths,
             @Qualifier("secured-paths") List<String> securedPaths
     ) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
@@ -67,8 +67,8 @@ public class SecurityConfig {
         http.sessionManagement(smc -> smc.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.authorizeHttpRequests(request -> {
             publicPaths.forEach(path -> request.requestMatchers(path).permitAll());
-            adminPaths.forEach(path -> request.requestMatchers(path).hasRole("ADMIN"));
-            employeePaths.forEach(path -> request.requestMatchers(path).hasRole("EMPLOYEE"));
+            adminEmployeePaths.forEach(path -> request.requestMatchers(path).hasAnyRole("ADMIN","EMPLOYEE"));
+            adminPaths.forEach(path -> request.requestMatchers(path).hasAnyRole("ADMIN"));
             securedPaths.forEach(path -> request.requestMatchers(path).authenticated());
             request.anyRequest().denyAll();
         });

@@ -16,6 +16,7 @@ public enum ErrorCode {
     INVALID_FORMAT("ERR-1008", HttpStatus.BAD_REQUEST, "Invalid value {0} provided for field {1}"),
     INVALID_CREDENTIALS("ERR-1009", HttpStatus.UNAUTHORIZED, "Invalid credentials"),
     UNAUTHORIZED("ERR-1010", HttpStatus.UNAUTHORIZED, "Unauthorized"),
+    NO_RESOURCE_FOUND("ERR-1011", HttpStatus.NOT_FOUND, "No resource found for {0} {1}"),
     INTERNAL_ERROR("ERR-1999", HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"),
 
     USER_NOT_FOUND("ERR-2000", HttpStatus.BAD_REQUEST,"User not found with id: {0}"),

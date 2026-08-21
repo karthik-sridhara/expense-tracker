@@ -3,6 +3,7 @@ package com.ksportfolio.expensetracker.service;
 import com.ksportfolio.expensetracker.constant.ErrorCode;
 import com.ksportfolio.expensetracker.dto.BudgetDto;
 import com.ksportfolio.expensetracker.dto.BudgetRequestDto;
+import com.ksportfolio.expensetracker.dto.auth.AppUserDetails;
 import com.ksportfolio.expensetracker.entity.AppUser;
 import com.ksportfolio.expensetracker.entity.Budget;
 import com.ksportfolio.expensetracker.entity.Category;
@@ -12,6 +13,8 @@ import com.ksportfolio.expensetracker.repository.AppUserRepo;
 import com.ksportfolio.expensetracker.repository.BudgetRepo;
 import com.ksportfolio.expensetracker.repository.CategoryRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +30,7 @@ public class BudgetService {
     private final BudgetRepo budgetRepo;
     private final CategoryRepo categoryRepo;
     private final AppUserRepo appUserRepo;
+    private final AppContextService appContextService;
 
     public List<BudgetDto> getAll() {
         List<Budget> budgets = budgetRepo.findAll();
@@ -44,7 +48,8 @@ public class BudgetService {
         );
     }
 
-    public List<BudgetDto> getByUser(Integer userId) {
+    public List<BudgetDto> getByUser() {
+        Integer userId = appContextService.getUserId();
         List<Budget> budgets = budgetRepo.findByUserId(userId);
         List<BudgetDto> budgetDtos = new ArrayList<>();
         for (Budget budget : budgets) {
@@ -54,7 +59,8 @@ public class BudgetService {
     }
 
     @Transactional
-    public void addBudget(BudgetRequestDto request, Integer userId) {
+    public void addBudget(BudgetRequestDto request) {
+        Integer userId =  appContextService.getUserId();
         Category category = categoryRepo.findById(request.getCategory()).orElseThrow(
                 ()->new BusinessLogicException(ErrorCode.CATEGORY_NOT_FOUND,request.getCategory())
         );
@@ -71,7 +77,8 @@ public class BudgetService {
     }
 
     @Transactional
-    public void updateBudget(BudgetRequestDto request, Integer userId, Integer budgetId) {
+    public void updateBudget(BudgetRequestDto request, Integer budgetId) {
+        Integer userId =  appContextService.getUserId();
         Budget budget = budgetRepo.findById(budgetId).orElseThrow(
                 ()->new  BusinessLogicException(ErrorCode.BUDGET_NOT_FOUND,budgetId)
         );
@@ -97,7 +104,8 @@ public class BudgetService {
     }
 
     @Transactional
-    public void deleteBudget(Integer budgetId, Integer userId) {
+    public void deleteBudget(Integer budgetId) {
+        Integer userId =  appContextService.getUserId();
         Budget budget = budgetRepo.findById(budgetId).orElseThrow(
                 ()->new  BusinessLogicException(ErrorCode.BUDGET_NOT_FOUND,budgetId)
         );

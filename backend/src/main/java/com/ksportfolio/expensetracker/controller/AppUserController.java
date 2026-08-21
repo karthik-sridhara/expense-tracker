@@ -19,7 +19,7 @@ public class AppUserController {
 
     private final AppUserService appUserService;
 
-    @GetMapping
+    @GetMapping(version = "1.0")
     public ResponseEntity<ApiResponse<List<AppUserDto>>> getUsers() {
         ApiResponse<List<AppUserDto>> response = new ApiResponse<>(
                 "Users retrieved successfully", appUserService.getUsers()
@@ -27,7 +27,7 @@ public class AppUserController {
         return response.toResponseEntity();
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping(value="/{userId}",version = "1.0")
     public ResponseEntity<ApiResponse<AppUserDto>> getUser(@PathVariable Integer userId) {
         ApiResponse<AppUserDto> response = new ApiResponse<>(
                 "User retrieved successfully", appUserService.getUserById(userId)
@@ -35,7 +35,7 @@ public class AppUserController {
         return response.toResponseEntity();
     }
 
-    @GetMapping("/email/{email}")
+    @GetMapping(value="/email/{email}",version = "1.0")
     public ResponseEntity<ApiResponse<AppUserDto>> getUserByEmail(@PathVariable String email) {
         ApiResponse<AppUserDto> response = new ApiResponse<>(
                 "User retrieved successfully", appUserService.getUserByEmail(email)

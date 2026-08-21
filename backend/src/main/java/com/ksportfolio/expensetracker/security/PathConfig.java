@@ -12,13 +12,13 @@ public class PathConfig {
     public List<String> publicPath() {
 
         List<String> swaggerPaths = List.of(
-                "/v3/api-docs/**",
-                "/swagger-ui/**",
-                "/api/utilities/**"
+            "/v3/api-docs/**",
+            "/swagger-ui/**"
         );
 
         List<String> appPaths = new ArrayList<>(List.of(
-                "/api/auth/**"
+            "/api/auth/**",
+            "/api/utilities/**"
         ));
         appPaths.addAll(swaggerPaths);
         return appPaths;
@@ -27,20 +27,16 @@ public class PathConfig {
     @Bean(name = "admin-employee-paths")
     public List<String> adminEmployeePath() {
         return List.of(
-                "/api/categories",
-                "/api/users"
+            "/api/budgets/admin",
+            "/api/categories/admin/**"
         );
     }
 
     @Bean(name="admin-paths")
     public List<String> adminPath() {
         return List.of(
-        );
-    }
-
-    @Bean(name="employee-paths")
-    public List<String> employeePath() {
-        return List.of(
+            "/api/users",
+            "/api/roles"
         );
     }
 

@@ -18,7 +18,7 @@ public class BudgetController {
 
     private final BudgetService budgetService;
 
-    @GetMapping
+    @GetMapping(version = "1.0",value = "/admin")
     public ResponseEntity<ApiResponse<List<BudgetDto>>> getAll() {
         ApiResponse<List<BudgetDto>> response = new ApiResponse<>(
                 "Budgets retrieved successfully", budgetService.getAll()
@@ -26,15 +26,15 @@ public class BudgetController {
         return response.toResponseEntity();
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<ApiResponse<List<BudgetDto>>> getAllByUserId(@PathVariable("userId") Integer userId) {
+    @GetMapping(version = "1.0")
+    public ResponseEntity<ApiResponse<List<BudgetDto>>> getAllByUserId() {
         ApiResponse<List<BudgetDto>> response = new ApiResponse<>(
-                "Budgets retrieved successfully", budgetService.getByUser(userId)
+                "Budgets retrieved successfully", budgetService.getByUser()
         );
         return response.toResponseEntity();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}",version = "1.0")
     public ResponseEntity<ApiResponse<BudgetDto>> getById(@PathVariable("id") Integer id) {
         ApiResponse<BudgetDto> response = new ApiResponse<>(
                 "Budget retrieved successfully", budgetService.getById(id)
@@ -42,27 +42,27 @@ public class BudgetController {
         return response.toResponseEntity();
     }
 
-    @PostMapping("/user/{userId}")
-    public ResponseEntity<ApiResponse<Void>> addBudget(@PathVariable("userId") Integer userId, @RequestBody @Valid BudgetRequestDto request) {
-        budgetService.addBudget(request, userId);
+    @PostMapping(version = "1.0")
+    public ResponseEntity<ApiResponse<Void>> addBudget(@RequestBody @Valid BudgetRequestDto request) {
+        budgetService.addBudget(request);
         ApiResponse<Void> response = new ApiResponse<>(
                 "Budget added successfully", null
         );
         return response.toResponseEntity();
     }
 
-    @PutMapping("/user/{userId}/budget/{id}")
-    public ResponseEntity<ApiResponse<Void>> updateBudget(@PathVariable("userId") Integer userId, @PathVariable("id") Integer id, @RequestBody @Valid BudgetRequestDto request) {
-        budgetService.updateBudget(request, userId, id);
+    @PutMapping(value="/{id}",version = "1.0")
+    public ResponseEntity<ApiResponse<Void>> updateBudget(@PathVariable("id") Integer id, @RequestBody @Valid BudgetRequestDto request) {
+        budgetService.updateBudget(request,id);
         ApiResponse<Void> response = new ApiResponse<>(
                 "Budget updated successfully", null
         );
         return response.toResponseEntity();
     }
 
-    @DeleteMapping("/user/{userId}/budget/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteBudget(@PathVariable("userId") Integer userId, @PathVariable("id") Integer id) {
-        budgetService.deleteBudget(id, userId);
+    @DeleteMapping(value="/{id}",version = "1.0")
+    public ResponseEntity<ApiResponse<Void>> deleteBudget(@PathVariable("id") Integer id) {
+        budgetService.deleteBudget(id);
         ApiResponse<Void> response = new ApiResponse<>(
                 "Budget deleted successfully", null
         );
