@@ -1,0 +1,1 @@
+1. To Generate Key for JWT Token : openssl rand -base64 32
