@@ -41,6 +41,14 @@ public class CategoryService {
         return CategoryMapper.toDto(category);
     }
 
+    public CategoryDto getUserCategoryById(Integer id) {
+        Integer userId = appContextService.getUserId();
+        Category category = categoryRepo.findByIdAndUserId(id,userId).orElseThrow(
+                ()-> new BusinessLogicException(ErrorCode.CATEGORY_NOT_FOUND,id)
+        );
+        return CategoryMapper.toDto(category);
+    }
+
     public List<CategoryDto> getAllByUser() {
         Integer userId = appContextService.getUserId();
         List<Category> categories = categoryRepo.findByUserIdOrIsUniversal(userId,true);

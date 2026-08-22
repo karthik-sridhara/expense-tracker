@@ -9,4 +9,7 @@ public class AppConstant {
     public static final String TOKEN_CLAIM_NAME = "name";
     public static final String TOKEN_HEADER = "Authorization";
     public static final String TOKEN_HEADER_PREFIX = "Bearer ";
+    public static final String ROLE_USER = "USER";
+    public static final String ROLE_ADMIN = "ADMIN";
+    public static final String ROLE_EMPLOYEE = "EMPLOYEE";
 }

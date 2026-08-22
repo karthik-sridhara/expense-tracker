@@ -42,7 +42,8 @@ public class BudgetService {
     }
 
     public BudgetDto getById(Integer id) {
-        Optional<Budget> budget = budgetRepo.findById(id);
+        Integer userId = appContextService.getUserId();
+        Optional<Budget> budget = budgetRepo.findByUserIdAndId(userId,id);
         return budget.map(BudgetMapper::toDto).orElseThrow(
                 ()->new BusinessLogicException(ErrorCode.BUDGET_NOT_FOUND,id)
         );

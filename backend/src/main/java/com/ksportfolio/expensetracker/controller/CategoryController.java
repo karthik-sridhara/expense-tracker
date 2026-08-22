@@ -26,16 +26,7 @@ public class CategoryController {
         return response.toResponseEntity();
     }
 
-    @GetMapping(version = "1.0")
-    public ResponseEntity<ApiResponse<List<CategoryDto>>> getCategoriesForUser() {
-        ApiResponse<List<CategoryDto>> response =  new ApiResponse<List<CategoryDto>>(
-                "Categories retrieved successfully",
-                categoryService.getAllByUser()
-        );
-        return response.toResponseEntity();
-    }
-
-    @GetMapping(value = "/{id}",version = "1.0")
+    @GetMapping(value = "/admin/{id}",version = "1.0")
     public ResponseEntity<ApiResponse<CategoryDto>> getCategoryById(@PathVariable Integer id) {
         ApiResponse<CategoryDto> response =  new ApiResponse<CategoryDto>(
                 "Category retrieved successfully",
@@ -62,6 +53,24 @@ public class CategoryController {
     public ResponseEntity<ApiResponse<Void>> deleteCategory(@PathVariable Integer id) {
         categoryService.deleteCategory(id);
         ApiResponse<Void> response = new ApiResponse<>("Category deleted successfully", null);
+        return response.toResponseEntity();
+    }
+
+    @GetMapping(version = "1.0")
+    public ResponseEntity<ApiResponse<List<CategoryDto>>> getCategoriesForUser() {
+        ApiResponse<List<CategoryDto>> response =  new ApiResponse<List<CategoryDto>>(
+                "Categories retrieved successfully",
+                categoryService.getAllByUser()
+        );
+        return response.toResponseEntity();
+    }
+
+    @GetMapping(value = "/{id}",version = "1.0")
+    public ResponseEntity<ApiResponse<CategoryDto>> getUserCategoryById(@PathVariable Integer id) {
+        ApiResponse<CategoryDto> response =  new ApiResponse<CategoryDto>(
+                "Category retrieved successfully",
+                categoryService.getUserCategoryById(id)
+        );
         return response.toResponseEntity();
     }
 

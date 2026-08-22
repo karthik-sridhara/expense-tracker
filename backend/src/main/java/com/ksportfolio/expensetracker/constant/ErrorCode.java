@@ -26,6 +26,9 @@ public enum ErrorCode {
     BUDGET_EXISTS("ERR-2004", HttpStatus.BAD_REQUEST,"Budget already exists for category: {0} and duration type: {1}"),
     CATEGORY_ALREADY_EXIST("ERR-2005", HttpStatus.BAD_REQUEST,"Category already exists with name: {0}"),
     EMAIL_ALREADY_EXIST("ERR-2006", HttpStatus.BAD_REQUEST,"Email already exists : {0}"),
+    PASSWORD_MISMATCH("ERR-2007", HttpStatus.BAD_REQUEST, "Current password is incorrect"),
+    NEW_PASSWORD_MATCH_OLD("ERR-2008", HttpStatus.BAD_REQUEST, "New password must be different from current password"),
+    NEW_AND_CONFIRM_PASSWORD("ERR-2009", HttpStatus.BAD_REQUEST, "New password and confirm password do not match"),
     ;
 
     private final String code;

@@ -18,6 +18,7 @@ public class PathConfig {
 
         List<String> appPaths = new ArrayList<>(List.of(
             "/api/auth/**",
+            "/api/users/check-email",
             "/api/utilities/**"
         ));
         appPaths.addAll(swaggerPaths);
@@ -35,7 +36,7 @@ public class PathConfig {
     @Bean(name="admin-paths")
     public List<String> adminPath() {
         return List.of(
-            "/api/users",
+            "/api/users/admin/**",
             "/api/roles"
         );
     }

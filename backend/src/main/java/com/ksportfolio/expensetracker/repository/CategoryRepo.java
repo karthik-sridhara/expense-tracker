@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CategoryRepo extends JpaRepository<Category, Integer> {
@@ -18,5 +19,5 @@ public interface CategoryRepo extends JpaRepository<Category, Integer> {
     Boolean existsByNameAndIsUniversal(String name, boolean isUniversal);
     Boolean existsByUserIdAndNameAndIdNot(Integer userId, String name, Integer id);
     Boolean existsByNameAndIsUniversalAndIdNot(String name, boolean isUniversal, Integer id);
-
+    Optional<Category> findByIdAndUserId(Integer id, Integer userId);
 }

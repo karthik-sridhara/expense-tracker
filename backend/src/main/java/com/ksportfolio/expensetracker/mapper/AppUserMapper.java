@@ -2,6 +2,7 @@ package com.ksportfolio.expensetracker.mapper;
 
 import com.ksportfolio.expensetracker.constant.AppUserConstant;
 import com.ksportfolio.expensetracker.dto.AppUserDto;
+import com.ksportfolio.expensetracker.dto.AppUserRequestDto;
 import com.ksportfolio.expensetracker.dto.auth.RegisterRequestDto;
 import com.ksportfolio.expensetracker.entity.AppUser;
 import com.ksportfolio.expensetracker.entity.Role;
@@ -25,6 +26,25 @@ public class AppUserMapper {
 
     public  static AppUser toEntity(RegisterRequestDto dto, Role role) {
         AppUser entity = new AppUser();
+        entity.setName(dto.getName());
+        entity.setDob(dto.getDob());
+        entity.setEmail(dto.getEmail());
+        entity.setGender(AppUserConstant.male == dto.getGender().charAt(0));
+        entity.setRole(role);
+        return entity;
+    }
+
+    public  static AppUser toEntity(AppUserRequestDto dto, Role role) {
+        AppUser entity = new AppUser();
+        entity.setName(dto.getName());
+        entity.setDob(dto.getDob());
+        entity.setEmail(dto.getEmail());
+        entity.setGender(AppUserConstant.male == dto.getGender().charAt(0));
+        entity.setRole(role);
+        return entity;
+    }
+
+    public static AppUser toEntity(AppUser entity, AppUserRequestDto dto, Role role) {
         entity.setName(dto.getName());
         entity.setDob(dto.getDob());
         entity.setEmail(dto.getEmail());
