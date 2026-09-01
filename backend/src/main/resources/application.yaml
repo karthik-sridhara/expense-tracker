@@ -43,3 +43,5 @@ springdoc:
 jwt:
   expiration-ms: 3600000
   secret: ${JWT_SECRET}
+server:
+  port: 9090

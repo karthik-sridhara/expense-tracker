@@ -1,0 +1,40 @@
+import { Component, ElementRef, HostListener, signal, viewChild } from '@angular/core';
+import { Button } from '../../../../common/ui/button';
+import { AppLogo } from "../../../../common/ui/app-logo";
+import { SvgIcon } from '../../../../common/ui/svg-icon';
+import { ThemeToggle } from '../../../../common/ui/theme-toggle';
+
+@Component({
+  imports: [Button, AppLogo,SvgIcon,ThemeToggle],
+  selector: 'app-header',
+  styleUrl: './header.css',
+  templateUrl: './header.html',
+})
+export class Header {
+  readonly isMenuOpen = signal(false);
+  readonly mobileMenuRef = viewChild<unknown,ElementRef<HTMLElement>>('mobileMenu',{read: ElementRef});
+  readonly menuButtonRef = viewChild<unknown,ElementRef<HTMLElement>>('menuButton',{read: ElementRef});
+
+
+  toggleMenu() { this.isMenuOpen.update(v => !v); }
+  closeMenu() { this.isMenuOpen.set(false); }
+  
+  @HostListener('window:resize')
+  onResize() {
+    if (window.innerWidth >= 768) {
+      this.closeMenu();
+    }
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+   
+    const isClickInsideMenu = this.mobileMenuRef()?.nativeElement.contains(target);
+    const isClickOnButton = this.menuButtonRef()?.nativeElement.contains(target);
+    if (!isClickInsideMenu && !isClickOnButton) {
+      this.closeMenu();
+    }
+  }
+  
+}
