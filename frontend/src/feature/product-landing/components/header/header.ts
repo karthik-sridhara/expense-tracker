@@ -3,12 +3,16 @@ import { Button } from '../../../../common/ui/button';
 import { AppLogo } from "../../../../common/ui/app-logo";
 import { SvgIcon } from '../../../../common/ui/svg-icon';
 import { ThemeToggle } from '../../../../common/ui/theme-toggle';
+import { RouterLink } from "@angular/router";
 
 @Component({
-  imports: [Button, AppLogo,SvgIcon,ThemeToggle],
+  imports: [Button, AppLogo, SvgIcon, ThemeToggle, RouterLink],
   selector: 'app-header',
   styleUrl: './header.css',
   templateUrl: './header.html',
+  host: {
+    class: 'fixed top-0 left-0 w-full z-50'
+  }
 })
 export class Header {
   readonly isMenuOpen = signal(false);

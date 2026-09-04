@@ -4,15 +4,16 @@
 
         <nav aria-label="Primary" class="hidden md:block">
             <ul class="flex items-center gap-8 text-sm font-medium">
-                <li><a uiButton variant="link" color="default" href="#">Home</a></li>
-                <li><a uiButton variant="link" color="default" href="#">Features</a></li>
-                <li><a uiButton variant="link" color="default" href="#">Pricing</a></li>
+                <li><a uiButton variant="link" color="default" href="#hero">Home</a></li>
+                <li><a uiButton variant="link" color="default" href="#features">Features</a></li>
+                <li><a uiButton variant="link" color="default" href="#pricing">Pricing</a></li>
+                <li><a uiButton variant="link" color="default" href="#faq">FAQ</a></li>
             </ul>
         </nav>
 
         <div class="hidden md:flex items-center gap-3">
             <ui-theme-toggle />
-            <button uiButton variant="filled"  size="md">Login / Sign Up</button>
+            <button uiButton variant="filled"  size="md" routerLink="/login"  >Login / Sign Up</button>
         </div>
         <button
             #menuButton
@@ -30,13 +31,14 @@
     @if (isMenuOpen()) {
         <div id="mobile-menu" class="md:hidden border-t border-slate-200/80 bg-white/85 px-4 py-4 absolute top-16 right-0 left-0 z-50 dark:border-slate-800 dark:bg-slate-900/85" #mobileMenu>
             <ul class="flex flex-col gap-4 text-sm font-medium">
-                <li><a uiButton variant="link" color="default" href="#" (click)="closeMenu()">Home</a></li>
-                <li><a uiButton variant="link" color="default" href="#" (click)="closeMenu()">Features</a></li>
-                <li><a uiButton variant="link" color="default" href="#" (click)="closeMenu()">Pricing</a></li>
+                <li><a uiButton variant="link" color="default" href="#hero" (click)="closeMenu()">Home</a></li>
+                <li><a uiButton variant="link" color="default" href="#features" (click)="closeMenu()">Features</a></li>
+                <li><a uiButton variant="link" color="default" href="#pricing" (click)="closeMenu()">Pricing</a></li>
+                <li><a uiButton variant="link" color="default" href="#faq" (click)="closeMenu()">FAQ</a></li>
             </ul>
             <div class="mt-4 flex flex-col gap-2">
                 <ui-theme-toggle />
-                <button uiButton variant="filled"  size="md">Login / Sign Up</button>
+                <button uiButton variant="filled" routerLink="/login" size="md">Login / Sign Up</button>
             </div>
         </div>
     }

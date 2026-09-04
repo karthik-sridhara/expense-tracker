@@ -3,9 +3,16 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
 	{
 		path: '',
-		loadChildren: () =>
-			import('../feature/product-landing/product-landing.routes').then(
-				(m) => m.PRODUCT_LANDING_ROUTES
+		loadComponent: () =>
+			import('../feature/product-landing/product-landing').then(
+				(m) => m.ProductLanding
+			),
+	},
+	{
+		path:'login',
+		loadComponent: () =>
+			import('../feature/login/login').then(
+				(m) => m.Login
 			),
 	},
 	{

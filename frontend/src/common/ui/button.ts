@@ -55,16 +55,16 @@ export class Button {
 			link: 'text-slate-900 hover:text-slate-950 dark:text-white dark:hover:text-slate-300',
 		},
 		'primary': {
-			filled: 'bg-primary-600 hover:bg-primary-700 focus:outline-primary-500',
-			outline: 'border-primary-600 text-primary-700 hover:bg-primary-50',
-			ghost: 'text-primary-700 hover:bg-primary-100',
-			link: 'text-primary-700 focus:text-primary-900',
+			filled: 'bg-primary-600 hover:bg-primary-700 focus:outline-primary-500 dark:bg-primary-500 dark:hover:bg-primary-400',
+			outline: 'border-primary-600 text-primary-700 hover:bg-primary-50 dark:border-primary-400 dark:text-primary-300 dark:bg-slate-800 dark:hover:bg-primary-950',
+			ghost: 'text-primary-700 hover:bg-primary-100 dark:text-primary-300 dark:hover:bg-primary-900  dark:bg-slate-800',
+			link: 'text-primary-700 focus:text-primary-900 dark:text-primary-300 dark:focus:text-primary-100',
 		},
 		'secondary': {
-			filled: 'bg-secondary-400 hover:bg-secondary-500 focus:outline-secondary-500',
-			outline: 'border-secondary-400 text-secondary-500 hover:bg-secondary-50',
-			ghost: 'text-secondary-500 hover:bg-secondary-100',
-			link: 'text-secondary-500 focus:text-secondary-600',
+			filled: 'bg-secondary-400 hover:bg-secondary-500 focus:outline-secondary-500 dark:bg-secondary-500 dark:hover:bg-secondary-600',
+			outline: 'border-secondary-400 text-secondary-500 hover:bg-secondary-50 dark:border-secondary-400 dark:text-secondary-300 dark:hover:bg-secondary-950',
+			ghost: 'text-secondary-500 hover:bg-secondary-100 dark:text-secondary-300 dark:hover:bg-secondary-900',
+			link: 'text-secondary-500 focus:text-secondary-600 dark:text-secondary-300 dark:focus:text-secondary-200',
 		}
 	}
 
