@@ -1,12 +1,11 @@
 import { Component, ElementRef, HostListener, signal, viewChild } from '@angular/core';
 import { Button } from '../../../../common/ui/button';
 import { AppLogo } from "../../../../common/ui/app-logo";
-import { SvgIcon } from '../../../../common/ui/svg-icon';
 import { ThemeToggle } from '../../../../common/ui/theme-toggle';
 import { RouterLink } from "@angular/router";
 
 @Component({
-  imports: [Button, AppLogo, SvgIcon, ThemeToggle, RouterLink],
+  imports: [Button, AppLogo, ThemeToggle, RouterLink],
   selector: 'app-header',
   styleUrl: './header.css',
   templateUrl: './header.html',

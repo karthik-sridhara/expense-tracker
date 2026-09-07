@@ -34,7 +34,7 @@ logging:
 app:
   config:
     cors:
-      origin: http://localhost:4800, http://localhost:3000
+      origin: http://localhost:4200, http://localhost:3000
 springdoc:
   swagger-ui:
     enabled: ${SWAGGER_DOC:false}

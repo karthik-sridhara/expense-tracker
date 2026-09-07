@@ -4,41 +4,46 @@
 
         <nav aria-label="Primary" class="hidden md:block">
             <ul class="flex items-center gap-8 text-sm font-medium">
-                <li><a uiButton variant="link" color="default" href="#hero">Home</a></li>
-                <li><a uiButton variant="link" color="default" href="#features">Features</a></li>
-                <li><a uiButton variant="link" color="default" href="#pricing">Pricing</a></li>
-                <li><a uiButton variant="link" color="default" href="#faq">FAQ</a></li>
+                <li><a uiButton variant="link" color="default" routerLink="/landing" fragment="hero">Home</a></li>
+                <li><a uiButton variant="link" color="default" routerLink="/landing" fragment="features">Features</a></li>
+                <li><a uiButton variant="link" color="default" routerLink="/landing" fragment="pricing">Pricing</a></li>
+                <li><a uiButton variant="link" color="default" routerLink="/landing" fragment="faq">FAQ</a></li>
             </ul>
         </nav>
 
         <div class="hidden md:flex items-center gap-3">
             <ui-theme-toggle />
-            <button uiButton variant="filled"  size="md" routerLink="/login"  >Login / Sign Up</button>
+            <button uiButton variant="filled"  size="md" routerLink="/login" >
+                Login / Sign Up
+            </button>
         </div>
         <button
             #menuButton
             uiButton
             variant="ghost"
             class="md:hidden"
+            size="md"
             [attr.aria-expanded]="isMenuOpen()"
             aria-controls="mobile-menu"
             aria-label="Toggle navigation menu"
             (click)="toggleMenu()"
+            [icon]="isMenuOpen() ? '/icons/close.svg' : '/icons/menu.svg'" 
         >
-            <ui-svg-icon [src]="isMenuOpen() ? '/icons/close.svg' : '/icons/menu.svg'" class="h-8"/>
         </button>
     </div>
     @if (isMenuOpen()) {
         <div id="mobile-menu" class="md:hidden border-t border-slate-200/80 bg-white/85 px-4 py-4 absolute top-16 right-0 left-0 z-50 dark:border-slate-800 dark:bg-slate-900/85" #mobileMenu>
             <ul class="flex flex-col gap-4 text-sm font-medium">
-                <li><a uiButton variant="link" color="default" href="#hero" (click)="closeMenu()">Home</a></li>
-                <li><a uiButton variant="link" color="default" href="#features" (click)="closeMenu()">Features</a></li>
-                <li><a uiButton variant="link" color="default" href="#pricing" (click)="closeMenu()">Pricing</a></li>
-                <li><a uiButton variant="link" color="default" href="#faq" (click)="closeMenu()">FAQ</a></li>
+                <li><a uiButton variant="link" color="default" routerLink="/landing" fragment="hero" (click)="closeMenu()">Home</a></li>
+                <li><a uiButton variant="link" color="default" routerLink="/landing" fragment="features" (click)="closeMenu()">Features</a></li>
+                <li><a uiButton variant="link" color="default" routerLink="/landing" fragment="pricing" (click)="closeMenu()">Pricing</a></li>
+                <li><a uiButton variant="link" color="default" routerLink="/landing" fragment="faq" (click)="closeMenu()">FAQ</a></li>
             </ul>
             <div class="mt-4 flex flex-col gap-2">
                 <ui-theme-toggle />
-                <button uiButton variant="filled" routerLink="/login" size="md">Login / Sign Up</button>
+                <button uiButton variant="filled" routerLink="/login" size="md">
+                    Login / Sign Up
+                </button>
             </div>
         </div>
     }

@@ -30,7 +30,6 @@ import { Button } from "./button";
                 (click)="toggleAccordion()"
                 [icon]="isOpen() ? '/icons/arrow_up.svg' : '/icons/arrow_down.svg'"
                 iconPosition="suffix"
-                iconSizeClass="h-6 w-6 text-slate-500 dark:text-slate-400"
             >
                 <ng-content select="[accordion-title]"></ng-content>
             </button>
