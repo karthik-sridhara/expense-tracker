@@ -11,11 +11,11 @@ type IconPosition = 'prefix' | 'suffix';
 	imports: [SvgIcon],
 	template: `
 		@if(icon() && iconPosition() === 'prefix') {
-			<ui-svg-icon [src]="icon()!" [class]="iconSizeClass()" />
+			<ui-svg-icon class="h-full p-2" [src]="icon()!" [class]="iconClass()" />
 		}
 		<ng-content />
 		@if(icon() && iconPosition() === 'suffix') {
-			<ui-svg-icon [src]="icon()!" [class]="iconSizeClass()" />
+			<ui-svg-icon class="h-full p-2" [src]="icon()!" [class]="iconClass()" />
 		}
 	`,
 	host: {
@@ -27,7 +27,7 @@ export class Button {
 	readonly size = input<ButtonSize>('sm');
 	readonly icon = input<string | null>(null);
 	readonly iconPosition = input<IconPosition>('prefix');
-	readonly iconSizeClass = input<string>('h-4 w-4');
+	readonly iconClass = input<string>();
 	readonly color = input<string>('primary');
 
  	private readonly baseClasses =
@@ -43,7 +43,7 @@ export class Button {
 	private readonly sizeClasses: Record<ButtonSize, string> = {
 		sm: 'h-9 px-3  text-sm',
 		md: 'h-10 px-4  text-base',
-		lg: 'h-11 px-8  text-lg',
+		lg: 'h-11 px-8  text-lg'
 	};
 
 
@@ -70,6 +70,7 @@ export class Button {
 
 	get classes(): string {
 		const colorClass = this.colorClasses.hasOwnProperty(this.color()) ? this.colorClasses[this.color()][this.variant()] : this.color();
+
 		
 		return [
 			this.baseClasses,

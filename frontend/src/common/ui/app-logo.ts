@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component } from '@angular/core';
 import { AppLogoIcon } from "./app-logo-icon";
 
 @Component({
@@ -6,7 +6,6 @@ import { AppLogoIcon } from "./app-logo-icon";
   selector: 'app-logo',
   template: `
     <a 
-      [href]="link()" 
       aria-label="Expense Tracker Logo" 
       class="flex items-center gap-3"
     >
@@ -19,6 +18,4 @@ import { AppLogoIcon } from "./app-logo-icon";
     </a>
   `
 })
-export class AppLogo {
-  link = input<string>('#');
-}
+export class AppLogo {}

@@ -1,8 +1,15 @@
-<main class="h-screen flex items-center justify-center">
-    <form class="h-100 w-100">
-        <ui-input type="email" placeholder="Email" class="mb-4" icon="/icons/close.svg"
-         />
-        <ui-input type="password" placeholder="Password" class="mb-4" [disabled]="false" />
-        <button uiButton variant="filled" size="md" class="w-full" >Login</button>
-    </form>
+<main class="h-screen w-full flex">
+    <!-- Left half: image -->
+    <div class="hidden md:block md:w-1/2 lg:w-3/5 h-full relative">
+        <img
+            src="/image/login.png"
+            alt="Login illustration"
+            class="w-full h-full object-cover object-top-left"
+        />
+        <div class="absolute inset-y-0 right-0 w-15 bg-linear-to-r from-transparent to-white dark:to-slate-900 pointer-events-none"></div>
+    </div>
+
+    <div class="w-full md:w-1/2 lg:w-2/5 h-full flex items-center justify-center px-6 bg-white dark:bg-slate-900">
+        <router-outlet></router-outlet>
+    </div>
 </main>

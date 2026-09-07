@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { Button } from '../../common/ui/button';
-import { Input } from '../../common/ui/input';
+import { RouterOutlet } from '@angular/router';
+import { LoginService } from './login.service';
 
 @Component({
-  imports: [Button,Input],
+  imports: [RouterOutlet],
+  providers:[LoginService],
   selector: 'app-login',
   styleUrl: './login.css',
   templateUrl: './login.html',

@@ -6,16 +6,15 @@ import { Button } from './button';
     selector: 'ui-theme-toggle',
     imports: [Button],
     template: `
-        <button
-            uiButton
-            iconSizeClass="h-5 w-5"
-            variant="ghost"
-            color="default"
-            size="sm"
-            [icon]="theme.theme() === 'dark' ? '/icons/light_mode_fill.svg' : '/icons/dark_mode_fill.svg'"
-            [attr.aria-label]="theme.theme() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'"
-            (click)="theme.toggle()"
-        ></button>
+      <button
+        uiButton
+        variant="ghost"
+        color="default"
+        size="md"
+        [icon]="theme.theme() === 'dark' ? '/icons/light_mode_fill.svg' : '/icons/dark_mode_fill.svg'"
+        [attr.aria-label]="theme.theme() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'"
+        (click)="theme.toggle()"
+      ></button>
   `,
 })
 export class ThemeToggle {

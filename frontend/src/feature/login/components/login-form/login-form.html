@@ -1,0 +1,54 @@
+<div class="mb-8">
+    <div class="flex justify-center mb-6">
+        <app-logo routerLink="/landing"/>
+    </div>
+    <h3 class="text-2xl font-bold text-center text-slate-900 dark:text-white">Welcome Back</h3>
+    <p class="text-sm text-center text-slate-500 dark:text-slate-400 mt-1">Login to continue managing your expense</p>
+</div>
+<form [formGroup]="loginForm" (ngSubmit)="login()">
+    @if (errorMessage()!=null) {
+        <ui-message-banner
+            class="mb-4 h-10 block" 
+            [type]="MessageBannerType.Error"
+            [text]="errorMessage()!"
+        />
+    }
+    <form-control
+        [name]="'Email'"
+        [control]="usernameControl"
+    >
+        <ui-input
+            icon="/icons/mail_fill.svg"
+            iconPosition="prefix"
+            type="email"
+            placeholder="Email"
+            formControlName="username"
+            height="h-10 pe-3 ps-1"
+        />
+    </form-control>
+
+    <form-control
+        [name]="'Password'"
+        [control]="passwordControl"
+    >
+        <ui-input
+            icon="/icons/lock.svg"
+            iconPosition="prefix"
+            type="password"
+            placeholder="Password"
+            formControlName="password"
+            height="h-10 pe-3 ps-1"
+        />
+    </form-control>
+
+    <button uiButton variant="filled" size="md" class="w-full mt-2" type="submit">
+        Login
+    </button>
+</form>
+<ui-divider class="my-6" text="OR"/>
+<button uiButton variant="outline" size="md" class="w-full" routerLink="register">
+    Create a new account
+</button>
+<p class="text-xs text-center text-slate-400 dark:text-slate-500 mt-6">
+    By Continuing, you agree to our <a href="/terms" class="text-primary-600 hover:underline">Terms of Service</a> and <a href="/privacy" class="text-primary-600 hover:underline">Privacy Policy</a>.
+</p>
