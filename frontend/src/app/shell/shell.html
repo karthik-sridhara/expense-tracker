@@ -1,0 +1,140 @@
+
+<ng-template #search>
+    <ui-input
+        class="p-0! rounded-xl! w-full md:min-w-80 lg:min-w-90 min-w-20"
+        placeholder="Search expenses, categories, notes..."
+        icon="/icons/search.svg"
+        iconPosition="prefix"
+        [formControl]="searchControl"
+        [actionIcon]="showSearch() ? '/icons/close.svg' : null"
+        (action)="clearSearch()"
+    />
+</ng-template>
+<ng-template #menuButton>
+    <button
+        uiButton
+        type="button"
+        variant="ghost"
+        color="default"
+        size="md"
+        [icon]="isMenuOpen() ? '/icons/menu_open.svg' : '/icons/menu.svg'"
+        iconClass="p-1!"
+        class="p-0! h-9.75!"
+        aria-label="Toggle navigation"
+        aria-controls="side-bar"
+        [attr.aria-expanded]="isMenuOpen()"
+        (click)="onMenuClick()"
+    ></button>
+</ng-template>
+<div class="flex h-dvh flex-col overflow-hidden bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+    <header class="z-30 shrink-0 border-b border-slate-200 bg-white shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900">
+        <div class="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+            <div class="shrink-0">
+                <app-logo />
+            </div>
+
+            <div class="flex items-center gap-3">
+                <div class="hidden md:block">
+                    <ng-container [ngTemplateOutlet]="search"></ng-container>
+                </div>
+                <button
+                    uiButton
+                    type="button"
+                    id="notification-button"
+                    variant="ghost"
+                    color="default"
+                    size="md"
+                    icon="/icons/notification.svg"
+                    iconClass="p-1.5!"
+                    class="relative rounded-4xl! p-0!"
+                    aria-label="Notifications"
+                >
+                    @if (notificationCount > 0) {
+                        <span class="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary-600 px-1 text-xs font-semibold text-white">
+                            {{ notificationCount }}
+                        </span>
+                    }
+                </button>
+                <button uiButton
+                    type="button"
+                    variant="ghost" 
+                    color="default" 
+                    size="md" 
+                    class="gap-2 bg-inherit! px-1! sm:pr-2!"
+                    aria-label="Open profile menu"
+                >
+                    <span class="flex h-9 w-9 items-center justify-center rounded-full bg-primary-600 text-sm font-bold text-white">
+                        {{ profileName.charAt(0) | uppercase }}
+                    </span>
+                    <span class="hidden text-left sm:block">
+                        <span class="block text-sm font-semibold text-slate-900 dark:text-white">{{ profileName }}</span>
+                        <span class="block text-xs text-slate-500 dark:text-slate-400">{{ profileRole }}</span>
+                    </span>
+                </button>
+            </div>
+        </div>
+        <div class="flex h-13 gap-4 px-4 pb-3 md:hidden">
+            <ng-container [ngTemplateOutlet]="search"></ng-container>
+        </div>
+    </header>
+
+    <main id="layout" class="relative min-h-0 flex-1 md:grid md:grid-cols-[auto_minmax(0,1fr)]">
+        @if (isMenuOpen()) {
+            <button
+                type="button"
+                class="absolute inset-0 z-10 bg-slate-950/35 backdrop-blur-[1px] md:hidden"
+                aria-label="Close navigation"
+                (click)="onMenuClick()"
+            ></button>
+        }
+
+        <aside
+            id="side-bar"
+            class="absolute inset-y-0 left-0 z-20 w-56 overflow-hidden
+                border-r border-slate-200 
+                bg-slate-100  dark:border-slate-800 dark:bg-slate-900 shadow-xl
+                transition-transform duration-200 ease-out
+                md:relative md:z-auto md:shrink-0 md:translate-x-0
+                md:transition-[width] md:shadow-none
+            "
+            [ngClass]="{
+                'visible translate-x-0 md:w-56': isMenuOpen(),
+                'invisible -translate-x-full md:visible md:w-14 md:translate-x-0': !isMenuOpen()
+            }"
+        >
+            <div class="flex items-center justify-end px-2">
+                <ng-container [ngTemplateOutlet]="menuButton"></ng-container>
+            </div>
+            <ui-divider></ui-divider>
+            <div class="menu-element">
+                <button 
+                    uiButton 
+                    icon="icons/location_fill.svg" 
+                    size="sm" 
+                    class="w-full justify-start!"
+                    iconClass="h-8! p-0!"
+                    variant="ghost"
+                >
+                    {{  isMenuOpen() ? 'Location' : ''}}
+                </button>
+            </div>
+
+        </aside>
+
+        <section id="main-container" class="min-w-0 overflow-y-auto">
+            <div id="breadcrumb" 
+                class="z-10 flex h-10 items-center border-b border-slate-200 bg-slate-100 px-2 backdrop-blur dark:border-slate-800 dark:bg-slate-900"
+            >
+                <div class="md:hidden">
+                    <ng-container [ngTemplateOutlet]="menuButton"></ng-container>
+                </div>
+            </div>
+
+            <div id="content" class="w-full px-4 py-6 sm:px-6 lg:px-8">
+                <router-outlet></router-outlet>
+            </div>
+        </section>
+    </main>
+</div>
+
+
