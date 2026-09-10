@@ -1,5 +1,6 @@
-import { Component, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { SvgIcon } from './svg-icon';
+import { NgTemplateOutlet } from '@angular/common';
 
 type ButtonVariant = 'filled' | 'outline' | 'ghost' | 'link';
 type ButtonSize = 'sm' | 'md' | 'lg';
@@ -8,18 +9,26 @@ type IconPosition = 'prefix' | 'suffix';
 @Component({
 	selector: 'button[uiButton], a[uiButton]',
 	standalone: true,
-	imports: [SvgIcon],
+	imports: [SvgIcon,NgTemplateOutlet],
 	template: `
+		<ng-template #iconTemplate>
+			<ui-svg-icon 
+				id="button-icon"
+				class="h-full p-2" 
+				[src]="icon()!" 
+				[class]="iconClass()" 
+			/>
+		</ng-template>
 		@if(icon() && iconPosition() === 'prefix') {
-			<ui-svg-icon class="h-full p-2" [src]="icon()!" [class]="iconClass()" />
+			<ng-container *ngTemplateOutlet="iconTemplate"></ng-container>
 		}
 		<ng-content />
 		@if(icon() && iconPosition() === 'suffix') {
-			<ui-svg-icon class="h-full p-2" [src]="icon()!" [class]="iconClass()" />
+			<ng-container *ngTemplateOutlet="iconTemplate"></ng-container>
 		}
 	`,
 	host: {
-		'[class]': 'classes',
+		'[class]': 'classes()',
 	}
 })
 export class Button {
@@ -68,16 +77,15 @@ export class Button {
 		}
 	}
 
-	get classes(): string {
+	classes = computed(() => {
 		const colorClass = this.colorClasses.hasOwnProperty(this.color()) ? this.colorClasses[this.color()][this.variant()] : this.color();
 
-		
 		return [
 			this.baseClasses,
 			this.variantClasses[this.variant()],
 			colorClass,
 			this.sizeClasses[this.size()],
 		].join(' ');
-	}
+	});
 
 }

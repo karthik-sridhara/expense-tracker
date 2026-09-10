@@ -23,10 +23,8 @@ export const routes: Routes = [
 	{
 		path: '',
 		canActivate: [authGuard],
-		loadComponent: () =>
-			import('../feature/dashboard/dashboard').then(
-				(m) => m.Dashboard
-			),
+		loadComponent: () => import('./shell/shell').then(m => m.Shell),
+		loadChildren: () => import('./shell/shell.routes').then(m => m.SHELL_ROUTES),
 	},
 	{
 		path: '**',

@@ -1,0 +1,10 @@
+
+:host {
+  display: block;
+  min-width: 0;
+}
+
+#content{
+  height: calc(100% - 40px); 
+  overflow-y: auto;
+}
