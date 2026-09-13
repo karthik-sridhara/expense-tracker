@@ -6,5 +6,14 @@
 
 #content{
   height: calc(100% - 40px); 
-  overflow-y: auto;
+}
+
+#layout {
+  height: calc(100% - 117px);
+}
+
+@media (min-width: 768px){
+  #layout {
+    height: calc(100dvh - 65px);
+  }
 }

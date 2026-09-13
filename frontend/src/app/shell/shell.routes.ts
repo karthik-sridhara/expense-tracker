@@ -7,5 +7,11 @@ export const SHELL_ROUTES: Routes = [
             '../../feature/dashboard/dashboard'
         ).then(m => m.Dashboard) 
     },
+    { 
+        path: 'settings', 
+        loadComponent: () => import(
+            '../../feature/setting/setting'
+        ).then(m => m.Setting) 
+    },
     { path: '**', redirectTo: '' },
 ];
