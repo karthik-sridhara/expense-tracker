@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { ThemeService } from '../service/theme';
 import { Button } from './button';
 
@@ -11,6 +11,7 @@ import { Button } from './button';
         variant="ghost"
         color="default"
         size="md"
+        [class]="buttonClass()"
         [icon]="theme.theme() === 'dark' ? '/icons/light_mode_fill.svg' : '/icons/dark_mode_fill.svg'"
         [attr.aria-label]="theme.theme() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'"
         (click)="theme.toggle()"
@@ -19,4 +20,5 @@ import { Button } from './button';
 })
 export class ThemeToggle {
   protected readonly theme = inject(ThemeService);
+  readonly buttonClass = input('',{alias: 'class'}); 
 }

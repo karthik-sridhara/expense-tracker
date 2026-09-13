@@ -1,57 +1,50 @@
 import { Component, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { RouterOutlet } from '@angular/router';
-import { AppLogo } from '../../common/ui/app-logo';
+import { RouterOutlet,  RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { Button } from '../../common/ui/button';
-import { Input } from '../../common/ui/input';
-import { NgTemplateOutlet, UpperCasePipe, NgClass } from '@angular/common';
-import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
-import { debounceTime } from 'rxjs';
-import { AppSessionService } from '../../common/service/app-session';
+import { NgTemplateOutlet,  NgClass } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
 import { DividerLine } from '../../common/ui/divider-line';
-import { SvgIcon } from '../../common/ui/svg-icon';
+import { SideMenu } from '../../common/interface/app/side-menu';
+import { Header } from "./components/header/header";
+import { MENUS, MENUS_BY_ROLE } from './consts/menu';
+import { AppSessionService } from '../../common/service/app-session';
 
 
 @Component({
-  imports: [RouterOutlet, AppLogo, Input, Button, NgTemplateOutlet, ReactiveFormsModule, UpperCasePipe, DividerLine, NgClass],
+  imports: [RouterOutlet, Button, NgTemplateOutlet, ReactiveFormsModule, DividerLine, NgClass, RouterLink, RouterLinkActive, Header],
   selector: 'app-shell',
   styleUrl: './shell.css',
   templateUrl: './shell.html',
 })
 export class Shell {
-  
-  notificationCount = 3;
-  profileName!: string;
-  profileRole!: string;
-  searchControl!:FormControl;
-  showSearch = signal<boolean>(false);
+
   isMenuOpen = signal<boolean>(false);
+  menus!: SideMenu[];
 
-  constructor(private fb: FormBuilder,private appSession:AppSessionService) {
+  constructor(private appSession:AppSessionService,private router: Router) {
     const user = this.appSession.getUser();
-    this.profileName = user?.name || '';
-    this.profileRole = user?.role || '';
-
-
-    this.searchControl = this.fb.control('');
-    this.searchControl.valueChanges
-    .pipe(
-      debounceTime(300),
-      takeUntilDestroyed()
-    )
-    .subscribe(value => {
-      this.showSearch.set(Boolean(value?.trim()));
-    });
-
+    if(!user ||!user.role) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    this.loadMenu(user.role);
   }
 
-
-  clearSearch() {
-    this.searchControl.setValue('');
-    this.showSearch.set(false);
+  private loadMenu(role: string){
+    const menus: SideMenu[] = [];
+    for (const menu of MENUS) {
+      if (MENUS_BY_ROLE[role].has(menu.id)) {
+        menus.push(menu);
+      }
+    }
+    this.menus = menus;
   }
 
   onMenuClick() {
     this.isMenuOpen.update(value => !value);
+  }
+
+  onMenuItemClick(menu:SideMenu) {
+    this.isMenuOpen.update(value => false);
   }
 }
