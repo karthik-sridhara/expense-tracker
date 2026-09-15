@@ -7,6 +7,7 @@ import { Injectable } from "@angular/core";
 import { ApiResponse } from "../../common/interface/api-model/api-response";
 import { Router } from "@angular/router";
 import { RegisterRequest } from "../../common/interface/register/register-request";
+import { API_ENDPOINTS } from "../../common/const/api-enpoint.const";
 
 @Injectable()
 export class LoginService {
@@ -18,7 +19,7 @@ export class LoginService {
     ) {}
 
     login(body: LoginRequest) : Observable<ApiResponse<LoginResponse>> {
-        return this.http.post<ApiResponse<LoginResponse>>('http://localhost:9090/api/auth/login', body);
+        return this.http.post<ApiResponse<LoginResponse>>(API_ENDPOINTS.LOGIN, body);
     }
 
     onLoginSuccess(response: LoginResponse,redirectUrl:string) {
@@ -33,7 +34,7 @@ export class LoginService {
     }
 
     register(body: RegisterRequest): Observable<ApiResponse<unknown>> {
-        return this.http.post<ApiResponse<unknown>>('http://localhost:9090/api/auth/registration', body);
+        return this.http.post<ApiResponse<unknown>>(API_ENDPOINTS.REGISTERATION, body);
     }
 
     onRegisterSuccess() {

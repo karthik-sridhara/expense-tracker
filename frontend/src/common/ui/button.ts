@@ -2,9 +2,9 @@ import { Component, computed, input } from '@angular/core';
 import { SvgIcon } from './svg-icon';
 import { NgTemplateOutlet } from '@angular/common';
 
-type ButtonVariant = 'filled' | 'outline' | 'ghost' | 'link';
-type ButtonSize = 'sm' | 'md' | 'lg';
-type IconPosition = 'prefix' | 'suffix';
+export type ButtonVariant = 'filled' | 'outline' | 'ghost' | 'link';
+export type ButtonSize = 'sm' | 'md' | 'lg';
+export type IconPosition = 'prefix' | 'suffix';
 
 @Component({
 	selector: 'button[uiButton], a[uiButton]',
@@ -60,19 +60,19 @@ export class Button {
 		'default': {
 			filled: 'bg-slate-900 text-white hover:bg-slate-800 focus:outline-slate-500 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200',
 			outline: 'border-slate-300 text-slate-900 hover:bg-slate-50 dark:border-slate-600 dark:text-white dark:hover:bg-slate-800',
-			ghost: 'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800',
+			ghost: 'text-slate-600 hover:bg-slate-200 hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white',
 			link: 'text-slate-900 hover:text-slate-950 dark:text-white dark:hover:text-slate-300',
 		},
 		'primary': {
 			filled: 'bg-primary-600 hover:bg-primary-700 focus:outline-primary-500 dark:bg-primary-500 dark:hover:bg-primary-400',
 			outline: 'border-primary-600 text-primary-700 hover:bg-primary-50 dark:border-primary-400 dark:text-primary-300 dark:bg-slate-800 dark:hover:bg-primary-950',
-			ghost: 'text-primary-700 hover:bg-primary-100 dark:text-primary-300 dark:hover:bg-primary-900  dark:bg-slate-800',
+			ghost: 'text-primary-700 hover:bg-primary-100 hover:text-primary-900 dark:bg-slate-800 dark:text-primary-300 dark:hover:bg-primary-900 dark:hover:text-primary-100',
 			link: 'text-primary-700 focus:text-primary-900 dark:text-primary-300 dark:focus:text-primary-100',
 		},
 		'secondary': {
 			filled: 'bg-secondary-400 hover:bg-secondary-500 focus:outline-secondary-500 dark:bg-secondary-500 dark:hover:bg-secondary-600',
 			outline: 'border-secondary-400 text-secondary-500 hover:bg-secondary-50 dark:border-secondary-400 dark:text-secondary-300 dark:hover:bg-secondary-950',
-			ghost: 'text-secondary-500 hover:bg-secondary-100 dark:text-secondary-300 dark:hover:bg-secondary-900',
+			ghost: 'text-secondary-500 hover:bg-secondary-100 hover:text-secondary-700 dark:text-secondary-300 dark:hover:bg-secondary-900 dark:hover:text-secondary-100',
 			link: 'text-secondary-500 focus:text-secondary-600 dark:text-secondary-300 dark:focus:text-secondary-200',
 		}
 	}

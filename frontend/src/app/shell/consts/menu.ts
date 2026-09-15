@@ -10,30 +10,30 @@ export const MENUS:SideMenu[] = [
     {
       id: 'transaction',
       name: 'Transaction',
-      route: '/transaction',
+      route: '/transactions',
       icon: '/icons/receipt_fill.svg'
     },
     {
       id: 'category',
       name: 'Category',
-      route: '/category',
+      route: '/categories',
       icon: '/icons/category_fill.svg'
     },
     {
       id: 'budget',
       name: 'Budget',
-      route: '/budget',
+      route: '/budgets',
       icon: '/icons/account_balance_wallet_fill.svg'
     },
     {
       id: 'payment',
       name: 'Payment',
-      route: '/payment',
+      route: '/payments',
       icon: '/icons/pending_actions.svg'
     },
     {
       id: 'settings',
-      name: 'Settings',
+      name: 'Setting',
       route: '/settings',
       icon: '/icons/settings_fill.svg'
     }

@@ -87,7 +87,7 @@ export class Input implements ControlValueAccessor {
     );
     readonly clientClass = input<string>('', { alias: 'class' });
 
-    private defaultClasess = ('h-10 px-3 bg-white dark:bg-slate-800 outline-1 outline-gray-300 dark:outline-slate-600 rounded-md transition-colors focus-within:outline-2 focus-within:outline-primary-500');
+    private defaultClasess = ('h-10 px-3 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-md transition-colors focus-within:border-primary-500  focus-within:ring-2 ring-primary-500/20');
     private disabledClasses = "opacity-50 cursor-not-allowed";
 
 
