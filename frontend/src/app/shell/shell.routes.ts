@@ -8,6 +8,18 @@ export const SHELL_ROUTES: Routes = [
         ).then(m => m.Dashboard) 
     },
     { 
+        path: 'categories', 
+        loadComponent: () => import(
+            '../../feature/category/category'
+        ).then(m => m.Category) 
+    },
+    { 
+        path: 'budgets', 
+        loadComponent: () => import(
+            '../../feature/budget/budget'
+        ).then(m => m.Budget) 
+    },
+    { 
         path: 'settings', 
         loadComponent: () => import(
             '../../feature/setting/setting'

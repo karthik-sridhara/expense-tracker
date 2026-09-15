@@ -60,6 +60,7 @@ export class AppFormControl{
         else if (error['required']) return `${this.name()} is required`;
         else if (error['email']) return `Enter a valid email address`;
         else if (error['minlength']) return `${this.name()} must be at least ${error['minlength'].requiredLength} characters long`;
+        else if (error['maxlength']) return `${this.name()} must be at most ${error['maxlength'].requiredLength} characters long`;
         else return `Invalid value`;
     });
 }

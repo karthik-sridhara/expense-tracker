@@ -12,9 +12,12 @@ import { NgTemplateOutlet } from "@angular/common";
             display: block;
         }
         :host(.ng-invalid.ng-touched) {
-            outline-color: #dc2626 !important;
-            outline-width: 2px !important;
-        }        
+            border-color: #dc2626;
+        }
+
+        :host(.ng-invalid.ng-touched:focus-within) {
+            box-shadow: 0 0 0 2px rgb(220 38 38 / 20%);
+        }   
     `],
     template: `
         <ng-template #iconTemplate>
@@ -87,7 +90,7 @@ export class Input implements ControlValueAccessor {
     );
     readonly clientClass = input<string>('', { alias: 'class' });
 
-    private defaultClasess = ('h-10 px-3 bg-white dark:bg-slate-800 outline-1 outline-gray-300 dark:outline-slate-600 rounded-md transition-colors focus-within:outline-2 focus-within:outline-primary-500');
+    private defaultClasess = ('h-10 px-3 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-md transition-colors focus-within:border-primary-500  focus-within:ring-2 ring-primary-500/20');
     private disabledClasses = "opacity-50 cursor-not-allowed";
 
 
