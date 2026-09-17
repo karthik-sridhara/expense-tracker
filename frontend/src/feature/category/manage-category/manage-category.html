@@ -1,0 +1,130 @@
+
+<header
+  class="border-b border-slate-200  px-6 py-5 dark:border-slate-800 dark:bg-slate-950 bg-white
+  "
+>
+  <h2 class="text-lg font-semibold">
+    {{ data.mode === 'add' ? 'Add category' : 'Edit category' }}
+  </h2>
+
+  <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+    Configure how this category is used for transactions.
+  </p>
+</header>
+
+<form
+  id="category-form"
+  class="flex-1 space-y-1 overflow-auto bg-white px-6 py-5 dark:bg-slate-950
+  "
+  [formGroup]="categoryForm"
+  (ngSubmit)="save()"
+>
+  <form-control
+    name="Name"
+    [control]="nameControl"
+  >
+    <label
+      for="category-name"
+      class="mb-1.5 block text-sm font-medium"
+    >
+      Name
+    </label>
+
+    <ui-input
+      name="category-name"
+      placeholder="For example, Groceries"
+      formControlName="name"
+    />
+  </form-control>
+
+  <form-control
+    name="Description"
+    [control]="descriptionControl"
+  >
+    <label
+      for="category-description"
+      class="mb-1.5 block text-sm font-medium"
+    >
+      Description
+    </label>
+    <ui-textarea
+      name="category-description"
+      [rows]="4"
+      [maxLength]="300"
+      placeholder="Describe when this category should be used"
+      formControlName="description"
+    />
+  </form-control>
+
+  <form-control
+    name="Icon"
+    [control]="iconControl"
+  >
+    <label
+      for="category-icon"
+      class="mb-1.5 block text-sm font-medium"
+    >
+      Icon
+    </label>
+
+    <ui-input
+      name="category-icon"
+      placeholder="/category.svg"
+      formControlName="icon"
+    />
+  </form-control>
+
+  <fieldset class="space-y-3 pt-3">
+    <legend class="mb-2 text-sm font-medium">
+      Category settings
+    </legend>
+
+    <ui-checkbox
+      name="is-income"
+      label="Income category"
+      description="Use this category for incoming transactions."
+      formControlName="isIncome"
+    />
+
+    <ui-checkbox
+      name="is-universal"
+      label="Universal category"
+      description="Make this category available to every user."
+      formControlName="isUniversal"
+    />
+
+    <ui-checkbox
+      name="is-active"
+      label="Active"
+      description="Allow this category to be selected."
+      formControlName="isActive"
+    />
+  </fieldset>
+</form>
+
+<footer
+  class="
+    flex justify-end gap-3 border-t border-slate-200 bg-slate-100 px-6 py-4 dark:border-slate-800 dark:bg-slate-900
+  "
+>
+  <button
+    uiButton
+    type="button"
+    variant="outline"
+    color="default"
+    size="md"
+    (click)="cancel()"
+  >
+    Cancel
+  </button>
+
+  <button
+    uiButton
+    type="submit"
+    form="category-form"
+    variant="filled"
+    size="md"
+  >
+    {{ data.mode === 'add' ? 'Add category' : 'Save' }}
+  </button>
+</footer>

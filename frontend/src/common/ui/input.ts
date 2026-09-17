@@ -12,9 +12,12 @@ import { NgTemplateOutlet } from "@angular/common";
             display: block;
         }
         :host(.ng-invalid.ng-touched) {
-            outline-color: #dc2626 !important;
-            outline-width: 2px !important;
-        }        
+            border-color: #dc2626;
+        }
+
+        :host(.ng-invalid.ng-touched:focus-within) {
+            box-shadow: 0 0 0 2px rgb(220 38 38 / 20%);
+        }   
     `],
     template: `
         <ng-template #iconTemplate>

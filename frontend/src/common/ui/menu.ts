@@ -4,7 +4,7 @@ import { Button, ButtonSize, ButtonVariant, IconPosition } from "./button";
 export interface UiMenuItem {
     text: string;
     icon: string | null;
-    onClick: () => void;
+    onClick: (item: unknown) => void;
     disabled?: Signal<boolean>;
 }
 
@@ -25,6 +25,7 @@ export interface UiMenuItem {
             [color]="buttonColor()"
             [class]="buttonClass()"
             (click)="toggleMenu()"
+            [disabled]="disabled()"
         >
             <ng-content [select]="buttonContent" ></ng-content>
         </button>
@@ -65,12 +66,14 @@ export class UiMenu implements AfterViewInit, OnDestroy {
 	readonly buttonIconClass = input<string>();
 	readonly buttonColor = input<string>('primary');
     readonly buttonClass = input<string>('');
+    readonly disabled = input<boolean>(false);
 
 	readonly menuItemSize = input<ButtonSize>('sm');
 	readonly menuItemIconPosition = input<IconPosition>('prefix');
 	readonly menuItemColor = input<string>('default');
     readonly menuItemClass = input<string>('');
     readonly menuItems = input.required<UiMenuItem[]>();
+    readonly data = input.required<unknown>();
 
 
     @ViewChild('menuToggleButton', { read: ElementRef })
@@ -126,7 +129,7 @@ export class UiMenu implements AfterViewInit, OnDestroy {
             return;
         }
 
-        item.onClick();
+        item.onClick(this.data());
         this.menuPopover.nativeElement.hidePopover();
     }
 

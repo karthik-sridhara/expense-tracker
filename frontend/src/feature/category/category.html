@@ -38,6 +38,9 @@
             <span class="shrink-0 text-sm text-slate-500 dark:text-slate-400">
                 1 category
             </span>
+            <button (click)="onAddCategory()">
+                Add Category
+            </button>
         </div>
 
         <h2 id="category-list-heading" class="sr-only">Category list</h2>
@@ -123,10 +126,12 @@
                 <ui-menu
                     aria-label="Actions for Food"
                     [menuItems]="menuItems"
+                    [data]="category"
                     buttonIcon="/icons/more_vert.svg"
                     buttonColor="default"
                     buttonIconClass="h-5! w-5! p-0!"
                     buttonClass="h-9! w-9! shrink-0 p-0!"
+                    [disabled]="category.isUniversal && userRole() === 'USER'"
                 />
             </article>
             }
