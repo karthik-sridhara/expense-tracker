@@ -12,6 +12,7 @@ import { AppSessionService } from '../../common/service/app-session';
 import { DialogType, MessageDialogKind, MessageDialogTheme } from '../../common/enum/dialog';
 import { MessageDialog } from '../../common/component/app-dialog/message-dialog';
 import { MessageDialogData, MessageDialogResult } from '../../common/interface/app/app-dialog';
+import { ToastService } from '../../common/component/toast/toast-service';
 
 @Component({
   imports: [SvgIcon, UiMenu],
@@ -30,7 +31,8 @@ export class Category implements OnInit{
   constructor(
     private categoryService: CategoryService,
     private dialogService: DialogService,
-    private appSessionService:AppSessionService
+    private appSessionService:AppSessionService,
+    private toastService:ToastService
   ) {
     this.userRole.set(this.appSessionService.getUser()!.role);
   }
@@ -128,6 +130,7 @@ export class Category implements OnInit{
     this.categoryService.deleteCategory(category.id, category.isUniversal)
     .pipe(take(1))
     .subscribe(response => {
+      this.toastService.showSuccess('Category deleted successfully');
       this.getCategories();
     });
   }

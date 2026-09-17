@@ -12,7 +12,7 @@ import { SvgIcon } from '../../ui/svg-icon';
   template: `
     
     <header
-        class="flex items-center gap-4 bg-white px-6 pt-6 pb-3 dark:bg-slate-950"
+        class="flex items-center gap-4 bg-white px-6 py-6 dark:bg-slate-950"
     >
         <div
             class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full"

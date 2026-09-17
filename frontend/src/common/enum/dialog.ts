@@ -13,3 +13,10 @@ export enum DialogType {
   Modal = 'modal',
   Sidepop = 'sidepop',
 }
+
+export enum ToastType {
+    SUCCESS = 'success',
+    ERROR = 'error',
+    INFO = 'info',
+    WARNING = 'warning'
+}

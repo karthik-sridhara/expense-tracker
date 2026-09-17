@@ -12,6 +12,7 @@ import { Textarea } from '../../../common/ui/textarea';
 import { CategoryService } from '../category.service';
 import { AppSessionService } from '../../../common/service/app-session';
 import { Role } from '../../../common/enum/role';
+import { ToastService } from '../../../common/component/toast/toast-service';
 
 @Component({
   imports: [AppFormControl, Input , ReactiveFormsModule,Button,CheckBox, Textarea],
@@ -38,7 +39,8 @@ export class ManageCategory {
     private formBuilder: FormBuilder,
     private dialogRef: DialogRef<CategoryDialogResult>,
     private categoryService: CategoryService,
-    private appSessionService:AppSessionService
+    private appSessionService:AppSessionService,
+    private toastService: ToastService
   ) {
     const category = this.data.category;
     const user = this.appSessionService.getUser();
@@ -137,6 +139,7 @@ export class ManageCategory {
         this.dialogRef.close({
           saved: true,
         });
+        this.toastService.showSuccess('Category added successfully');
       }
     });
   }
@@ -150,6 +153,7 @@ export class ManageCategory {
         this.dialogRef.close({
           saved: true,
         });
+        this.toastService.showSuccess('Category updated successfully');
       }
     });
   }
