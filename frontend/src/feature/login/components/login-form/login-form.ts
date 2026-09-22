@@ -4,12 +4,13 @@ import { Input } from '../../../../common/ui/input';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LoginType } from '../../../../common/interface/login/login-request';
 import { AppFormControl } from '../../../../common/ui/form-control';
-import { LoginService } from '../../login.service';
+import { LoginService } from '../../../../common/service/login.service';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { AppLogo } from '../../../../common/ui/app-logo';
 import { DividerLine } from '../../../../common/ui/divider-line';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MessageBanner,MessageBannerType } from '../../../../common/ui/message-banner';
+import { Role } from '../../../../common/enum/role';
 
 @Component({
   imports: [Button,Input,ReactiveFormsModule,AppFormControl,AppLogo,RouterLink,DividerLine,MessageBanner],
@@ -56,7 +57,8 @@ export class LoginForm {
     const body = this.loginForm.value;
     this.loginService.login(body).subscribe({
       next: (response) => {
-        const redirectUrl = this.state.snapshot.queryParams['returnUrl'] || '/';
+        const defaultURL = response.data.role === Role.ADMIN ? '/categories' : '/';
+        const redirectUrl = this.state.snapshot.queryParams['returnUrl'] || defaultURL;
         this.loginService.onLoginSuccess(response.data,redirectUrl);
       },
       error: (error: HttpErrorResponse) => {

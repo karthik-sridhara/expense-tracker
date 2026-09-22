@@ -1,9 +1,11 @@
 package com.ksportfolio.expensetracker.controller;
 
-import com.ksportfolio.expensetracker.dto.BudgetDto;
-import com.ksportfolio.expensetracker.dto.BudgetRequestDto;
+import com.ksportfolio.expensetracker.dto.Budget.BudgetDto;
+import com.ksportfolio.expensetracker.dto.Budget.BudgetFilter;
+import com.ksportfolio.expensetracker.dto.Budget.BudgetRequestDto;
 import com.ksportfolio.expensetracker.dto.response.ApiResponse;
 import com.ksportfolio.expensetracker.service.BudgetService;
+import com.ksportfolio.expensetracker.type.DurationType;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,9 +29,14 @@ public class BudgetController {
     }
 
     @GetMapping(version = "1.0")
-    public ResponseEntity<ApiResponse<List<BudgetDto>>> getAllByUserId() {
+    public ResponseEntity<ApiResponse<List<BudgetDto>>> getAllByUserId(
+        @RequestParam(required = false) DurationType type
+    ) {
+        BudgetFilter budgetFilter = new BudgetFilter();
+        budgetFilter.setDurationType(type);
         ApiResponse<List<BudgetDto>> response = new ApiResponse<>(
-                "Budgets retrieved successfully", budgetService.getByUser()
+        "Budgets retrieved successfully",
+                budgetService.getByUser(budgetFilter)
         );
         return response.toResponseEntity();
     }

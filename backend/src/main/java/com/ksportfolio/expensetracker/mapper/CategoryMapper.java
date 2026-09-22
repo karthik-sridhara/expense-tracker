@@ -1,7 +1,7 @@
 package com.ksportfolio.expensetracker.mapper;
 
-import com.ksportfolio.expensetracker.dto.CategoryDto;
-import com.ksportfolio.expensetracker.dto.CategoryRequestDto;
+import com.ksportfolio.expensetracker.dto.Category.CategoryDto;
+import com.ksportfolio.expensetracker.dto.Category.CategoryRequestDto;
 import com.ksportfolio.expensetracker.entity.AppUser;
 import com.ksportfolio.expensetracker.entity.Category;
 

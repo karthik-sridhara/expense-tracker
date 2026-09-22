@@ -9,7 +9,7 @@ import { DividerLine } from '../../../../common/ui/divider-line';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MessageBanner, MessageBannerType } from '../../../../common/ui/message-banner';
 import { Gender } from '../../../../common/enum/gender';
-import { LoginService } from '../../login.service';
+import { LoginService } from '../../../../common/service/login.service';
 
 @Component({
   imports: [Button,Input,ReactiveFormsModule,AppFormControl,AppLogo,RouterLink,DividerLine,MessageBanner],

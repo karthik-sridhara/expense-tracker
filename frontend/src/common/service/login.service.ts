@@ -1,15 +1,17 @@
 import { HttpClient } from "@angular/common/http";
-import { LoginRequest } from "../../common/interface/login/login-request";
-import { LoginResponse } from "../../common/interface/login/login-response";
-import { AppSessionService } from "../../common/service/app-session";
+import { LoginRequest } from "../interface/login/login-request";
+import { LoginResponse } from "../interface/login/login-response";
+import { AppSessionService } from "./app-session";
 import { Observable } from "rxjs";
 import { Injectable } from "@angular/core";
-import { ApiResponse } from "../../common/interface/api-model/api-response";
+import { ApiResponse } from "../interface/api-model/api-response";
 import { Router } from "@angular/router";
-import { RegisterRequest } from "../../common/interface/register/register-request";
-import { API_ENDPOINTS } from "../../common/const/api-enpoint.const";
+import { RegisterRequest } from "../interface/register/register-request";
+import { API_ENDPOINTS } from "../const/api-enpoint.const";
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class LoginService {
 
     constructor(
@@ -23,13 +25,15 @@ export class LoginService {
     }
 
     onLoginSuccess(response: LoginResponse,redirectUrl:string) {
-        this.appSessionService.setToken(response.token);
-        this.appSessionService.setUser({
-            userId: response.userId,
-            email: response.email,
-            name: response.name,
-            role: response.role
-        });
+        this.appSessionService.setSession(
+            response.token,
+            {
+                userId: response.userId,
+                email: response.email,
+                name: response.name,
+                role: response.role
+            }
+        );
         this.router.navigateByUrl(redirectUrl);
     }
 
@@ -39,5 +43,10 @@ export class LoginService {
 
     onRegisterSuccess() {
         this.router.navigateByUrl('/login');
+    }
+
+    onLogout() {
+        this.appSessionService.clearSession();
+        window.location.href = '/login';
     }
 }

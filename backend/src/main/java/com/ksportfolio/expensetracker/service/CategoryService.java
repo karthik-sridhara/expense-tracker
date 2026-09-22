@@ -1,15 +1,18 @@
 package com.ksportfolio.expensetracker.service;
 
 import com.ksportfolio.expensetracker.constant.ErrorCode;
-import com.ksportfolio.expensetracker.dto.CategoryDto;
-import com.ksportfolio.expensetracker.dto.CategoryRequestDto;
+import com.ksportfolio.expensetracker.dto.Category.CategoryDto;
+import com.ksportfolio.expensetracker.dto.Category.CategoryFilter;
+import com.ksportfolio.expensetracker.dto.Category.CategoryRequestDto;
 import com.ksportfolio.expensetracker.entity.AppUser;
 import com.ksportfolio.expensetracker.entity.Category;
 import com.ksportfolio.expensetracker.exception.BusinessLogicException;
 import com.ksportfolio.expensetracker.mapper.CategoryMapper;
 import com.ksportfolio.expensetracker.repository.AppUserRepo;
 import com.ksportfolio.expensetracker.repository.CategoryRepo;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,9 +52,9 @@ public class CategoryService {
         return CategoryMapper.toDto(category);
     }
 
-    public List<CategoryDto> getAllByUser() {
-        Integer userId = appContextService.getUserId();
-        List<Category> categories = categoryRepo.findByUserIdOrIsUniversal(userId,true);
+    public List<CategoryDto> getAllByUser(CategoryFilter categoryFilter) {
+        categoryFilter.setUserId(appContextService.getUserId());
+        List<Category> categories = categoryRepo.findAll(filter(categoryFilter));
         List<CategoryDto> categoryDtos = new ArrayList<>();
         for (Category category : categories) {
             categoryDtos.add(CategoryMapper.toDto(category));
@@ -142,6 +145,54 @@ public class CategoryService {
             throw new BusinessLogicException(ErrorCode.ACCESS_DENIED);
         }
         categoryRepo.delete(category);
+    }
+
+    private static Specification<Category> filter(CategoryFilter filter) {
+
+        return (root, query, criteriaBuilder) -> {
+
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (filter.getUserId() != null) {
+                Predicate userPredicate = criteriaBuilder.equal(
+                        root.get("user").get("id"),
+                        filter.getUserId()
+                );
+
+                Predicate universalPredicate = criteriaBuilder.isTrue(
+                        root.get("isUniversal")
+                );
+
+                predicates.add(
+                        criteriaBuilder.or(
+                                userPredicate,
+                                universalPredicate
+                        )
+                );
+            }
+
+            if (filter.getIsIncome() != null) {
+                predicates.add(
+                        criteriaBuilder.equal(
+                                root.get("isIncome"),
+                                filter.getIsIncome()
+                        )
+                );
+            }
+
+            if (filter.getIsActive() != null) {
+                predicates.add(
+                        criteriaBuilder.equal(
+                                root.get("isActive"),
+                                filter.getIsActive()
+                        )
+                );
+            }
+
+            return criteriaBuilder.and(
+                    predicates.toArray(new Predicate[0])
+            );
+        };
     }
 
 }

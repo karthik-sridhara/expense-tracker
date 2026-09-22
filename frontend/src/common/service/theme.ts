@@ -10,9 +10,11 @@ export class ThemeService {
     readonly theme = signal<Theme>(this.getPreferredTheme());
 
     constructor() {
+
         effect(() => {
             const theme = this.theme();
             document.documentElement.classList.toggle('dark', theme === 'dark');
+            document.documentElement.dataset['agThemeMode']= theme === 'dark' ? 'app-dark' : 'app-light';
             LocalStorageService.setValue(LocalStorageKey.THEME, theme);
         });
     }

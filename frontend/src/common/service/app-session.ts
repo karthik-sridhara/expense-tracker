@@ -13,21 +13,11 @@ export class AppSessionService {
         return !!this.getToken() && !!this.getUser();
     }
 
-    setToken(token: string): void {
-        this.token = token;
-        LocalStorageService.setValue(LocalStorageKey.AUTH_TOKEN, token);
-    }
-
     getToken(): string | null {
         if (!this.token) {
             this.token = LocalStorageService.getValue(LocalStorageKey.AUTH_TOKEN);
         }
         return this.token;
-    }
-
-    setUser(user: LoggedUser): void {
-        this.user = user;
-        LocalStorageService.setItem(LocalStorageKey.USER, user);
     }
 
     getUser(): LoggedUser | null {
@@ -38,6 +28,20 @@ export class AppSessionService {
             }
         }
         return this.user;
+    }
+
+    setSession(token: string, user: LoggedUser): void {
+        this.user = user;
+        this.token = token;
+        LocalStorageService.setValue(LocalStorageKey.AUTH_TOKEN, token);
+        LocalStorageService.setItem(LocalStorageKey.USER, user);
+    }
+
+    clearSession(): void {
+        this.token = null;
+        this.user = null;
+        LocalStorageService.remove(LocalStorageKey.AUTH_TOKEN);
+        LocalStorageService.remove(LocalStorageKey.USER);
     }
 
 }

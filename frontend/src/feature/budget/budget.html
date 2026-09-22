@@ -1,1 +1,49 @@
-<p>budget works!</p>
+<div class="mx-auto w-full max-w-7xl">
+    <header class="mb-6">
+        <h1 class="text-2xl font-semibold text-slate-950 dark:text-white">
+            Budgets
+        </h1>
+        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            Plan recurring income and expense limits by category.
+        </p>
+    </header>
+
+    <section id="filter" class="flex mb-4 items-center justify-between">
+        <div class="flex gap-2 justify-start">
+            <ui-input  
+                type="search" 
+                placeholder="Search budgets..." 
+                class="w-80 ps-0!" 
+                icon="/icons/search.svg"
+                iconPosition="prefix"
+            />
+            <select uiSelect id="budgetType" class="w-40" >
+                @for(type of budgetType;track $index){
+                    <option [value]="type.value">{{type.label}}</option>
+                }
+            </select>
+        </div>
+        
+        <button
+            uiButton
+            type="button"
+            icon="/icons/add_box_fill.svg"
+            label="Add Budget"
+            class="ps-0!"
+            (click)="onAdd()"
+        >
+            Add Budget
+        </button>
+    </section>
+
+    <section id="table" class="hidden md:block">
+        <app-table
+            id="budget-app-table"
+            [colDefs]="budgetColDefs()"
+            [rowData]="budgetRowData()"
+        />
+    </section>
+
+    <section id="cards" class="md:hidden">
+    </section>
+</div>

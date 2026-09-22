@@ -41,13 +41,17 @@ export class AppDialog {
   readonly dialogRef = input.required<DialogRef<unknown>>();
   readonly config = input<DialogConfig<unknown>>({});
 
+  private readonly positionClasses = {
+    [DialogType.Sidepop]: 'ml-auto mr-0 my-0 h-dvh max-h-dvh w-2/3 md:w-1/2 min-w-80 max-w-[calc(100vw-2rem)] rounded-l-md',
+    [DialogType.Modal]: 'm-auto max-h-[calc(100vh-2rem)] w-100 max-w-[calc(100vw-2rem)] rounded-md',
+    [DialogType.ProfilePop]: 'm-auto mr-4 md:mr-10 mt-16 max-h-dvh  max-w-[calc(100vw-2rem)] rounded-lg backdrop:bg-slate-950/1!',
+  }
+
   protected readonly dialogClasses = computed(() => {
     const baseClasses =
       'p-0 overflow-auto border border-slate-200 bg-white shadow-xl ' +
       'backdrop:bg-slate-950/50 dark:border-slate-600 dark:bg-slate-900 dark:shadow-2xl dark:shadow-black/80';
-    const positionClasses = this.config().type === DialogType.Sidepop
-      ? 'ml-auto mr-0 my-0 h-dvh max-h-dvh w-2/3 md:w-1/2 min-w-80 max-w-[calc(100vw-2rem)] rounded-l-md'
-      : 'm-auto max-h-[calc(100vh-2rem)] w-100 max-w-[calc(100vw-2rem)] rounded-md';
+    const positionClasses = this.positionClasses[this.config().type ?? DialogType.Modal];
 
     return [baseClasses, positionClasses, this.config().class]
       .filter(Boolean)

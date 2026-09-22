@@ -2,6 +2,7 @@ package com.ksportfolio.expensetracker.repository;
 
 import com.ksportfolio.expensetracker.entity.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -10,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface CategoryRepo extends JpaRepository<Category, Integer> {
+public interface CategoryRepo extends JpaRepository<Category, Integer> , JpaSpecificationExecutor<Category> {
 
     @Query(name="Category.findByUserId")
     List<Category> getAllByUser(@Param("userId") Integer userId);

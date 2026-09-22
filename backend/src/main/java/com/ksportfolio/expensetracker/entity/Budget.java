@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.NamedQueries;
 import org.hibernate.annotations.NamedQuery;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -15,7 +16,12 @@ import java.math.BigDecimal;
 @Table(name = "BUDGET")
 @Getter
 @Setter
-@NamedQuery(name = "Budget.findByUserId", query = "SELECT b FROM Budget b WHERE b.user.id = :userId")
+@NamedQueries({
+    @NamedQuery(
+            name = "Budget.findByUserId",
+            query = "SELECT b FROM Budget b JOIN FETCH b.category WHERE b.user.id = :userId"
+    )
+})
 public class Budget extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -40,7 +40,7 @@ export const MENUS:SideMenu[] = [
 ];
 
 export const MENUS_BY_ROLE: Record<string, Set<string>> = {
-    'ADMIN': new Set(['category', 'budget', 'settings']),
+    'ADMIN': new Set(['category', 'settings']),
     'USER': new Set(['dashboard', 'transaction', 'category', 'budget', 'settings', 'payment']),
     'EMPLOYEE': new Set(['dashboard', 'transaction', 'category', 'budget', 'settings', 'payment'])
 };

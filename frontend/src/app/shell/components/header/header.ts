@@ -8,6 +8,9 @@ import { AppSessionService } from '../../../../common/service/app-session';
 import { debounceTime } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ThemeToggle } from '../../../../common/ui/theme-toggle';
+import { DialogService } from '../../../../common/component/app-dialog/app-dialog.service';
+import { ProfileDialogComponent } from '../profile-dialog';
+import { DialogType } from '../../../../common/enum/dialog';
 
 
 
@@ -36,7 +39,11 @@ export class Header {
   searchControl!:FormControl;
   showSearchClose = signal<boolean>(false);
 
-  constructor(private fb: FormBuilder,private appSession:AppSessionService) {
+  constructor(
+    private fb: FormBuilder,
+    private appSession:AppSessionService,
+    private dialogService:DialogService
+  ) {
     const user = this.appSession.getUser();
     this.profileName = user?.name || '';
     this.profileRole = user?.role || '';
@@ -56,5 +63,14 @@ export class Header {
 
   clearSearch() {
     this.searchControl.setValue('');
+  }
+
+  openProfileDialog() {
+    this.dialogService.open<ProfileDialogComponent>(
+      ProfileDialogComponent,
+      {
+        type: DialogType.ProfilePop
+      }
+    );
   }
 }
