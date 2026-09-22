@@ -17,6 +17,7 @@ public enum ErrorCode {
     INVALID_CREDENTIALS("ERR-1009", HttpStatus.UNAUTHORIZED, "Invalid credentials"),
     UNAUTHORIZED("ERR-1010", HttpStatus.UNAUTHORIZED, "Unauthorized"),
     NO_RESOURCE_FOUND("ERR-1011", HttpStatus.NOT_FOUND, "No resource found for {0} {1}"),
+    BAD_REQUEST("ERR-1012", HttpStatus.BAD_REQUEST, "Bad request"),
     INTERNAL_ERROR("ERR-1999", HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"),
 
     USER_NOT_FOUND("ERR-2000", HttpStatus.BAD_REQUEST,"User not found with id: {0}"),
@@ -29,6 +30,7 @@ public enum ErrorCode {
     PASSWORD_MISMATCH("ERR-2007", HttpStatus.BAD_REQUEST, "Current password is incorrect"),
     NEW_PASSWORD_MATCH_OLD("ERR-2008", HttpStatus.BAD_REQUEST, "New password must be different from current password"),
     NEW_AND_CONFIRM_PASSWORD("ERR-2009", HttpStatus.BAD_REQUEST, "New password and confirm password do not match"),
+    BUDGET_CANT_SET_FOR_INCOME("ERR-2010", HttpStatus.BAD_REQUEST, "Budget cannot set for income"),
     ;
 
     private final String code;

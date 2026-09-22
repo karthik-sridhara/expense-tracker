@@ -13,7 +13,7 @@ import { SvgIcon } from './svg-icon';
         class="text-white"
         [class]="iconSizeClass()"
       />
-      <span class="absolute -right-1 -top-1 h-3 w-3 rounded-full border-2 border-white bg-secondary-500"></span>
+      <span class="absolute -right-1 -top-1 h-3 w-3 rounded-full border-2 border-white bg-amber-500"></span>
     </span>
   `
 })

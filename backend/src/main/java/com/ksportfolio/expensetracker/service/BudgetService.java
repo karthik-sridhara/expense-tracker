@@ -1,9 +1,9 @@
 package com.ksportfolio.expensetracker.service;
 
 import com.ksportfolio.expensetracker.constant.ErrorCode;
-import com.ksportfolio.expensetracker.dto.BudgetDto;
-import com.ksportfolio.expensetracker.dto.BudgetRequestDto;
-import com.ksportfolio.expensetracker.dto.auth.AppUserDetails;
+import com.ksportfolio.expensetracker.dto.Budget.BudgetDto;
+import com.ksportfolio.expensetracker.dto.Budget.BudgetFilter;
+import com.ksportfolio.expensetracker.dto.Budget.BudgetRequestDto;
 import com.ksportfolio.expensetracker.entity.AppUser;
 import com.ksportfolio.expensetracker.entity.Budget;
 import com.ksportfolio.expensetracker.entity.Category;
@@ -12,9 +12,12 @@ import com.ksportfolio.expensetracker.mapper.BudgetMapper;
 import com.ksportfolio.expensetracker.repository.AppUserRepo;
 import com.ksportfolio.expensetracker.repository.BudgetRepo;
 import com.ksportfolio.expensetracker.repository.CategoryRepo;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,9 +52,10 @@ public class BudgetService {
         );
     }
 
-    public List<BudgetDto> getByUser() {
+    public List<BudgetDto> getByUser(BudgetFilter filter) {
         Integer userId = appContextService.getUserId();
-        List<Budget> budgets = budgetRepo.findByUserId(userId);
+        filter.setUserId(userId);
+        List<Budget> budgets = budgetRepo.findAll(buildSpecification(filter));
         List<BudgetDto> budgetDtos = new ArrayList<>();
         for (Budget budget : budgets) {
             budgetDtos.add(BudgetMapper.toDto(budget));
@@ -68,10 +72,13 @@ public class BudgetService {
         if(!category.getIsUniversal() && !category.getUser().getId().equals(userId)) {
             throw new BusinessLogicException(ErrorCode.CATEGORY_NOT_FOUND, request.getCategory());
         }
+        if(category.getIsIncome()){
+            throw new BusinessLogicException(ErrorCode.BUDGET_CANT_SET_FOR_INCOME,request.getCategory());
+        }
         AppUser user =  appUserRepo.getReferenceById(userId);
         boolean isExist = budgetRepo.existsByDurationTypeAndCategoryIdAndUserId(request.getDurationType(),request.getCategory(),userId);
         if (isExist) {
-            throw new BusinessLogicException(ErrorCode.BUDGET_EXISTS,request.getCategory(),request.getDurationType());
+            throw new BusinessLogicException(ErrorCode.BUDGET_EXISTS,category.getName(),request.getDurationType());
         }
         Budget budget = BudgetMapper.toEntity(request, user, category);
         budgetRepo.save(budget);
@@ -96,9 +103,13 @@ public class BudgetService {
             throw new BusinessLogicException(ErrorCode.CATEGORY_NOT_FOUND, request.getCategory());
         }
 
+        if(category.getIsIncome()){
+            throw new BusinessLogicException(ErrorCode.BUDGET_CANT_SET_FOR_INCOME,request.getCategory());
+        }
+
         boolean isExist = budgetRepo.existsByDurationTypeAndCategoryIdAndUserIdAndIdNot(request.getDurationType(),request.getCategory(),userId,budgetId);
         if (isExist) {
-            throw new BusinessLogicException(ErrorCode.BUDGET_EXISTS,request.getCategory(),request.getDurationType());
+            throw new BusinessLogicException(ErrorCode.BUDGET_EXISTS,category.getName(),request.getDurationType());
         }
         BudgetMapper.toEntity(request,budget,category);
         budgetRepo.save(budget);
@@ -115,6 +126,110 @@ public class BudgetService {
             throw new BusinessLogicException(ErrorCode.ACCESS_DENIED);
         }
         budgetRepo.delete(budget);
+    }
+
+    private Specification<Budget> buildSpecification(BudgetFilter filter) {
+
+        return (root, query, criteriaBuilder) -> {
+
+            List<Predicate> predicates = new ArrayList<>();
+
+            /*
+             * Equivalent to:
+             * JOIN FETCH b.category c
+             *
+             * Fetch category only for the main entity query.
+             * This avoids issues when Spring executes a count query
+             * for pagination.
+             */
+            if (query.getResultType() != Long.class
+                    && query.getResultType() != long.class) {
+
+                root.fetch("category", JoinType.INNER);
+            }
+
+            /*
+             * Creates a normal join so that category fields
+             * can be used in WHERE conditions.
+             */
+            Join<Budget, Category> categoryJoin =
+                    root.join("category", JoinType.INNER);
+
+            /*
+             * Mandatory filter:
+             * b.user.id = :userId
+             */
+            predicates.add(
+                    criteriaBuilder.equal(
+                            root.get("user").get("id"),
+                            filter.getUserId()
+                    )
+            );
+
+            /*
+             * Optional filter:
+             * c.durationType = :durationType
+             *
+             * If durationType is null, this predicate is not added.
+             */
+            if (filter.getDurationType() != null) {
+                predicates.add(
+                        criteriaBuilder.equal(
+                                root.get("durationType"),
+                                filter.getDurationType()
+                        )
+                );
+            }
+
+            /*
+             * Optional global search.
+             *
+             * Searches:
+             * 1. Category name
+             * 2. Category description
+             *
+             * The OR conditions are grouped together and then combined
+             * with userId and durationType using AND.
+             */
+            if (filter.getSearchText() != null
+                    && !filter.getSearchText().isBlank()) {
+
+                String searchValue =
+                        "%" + filter.getSearchText().trim().toLowerCase() + "%";
+
+                List<Predicate> searchPredicates = new ArrayList<>();
+
+                searchPredicates.add(
+                        criteriaBuilder.like(
+                                criteriaBuilder.lower(
+                                        categoryJoin.get("name")
+                                ),
+                                searchValue
+                        )
+                );
+
+                searchPredicates.add(
+                        criteriaBuilder.like(
+                                criteriaBuilder.lower(
+                                        categoryJoin.get("description")
+                                ),
+                                searchValue
+                        )
+                );
+
+                predicates.add(
+                        criteriaBuilder.or(
+                                searchPredicates.toArray(new Predicate[0])
+                        )
+                );
+            }
+
+            query.distinct(true);
+
+            return criteriaBuilder.and(
+                    predicates.toArray(new Predicate[0])
+            );
+        };
     }
 
 }

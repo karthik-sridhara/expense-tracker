@@ -9,7 +9,7 @@ import { DividerLine } from '../../../../common/ui/divider-line';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MessageBanner, MessageBannerType } from '../../../../common/ui/message-banner';
 import { Gender } from '../../../../common/enum/gender';
-import { LoginService } from '../../login.service';
+import { LoginService } from '../../../../common/service/login.service';
 
 @Component({
   imports: [Button,Input,ReactiveFormsModule,AppFormControl,AppLogo,RouterLink,DividerLine,MessageBanner],
@@ -17,7 +17,7 @@ import { LoginService } from '../../login.service';
   styleUrl: './register-form.css',
   templateUrl: './register-form.html',
   host: {
-    class: 'block w-full max-w-sm'
+    class: 'w-full min-h-full flex items-center justify-center'
   }
 })
 export class RegisterForm {

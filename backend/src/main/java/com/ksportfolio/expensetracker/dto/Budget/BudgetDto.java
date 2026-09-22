@@ -1,5 +1,6 @@
-package com.ksportfolio.expensetracker.dto;
+package com.ksportfolio.expensetracker.dto.Budget;
 
+import com.ksportfolio.expensetracker.dto.Category.CategoryDto;
 import com.ksportfolio.expensetracker.type.DurationType;
 import lombok.Getter;
 import lombok.Setter;

@@ -1,0 +1,45 @@
+<header class="border-b border-slate-200 px-6 py-5 dark:border-slate-800 dark:bg-slate-950 bg-white">
+    <h2 class="text-lg font-semibold">
+        {{ data.mode === 'add' ? 'Add budget' : 'Edit budget' }}
+    </h2>
+    <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+        Set a spending limit for a category.
+    </p>
+</header>
+
+<form id="budget-form" class="flex-1 space-y-1 overflow-auto bg-white px-6 py-5 dark:bg-slate-950"
+    [formGroup]="budgetForm" (ngSubmit)="save()">
+    <form-control name="Category" [control]="categoryControl">
+        <label for="budget-category" class="mb-1.5 block text-sm font-medium">Category</label>
+        <select uiSelect id="budget-category" class="w-full" formControlName="category">
+            @for (category of categories(); track category.id) {
+            <option [ngValue]="category.id">{{ category.name }}</option>
+            }
+        </select>
+    </form-control>
+
+    <form-control name="Duration" [control]="durationTypeControl">
+        <label for="budget-duration" class="mb-1.5 block text-sm font-medium">Duration</label>
+        <select uiSelect id="budget-duration" class="w-full" formControlName="durationType">
+            <option value="" disabled>Select duration</option>
+            @for (type of durationTypes; track type.value) {
+            <option [value]="type.value">{{ type.label }}</option>
+            }
+        </select>
+    </form-control>
+
+    <form-control name="Amount" [control]="amountControl">
+        <label for="budget-amount" class="mb-1.5 block text-sm font-medium">Amount</label>
+        <ui-input id="budget-amount" type="number" placeholder="0.00" formControlName="amount" />
+    </form-control>
+</form>
+
+<footer
+    class="flex justify-end gap-3 border-t border-slate-200 bg-slate-100 px-6 py-4 dark:border-slate-800 dark:bg-slate-900">
+    <button uiButton type="button" variant="outline" color="default" size="md" (click)="cancel()">
+        Cancel
+    </button>
+    <button uiButton type="submit" form="budget-form" variant="filled" size="md">
+        {{ data.mode === 'add' ? 'Add budget' : 'Save' }}
+    </button>
+</footer>

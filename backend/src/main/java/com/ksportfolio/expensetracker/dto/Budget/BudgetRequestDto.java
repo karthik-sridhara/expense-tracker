@@ -1,4 +1,4 @@
-package com.ksportfolio.expensetracker.dto;
+package com.ksportfolio.expensetracker.dto.Budget;
 
 
 import com.ksportfolio.expensetracker.type.DurationType;

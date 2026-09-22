@@ -1,4 +1,4 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { AppSessionService } from "../../common/service/app-session";
 import { API_ENDPOINTS } from "../../common/const/api-enpoint.const";
@@ -20,10 +20,8 @@ export class CategoryService {
         private appSessionService: AppSessionService,
     ) {}
 
-    getCategories():Observable<ApiResponse<Category[]>> {
-        const currentUser = this.appSessionService.getUser();
-        const endpoint = currentUser?.role !== Role.USER ? API_ENDPOINTS.MANAGE_ADMIN_CATEGORIES : API_ENDPOINTS.MANAGE_CATEGORIES;
-        return this.http.get<ApiResponse<Category[]>>(endpoint);
+    getCategories(params?: HttpParams): Observable<ApiResponse<Category[]>> {
+        return this.http.get<ApiResponse<Category[]>>(API_ENDPOINTS.MANAGE_CATEGORIES, { params });
     }
 
     private getEndpointForCategory(isUniversal: boolean): string {

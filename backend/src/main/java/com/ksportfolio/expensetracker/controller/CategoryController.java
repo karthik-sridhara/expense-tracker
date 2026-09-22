@@ -1,7 +1,8 @@
 package com.ksportfolio.expensetracker.controller;
 
-import com.ksportfolio.expensetracker.dto.CategoryDto;
-import com.ksportfolio.expensetracker.dto.CategoryRequestDto;
+import com.ksportfolio.expensetracker.dto.Category.CategoryDto;
+import com.ksportfolio.expensetracker.dto.Category.CategoryFilter;
+import com.ksportfolio.expensetracker.dto.Category.CategoryRequestDto;
 import com.ksportfolio.expensetracker.dto.response.ApiResponse;
 import com.ksportfolio.expensetracker.service.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -57,10 +58,19 @@ public class CategoryController {
     }
 
     @GetMapping(version = "1.0")
-    public ResponseEntity<ApiResponse<List<CategoryDto>>> getCategoriesForUser() {
+    public ResponseEntity<ApiResponse<List<CategoryDto>>> getCategoriesForUser(
+        @RequestParam(required = false) Boolean isIncome,
+        @RequestParam(required = false) Boolean isActive,
+        @RequestParam(required = false) String searchText
+    ) {
+        CategoryFilter filter = new CategoryFilter();
+        filter.setIsIncome(isIncome);
+        filter.setIsActive(isActive);
+        filter.setSearchText(searchText);
+
         ApiResponse<List<CategoryDto>> response =  new ApiResponse<List<CategoryDto>>(
                 "Categories retrieved successfully",
-                categoryService.getAllByUser()
+                categoryService.getAllByUser(filter)
         );
         return response.toResponseEntity();
     }

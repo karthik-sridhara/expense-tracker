@@ -1,4 +1,4 @@
-package com.ksportfolio.expensetracker.dto;
+package com.ksportfolio.expensetracker.dto.Category;
 
 import lombok.Getter;
 import lombok.Setter;

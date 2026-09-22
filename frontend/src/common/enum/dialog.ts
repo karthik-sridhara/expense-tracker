@@ -12,6 +12,7 @@ export enum MessageDialogTheme {
 export enum DialogType {
   Modal = 'modal',
   Sidepop = 'sidepop',
+  ProfilePop = 'profilepop'
 }
 
 export enum ToastType {

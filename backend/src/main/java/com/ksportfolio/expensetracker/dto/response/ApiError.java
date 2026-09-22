@@ -13,11 +13,11 @@ public class ApiError {
     private final String message;
     private final String code;
     private final HttpStatus httpStatus;
-    private final Map<String, String> data;
+    private final Map<String, Object> data;
     private final Instant timeStamp;
     private final String traceId;
 
-    public ApiError(String code,String message, HttpStatus httpStatus, Map<String, String> data,String traceId) {
+    public ApiError(String code,String message, HttpStatus httpStatus, Map<String, Object> data,String traceId) {
         this.message = message;
         this.httpStatus = httpStatus;
         this.data = data;
@@ -30,7 +30,7 @@ public class ApiError {
         this(code, message, httpStatus, null, traceId);
     }
 
-    public ApiError(ErrorCode errorCode,Map<String,String> data ,String traceId) {
+    public ApiError(ErrorCode errorCode,Map<String,Object> data ,String traceId) {
         this(errorCode.getCode(), errorCode.formatMessage(), errorCode.getHttpStatus(), data, traceId);
     }
 

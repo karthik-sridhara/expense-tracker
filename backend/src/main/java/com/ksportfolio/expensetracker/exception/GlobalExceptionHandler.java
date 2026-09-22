@@ -13,12 +13,11 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import tools.jackson.databind.exc.InvalidFormatException;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @RestControllerAdvice
@@ -83,7 +82,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
         String traceId = UUID.randomUUID().toString();
-        Map<String, String> fieldErrors = new HashMap<>();
+        Map<String, Object> fieldErrors = new HashMap<>();
         for (FieldError fe : ex.getBindingResult().getFieldErrors()) {
             fieldErrors.put(fe.getField(), fe.getDefaultMessage());
         }
@@ -136,5 +135,40 @@ public class GlobalExceptionHandler {
         return error.toResponseEntity();
     }
 
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiError> handleMethodArgumentTypeMismatch(
+            MethodArgumentTypeMismatchException exception
+    ) {
+        String traceId = UUID.randomUUID().toString();
+        String message;
+        Class<?> requiredType = exception.getRequiredType();
+
+        if (requiredType != null && requiredType.isEnum()) {
+            message ="Invalid value '%s' for parameter '%s'"
+                .formatted(
+                        exception.getValue(),
+                        exception.getName()
+                );
+        } else {
+            message = "Invalid value '%s' for parameter '%s'. Expected type: %s"
+                .formatted(
+                        exception.getValue(),
+                        exception.getName(),
+                        requiredType != null
+                                ? requiredType.getSimpleName()
+                                : "unknown"
+                );
+
+        }
+        log.warn("[{}] {}\n{}", traceId, ErrorCode.NO_RESOURCE_FOUND.getCode(), message);
+        ApiError error = new ApiError(
+                ErrorCode.BAD_REQUEST,
+                message,
+                traceId
+        );
+
+        return error.toResponseEntity();
+    }
 
 }

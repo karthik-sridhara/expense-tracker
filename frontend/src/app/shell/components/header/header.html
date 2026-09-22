@@ -45,6 +45,7 @@
             class=""
             class="gap-2 px-1! sm:pr-2! rounded-full! bg-transparent! hover:bg-slate-200! dark:hover:bg-slate-800!"
             aria-label="Open profile menu"
+            (click)="openProfileDialog()"
         >
             <span class="flex h-9 w-9 items-center justify-center rounded-full bg-primary-600 text-sm font-bold text-white">
                 {{ profileName.charAt(0) | uppercase }}

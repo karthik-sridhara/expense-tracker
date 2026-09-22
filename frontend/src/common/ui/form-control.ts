@@ -17,7 +17,7 @@ import { startWith, switchMap } from "rxjs";
     `,
     template:`
         <ng-content></ng-content>
-        <p class="error-message text-red-600 h-4 w-full" [title]="errorsMessage()">
+        <p class="error-message text-red-600 h-5 w-full" [title]="errorsMessage()">
             @if(touched() && invalid()) {
                 {{errorsMessage()}}
             }
