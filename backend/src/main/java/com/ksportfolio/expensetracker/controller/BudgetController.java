@@ -30,10 +30,12 @@ public class BudgetController {
 
     @GetMapping(version = "1.0")
     public ResponseEntity<ApiResponse<List<BudgetDto>>> getAllByUserId(
-        @RequestParam(required = false) DurationType type
+        @RequestParam(required = false) DurationType durationType,
+        @RequestParam(required = false) String searchText
     ) {
         BudgetFilter budgetFilter = new BudgetFilter();
-        budgetFilter.setDurationType(type);
+        budgetFilter.setDurationType(durationType);
+        budgetFilter.setSearchText(searchText);
         ApiResponse<List<BudgetDto>> response = new ApiResponse<>(
         "Budgets retrieved successfully",
                 budgetService.getByUser(budgetFilter)

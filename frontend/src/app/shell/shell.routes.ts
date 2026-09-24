@@ -19,6 +19,12 @@ export const SHELL_ROUTES: Routes = [
             '../../feature/budget/budget'
         ).then(m => m.Budget) 
     },
+     { 
+        path: 'users', 
+        loadComponent: () => import(
+            '../../feature/user-management/user-management'
+        ).then(m => m.UserManagement) 
+    },
     { 
         path: 'settings', 
         loadComponent: () => import(

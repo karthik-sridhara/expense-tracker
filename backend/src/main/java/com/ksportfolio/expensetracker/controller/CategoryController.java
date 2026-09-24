@@ -60,11 +60,13 @@ public class CategoryController {
     @GetMapping(version = "1.0")
     public ResponseEntity<ApiResponse<List<CategoryDto>>> getCategoriesForUser(
         @RequestParam(required = false) Boolean isIncome,
-        @RequestParam(required = false) Boolean isActive
+        @RequestParam(required = false) Boolean isActive,
+        @RequestParam(required = false) String searchText
     ) {
         CategoryFilter filter = new CategoryFilter();
         filter.setIsIncome(isIncome);
         filter.setIsActive(isActive);
+        filter.setSearchText(searchText);
 
         ApiResponse<List<CategoryDto>> response =  new ApiResponse<List<CategoryDto>>(
                 "Categories retrieved successfully",

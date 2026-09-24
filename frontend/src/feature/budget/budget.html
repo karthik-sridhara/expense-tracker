@@ -4,37 +4,50 @@
             Budgets
         </h1>
         <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            Plan recurring income and expense limits by category.
+            Plan recurring expense limits by category.
         </p>
     </header>
 
-    <section id="filter" class="flex mb-4 items-center justify-between">
-        <div class="flex gap-2 justify-start">
-            <ui-input  
-                type="search" 
-                placeholder="Search budgets..." 
-                class="w-80 ps-0!" 
+    <section id="filter" class="mb-4 flex flex-wrap items-center gap-2 md:flex-nowrap">
+        
+        <div class="relative w-full">
+            <label for="budget-search" class="sr-only">
+                Search budgets
+            </label>
+            <ui-input
+                type="search"
+                name="budget-search"
+                placeholder="Search budgets..."
+                class="w-full ps-0! md:w-80"
                 icon="/icons/search.svg"
                 iconPosition="prefix"
+                [formControl]="searchTextFormControl"
             />
-            <select uiSelect id="budgetType" class="w-40" >
-                @for(type of budgetType;track $index){
-                    <option [value]="type.value">{{type.label}}</option>
-                }
-            </select>
         </div>
-        
+
+        <select uiSelect id="durationType"
+            class="flex-1 md:w-40 md:flex-none"
+            [formControl]="durationTypeFormControl"
+        >
+            <option value="ALL">All</option>
+            @for(type of durationType;track $index){
+                <option [value]="type.value">{{type.label}}</option>
+            }
+        </select>
+
         <button
             uiButton
             type="button"
             icon="/icons/add_box_fill.svg"
             label="Add Budget"
-            class="ps-0!"
+            class="ps-0! flex-1 md:flex-none md:ml-auto"
             (click)="onAdd()"
         >
             Add Budget
         </button>
     </section>
+
+    
 
     <section id="table" class="hidden md:block">
         <app-table
@@ -44,6 +57,70 @@
         />
     </section>
 
-    <section id="cards" class="md:hidden">
+    <section id="cards" class="md:hidden grid grid-cols-1 gap-3">
+        @for (budget of budgetRowData(); track budget.id) {
+            <article
+                class="rounded-md border border-slate-200 bg-white p-4 shadow-sm
+                    dark:border-slate-800 dark:bg-slate-900"
+            >
+                <div class="flex items-start justify-between gap-3">
+                    <div class="flex min-w-0 items-center gap-2">
+                        @if (budget.category?.icon) {
+                            <ui-svg-icon
+                                [src]="'/icons' + budget.category.icon"
+                                class="h-5 w-5 shrink-0 text-slate-500 dark:text-slate-400"
+                            />
+                        }
+                        <div class="min-w-0 leading-tight">
+                            <div
+                                class="truncate font-medium text-slate-900 dark:text-slate-100"
+                                [title]="budget.category?.name"
+                            >
+                                {{ budget.category?.name }}
+                            </div>
+                            @if (budget.category?.description) {
+                                <div
+                                    class="truncate text-xs text-slate-500 dark:text-slate-400"
+                                    [title]="budget.category?.description"
+                                >
+                                    {{ budget.category?.description }}
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <ui-menu
+                        aria-label="Budget actions"
+                        [menuItems]="budgetMenuItems"
+                        [data]="budget"
+                        buttonIcon="/icons/more_vert.svg"
+                        buttonColor="default"
+                        buttonIconClass="h-5! w-5! p-0!"
+                        buttonClass="h-9! w-9! shrink-0 p-0!"
+                    />
+                </div>
+
+                <dl class="mt-3 grid grid-cols-2 gap-y-2 text-sm">
+                    <dt class="text-slate-500 dark:text-slate-400">Duration</dt>
+                    <dd class="text-right font-medium text-slate-900 dark:text-slate-100">
+                        {{ budget.durationType }}
+                    </dd>
+
+                    <dt class="text-slate-500 dark:text-slate-400">Monthly Limit</dt>
+                    <dd class="text-right font-medium text-slate-900 dark:text-slate-100">
+                        {{ formatCurrency(budget.amount) }}
+                    </dd>
+
+                    <dt class="text-slate-500 dark:text-slate-400">Last Updated</dt>
+                    <dd class="text-right text-slate-500 dark:text-slate-400">
+                        {{ formatDate(budget.modifiedAt ?? budget.createdAt) }}
+                    </dd>
+                </dl>
+            </article>
+        } @empty {
+            <p class="py-8 text-center text-sm text-slate-500 dark:text-slate-400">
+                No budgets found.
+            </p>
+        }
     </section>
 </div>

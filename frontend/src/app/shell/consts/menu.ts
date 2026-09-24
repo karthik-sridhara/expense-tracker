@@ -8,6 +8,12 @@ export const MENUS:SideMenu[] = [
       icon: '/icons/dashboard_fill.svg'
     },
     {
+      id: 'user',
+      name: 'Users',
+      route: '/users',
+      icon: '/icons/account_circle_fill.svg'
+    },
+    {
       id: 'transaction',
       name: 'Transaction',
       route: '/transactions',
@@ -40,7 +46,7 @@ export const MENUS:SideMenu[] = [
 ];
 
 export const MENUS_BY_ROLE: Record<string, Set<string>> = {
-    'ADMIN': new Set(['category', 'settings']),
-    'USER': new Set(['dashboard', 'transaction', 'category', 'budget', 'settings', 'payment']),
-    'EMPLOYEE': new Set(['dashboard', 'transaction', 'category', 'budget', 'settings', 'payment'])
+  'ADMIN': new Set(['category', 'settings', 'user']),
+  'USER': new Set(['dashboard', 'transaction', 'category', 'budget', 'settings', 'payment']),
+  'EMPLOYEE': new Set(['dashboard', 'transaction', 'category', 'budget', 'settings', 'payment'])
 };

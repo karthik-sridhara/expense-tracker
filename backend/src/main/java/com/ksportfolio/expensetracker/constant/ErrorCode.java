@@ -30,6 +30,7 @@ public enum ErrorCode {
     PASSWORD_MISMATCH("ERR-2007", HttpStatus.BAD_REQUEST, "Current password is incorrect"),
     NEW_PASSWORD_MATCH_OLD("ERR-2008", HttpStatus.BAD_REQUEST, "New password must be different from current password"),
     NEW_AND_CONFIRM_PASSWORD("ERR-2009", HttpStatus.BAD_REQUEST, "New password and confirm password do not match"),
+    BUDGET_CANT_SET_FOR_INCOME("ERR-2010", HttpStatus.BAD_REQUEST, "Budget cannot set for income"),
     ;
 
     private final String code;

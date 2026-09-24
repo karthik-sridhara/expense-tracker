@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_ENDPOINTS } from '../../common/const/api-enpoint.const';
@@ -13,8 +13,8 @@ import { BudgetUpsertRequest } from '../../common/interface/budget/budget-upsert
 export class BudgetService {
     constructor(private http: HttpClient) { }
 
-    getBudgets(): Observable<ApiResponse<Budget[]>> {
-        return this.http.get<ApiResponse<Budget[]>>(API_ENDPOINTS.MANAGE_BUDGETS);
+    getBudgets(params?:HttpParams): Observable<ApiResponse<Budget[]>> {
+        return this.http.get<ApiResponse<Budget[]>>(API_ENDPOINTS.MANAGE_BUDGETS, { params });
     }
 
     getBudget(budgetId: number): Observable<ApiResponse<Budget>> {

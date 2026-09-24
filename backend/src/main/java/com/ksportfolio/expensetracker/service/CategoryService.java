@@ -189,8 +189,36 @@ public class CategoryService {
                 );
             }
 
+            String searchText = filter.getSearchText();
+
+            if(searchText != null && !searchText.trim().isBlank()) {
+                searchText = "%" + searchText.trim().toLowerCase() + "%";
+                List<Predicate> searchPredicates = new ArrayList<>();
+                searchPredicates.add(
+                    criteriaBuilder.like(
+                        criteriaBuilder.lower(
+                            root.get("name")
+                        ),
+                        searchText
+                    )
+                );
+                searchPredicates.add(
+                    criteriaBuilder.like(
+                        criteriaBuilder.lower(
+                            root.get("description")
+                        ),
+                        searchText
+                    )
+                );
+                predicates.add(
+                    criteriaBuilder.or(
+                        searchPredicates.toArray(new Predicate[0])
+                    )
+                );
+            }
+
             return criteriaBuilder.and(
-                    predicates.toArray(new Predicate[0])
+                predicates.toArray(new Predicate[0])
             );
         };
     }

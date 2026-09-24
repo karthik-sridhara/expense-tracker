@@ -39,16 +39,16 @@ import { SvgIcon } from '../../ui/svg-icon';
 
     <footer class="flex justify-end gap-3 border-t border-slate-200 bg-slate-100 px-6 py-4 dark:border-slate-800 dark:bg-slate-900">
         @if (isConfirm()) {
-            <button
-                uiButton
-                type="button"
-                variant="outline"
-                color="default"
-                size="md"
-                (click)="cancel()"
-            >
-                {{ data.cancelText ?? 'Cancel' }}
-            </button>
+          <button
+              uiButton
+              type="button"
+              variant="outline"
+              color="default"
+              size="md"
+              (click)="cancel()"
+          >
+              {{ data.cancelText ?? 'Cancel' }}
+          </button>
         }
 
         <button

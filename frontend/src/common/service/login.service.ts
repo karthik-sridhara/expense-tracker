@@ -47,6 +47,6 @@ export class LoginService {
 
     onLogout() {
         this.appSessionService.clearSession();
-        window.location.href = '/login';
+        this.router.navigateByUrl('/login');
     }
 }

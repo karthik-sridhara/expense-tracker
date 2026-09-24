@@ -10,4 +10,5 @@ import lombok.Setter;
 public class BudgetFilter {
     private DurationType durationType;
     private Integer userId;
+    private String searchText;
 }

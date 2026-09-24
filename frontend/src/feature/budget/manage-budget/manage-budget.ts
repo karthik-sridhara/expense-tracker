@@ -16,6 +16,7 @@ import { ToastService } from '../../../common/component/toast/toast-service';
 import { take } from 'rxjs';
 import { Budget } from '../../../common/interface/budget/budget';
 import { BudgetUpsertRequest } from '../../../common/interface/budget/budget-upsert-request';
+import { HttpHeaders, HttpParams } from '@angular/common/http';
 
 @Component({
     imports: [AppFormControl, Input, ReactiveFormsModule, Button, AppSelect],
@@ -70,10 +71,7 @@ export class ManageBudget implements OnInit {
     }
 
     ngOnInit(): void {
-        this.categoryService
-            .getCategories()
-            .pipe(take(1))
-            .subscribe((response) => this.categories.set(response.data));
+        this.getCategories();
     }
 
     cancel(): void {
@@ -90,6 +88,16 @@ export class ManageBudget implements OnInit {
         } else {
             this.edit();
         }
+    }
+
+    private getCategories(): void {
+        const params = new HttpParams()
+        .set('isIncome', false)
+        .set('isActive', true);
+
+        this.categoryService.getCategories(params)
+            .pipe(take(1))
+            .subscribe(response => this.categories.set(response.data));
     }
 
     private add(): void {
