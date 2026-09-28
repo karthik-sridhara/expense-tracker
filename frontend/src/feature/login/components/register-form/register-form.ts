@@ -17,7 +17,7 @@ import { LoginService } from '../../../../common/service/login.service';
   styleUrl: './register-form.css',
   templateUrl: './register-form.html',
   host: {
-    class: 'block w-full max-w-sm'
+    class: 'w-full min-h-full flex items-center justify-center'
   }
 })
 export class RegisterForm {

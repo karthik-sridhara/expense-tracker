@@ -77,21 +77,25 @@ export class Category implements OnInit{
     this.incomeExpenseFormControl = new FormControl("ALL");
     this.statusFormControl = new FormControl("ALL");
 
-    const filterSubscription = merge(
-      this.incomeExpenseFormControl.valueChanges,
-      this.statusFormControl.valueChanges,
-      this.searchTextFormControl.valueChanges
-    )
+    const searchSubscription =this.searchTextFormControl.valueChanges
     .pipe(
       debounceTime(700),
       distinctUntilChanged()
     )
-    .subscribe((value:[string, string, string]) => {
+    .subscribe(() => {
+      this.getCategories();
+    });
+
+    const filterSubscription = merge(
+      this.incomeExpenseFormControl.valueChanges,
+      this.statusFormControl.valueChanges,
+    ).subscribe((value:[string, string, string]) => {
       this.getCategories();
     });
 
     this._destory$.onDestroy(() => {
       filterSubscription.unsubscribe();
+      searchSubscription.unsubscribe();
     });
   }
 

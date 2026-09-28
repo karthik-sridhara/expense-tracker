@@ -10,6 +10,7 @@ import { AppTable } from "../../common/component/app-table/app-table";
 import { Role } from "../../common/enum/role";
 import { UserManagementService } from "./user-management.service";
 import { User } from "../../common/interface/user-management/user-management";
+import { AppDatetimeService } from "../../common/service/app-datetime";
 
 
 @Component({
@@ -43,7 +44,8 @@ export class UserManagement implements OnInit {
 
     constructor(
         private userManagementService: UserManagementService,
-        private _destory$: DestroyRef
+        private _destory$: DestroyRef,
+        private appDateTimeService: AppDatetimeService
     ) {
         this.loadRoles();
         this.loadUserColDefs();
@@ -63,11 +65,19 @@ export class UserManagement implements OnInit {
             { headerName: 'Name', field: 'name', flex: 1},
             { headerName: 'Email', field: 'email', flex: 1 },
             { headerName: 'Gender', field: 'gender', flex: 1 },
-            { headerName: 'DOB', field: 'dob', flex: 1 },
+            { 
+                headerName: 'DOB', field: 'dob', flex: 1 , 
+                valueFormatter: (params) => this.appDateTimeService.formatDateOnly(params.value),
+            },
             {
                 headerName: 'Role',
                 valueGetter: (params) => params.data?.role?.name,
                 flex: 1,
+            },
+            { 
+                headerName: 'Last Updated', 
+                valueGetter: (params) => params.data?.modifiedAt ?? params.data?.createdAt,
+                valueFormatter: (params) => this.appDateTimeService.formatDateTime(params.value)
             },
         ]);
     }

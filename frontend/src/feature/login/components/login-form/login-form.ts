@@ -18,7 +18,7 @@ import { Role } from '../../../../common/enum/role';
   styleUrl: './login-form.css',
   templateUrl: './login-form.html',
   host: {
-    class: 'block w-full  max-w-sm'
+    class: 'w-full min-h-full flex items-center justify-center'
   }
 })
 export class LoginForm {

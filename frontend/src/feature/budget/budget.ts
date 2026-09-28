@@ -120,7 +120,7 @@ export class Budget implements OnInit{
       { 
         headerName: 'Last Updated', 
         valueGetter: (params) => params.data?.modifiedAt ?? params.data?.createdAt,
-        valueFormatter: (params) => this.appDatetimeService.formatDate(params.value)
+        valueFormatter: (params) => this.appDatetimeService.formatDateTime(params.value)
       },
       { 
         headerName: 'Actions', 
@@ -230,6 +230,6 @@ export class Budget implements OnInit{
   }
 
   formatDate(date?: string | Date | null): string {
-    return this.appDatetimeService.formatDate(date);
+    return this.appDatetimeService.formatDateTime(date);
   }
 }
