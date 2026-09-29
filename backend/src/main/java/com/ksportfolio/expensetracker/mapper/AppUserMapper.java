@@ -1,8 +1,8 @@
 package com.ksportfolio.expensetracker.mapper;
 
 import com.ksportfolio.expensetracker.constant.AppUserConstant;
-import com.ksportfolio.expensetracker.dto.AppUserDto;
-import com.ksportfolio.expensetracker.dto.AppUserRequestDto;
+import com.ksportfolio.expensetracker.dto.appuser.AppUserDto;
+import com.ksportfolio.expensetracker.dto.appuser.AppUserRequestDto;
 import com.ksportfolio.expensetracker.dto.auth.RegisterRequestDto;
 import com.ksportfolio.expensetracker.entity.AppUser;
 import com.ksportfolio.expensetracker.entity.Role;

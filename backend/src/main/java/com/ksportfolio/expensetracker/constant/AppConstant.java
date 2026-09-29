@@ -7,9 +7,11 @@ public class AppConstant {
     public static final String TOKEN_CLAIM_USERID = "userId";
     public static final String TOKEN_CLAIM_ROLE = "role";
     public static final String TOKEN_CLAIM_NAME = "name";
+    public static final String TOKEN_CLAIM_PASSWORD_EXPIRED = "passwordExpired";
     public static final String TOKEN_HEADER = "Authorization";
     public static final String TOKEN_HEADER_PREFIX = "Bearer ";
     public static final String ROLE_USER = "USER";
     public static final String ROLE_ADMIN = "ADMIN";
     public static final String ROLE_EMPLOYEE = "EMPLOYEE";
+    public static final String CHANGE_PASSWORD_URL = "/api/auth/change-password";
 }

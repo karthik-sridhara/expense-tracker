@@ -31,6 +31,8 @@ public enum ErrorCode {
     NEW_PASSWORD_MATCH_OLD("ERR-2008", HttpStatus.BAD_REQUEST, "New password must be different from current password"),
     NEW_AND_CONFIRM_PASSWORD("ERR-2009", HttpStatus.BAD_REQUEST, "New password and confirm password do not match"),
     BUDGET_CANT_SET_FOR_INCOME("ERR-2010", HttpStatus.BAD_REQUEST, "Budget cannot set for income"),
+    ROLE_NOT_FOUND("ERR-2011", HttpStatus.NOT_FOUND, "Role not found with id: {0}"),
+    PASSWORD_EXPIRED("ERR-2012", HttpStatus.FORBIDDEN, "Password has expired"),
     ;
 
     private final String code;

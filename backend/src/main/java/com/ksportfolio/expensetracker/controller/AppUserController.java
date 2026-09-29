@@ -1,7 +1,8 @@
 package com.ksportfolio.expensetracker.controller;
 
-import com.ksportfolio.expensetracker.dto.AppUserDto;
-import com.ksportfolio.expensetracker.dto.AppUserRequestDto;
+import com.ksportfolio.expensetracker.dto.appuser.AppUserDto;
+import com.ksportfolio.expensetracker.dto.appuser.AppUserFilter;
+import com.ksportfolio.expensetracker.dto.appuser.AppUserRequestDto;
 import com.ksportfolio.expensetracker.dto.auth.AppUserDetails;
 import com.ksportfolio.expensetracker.dto.auth.ChangePasswordRequest;
 import com.ksportfolio.expensetracker.dto.response.ApiResponse;
@@ -24,9 +25,16 @@ public class AppUserController {
     private final AppUserService appUserService;
 
     @GetMapping(version = "1.0",value="/admin")
-    public ResponseEntity<ApiResponse<List<AppUserDto>>> getUsers() {
+    public ResponseEntity<ApiResponse<List<AppUserDto>>> getUsers(
+        @RequestParam(required = false,value = "search-text") String searchText,
+        @RequestParam(required = false) String role
+    ) {
+        AppUserFilter filter = new AppUserFilter();
+        filter.setSearchText(searchText);
+        filter.setRole(role);
+
         ApiResponse<List<AppUserDto>> response = new ApiResponse<>(
-                "Users retrieved successfully", appUserService.getUsers()
+                "Users retrieved successfully", appUserService.getUsers(filter)
         );
         return response.toResponseEntity();
     }
@@ -35,14 +43,6 @@ public class AppUserController {
     public ResponseEntity<ApiResponse<AppUserDto>> getUser(@PathVariable Integer userId) {
         ApiResponse<AppUserDto> response = new ApiResponse<>(
                 "User retrieved successfully", appUserService.getUserById(userId)
-        );
-        return response.toResponseEntity();
-    }
-
-    @GetMapping(value="/admin/email/{email}",version = "1.0")
-    public ResponseEntity<ApiResponse<AppUserDto>> getUserByEmail(@PathVariable String email) {
-        ApiResponse<AppUserDto> response = new ApiResponse<>(
-                "User retrieved successfully", appUserService.getUserByEmail(email)
         );
         return response.toResponseEntity();
     }
@@ -89,10 +89,14 @@ public class AppUserController {
         return response.toResponseEntity();
     }
 
-    @GetMapping(value="/current-user",version = "1.0")
-    public ResponseEntity<ApiResponse<AppUserDto>> geCurrentUser() {
+    @GetMapping(value = "/current-user", version = "1.0")
+    public ResponseEntity<ApiResponse<AppUserDto>> getCurrentUser(
+            @AuthenticationPrincipal AppUserDetails userDetails
+    ) {
+        AppUserDto user = appUserService.getUserById(userDetails.getUserId());
         ApiResponse<AppUserDto> response = new ApiResponse<>(
-                "User retrieved successfully", appUserService.getCurrentUser()
+                "User retrieved successfully",
+                user
         );
         return response.toResponseEntity();
     }
@@ -107,19 +111,5 @@ public class AppUserController {
         );
         return response.toResponseEntity();
     }
-
-    @PatchMapping(version = "1.0",value = "/change-password")
-    public ResponseEntity<ApiResponse<Void>> changePassword(
-        @Valid @RequestBody ChangePasswordRequest changePasswordRequest,
-        @AuthenticationPrincipal AppUserDetails appUserDetails
-    ){
-        appUserService.changePassword(changePasswordRequest,appUserDetails.getUserId());
-        ApiResponse<Void> response = new ApiResponse<>(
-                "Password updated successfully", null
-        );
-        return response.toResponseEntity();
-    }
-
-
 
 }

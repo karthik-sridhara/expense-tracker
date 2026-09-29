@@ -1,6 +1,6 @@
 package com.ksportfolio.expensetracker.service;
 
-import com.ksportfolio.expensetracker.dto.RoleDto;
+import com.ksportfolio.expensetracker.dto.appuser.RoleDto;
 import com.ksportfolio.expensetracker.entity.Role;
 import com.ksportfolio.expensetracker.repository.RoleRepo;
 import lombok.RequiredArgsConstructor;

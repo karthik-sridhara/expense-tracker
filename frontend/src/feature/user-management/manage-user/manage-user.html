@@ -1,0 +1,65 @@
+<header class="border-b border-slate-200 px-6 py-5 dark:border-slate-800 dark:bg-slate-950 bg-white">
+    <h2 class="text-lg font-semibold">
+        {{ data.mode === 'add' ? 'Add user' : 'Edit user' }}
+    </h2>
+    <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+        {{ data.mode === 'add' ? 'Create a new user account.' : 'Update user details.' }}
+    </p>
+</header>
+
+<form id="user-form"
+   class="grid flex-1 auto-rows-min grid-cols-1 content-start gap-x-4 gap-y-1 overflow-auto bg-white px-6 py-5 dark:bg-slate-950 lg:grid-cols-2"
+    [formGroup]="userForm" (ngSubmit)="save()">
+
+    <form-control name="Name" [control]="nameControl">
+        <label for="user-name" class="mb-1.5 block text-sm font-medium">Name</label>
+        <ui-input name="user-name" placeholder="Full name" formControlName="name" />
+    </form-control>
+
+    <form-control name="Email" [control]="emailControl">
+        <label for="user-email" class="mb-1.5 block text-sm font-medium">Email</label>
+        <ui-input name="user-email" type="email" placeholder="name@example.com" formControlName="email" />
+    </form-control>
+
+    <form-control name="Gender" [control]="genderControl">
+        <label for="user-gender" class="mb-1.5 block text-sm font-medium">Gender</label>
+        <select uiSelect id="user-gender" class="w-full" formControlName="gender">
+            <option value="" disabled>Select gender</option>
+            @for (gender of genders; track gender.value) {
+                <option [value]="gender.value">{{ gender.label }}</option>
+            }
+        </select>
+    </form-control>
+
+    <form-control name="Date of birth" [control]="dobControl">
+        <label for="user-dob" class="mb-1.5 block text-sm font-medium">Date of birth</label>
+        <ui-input name="user-dob" type="date" formControlName="dob" />
+    </form-control>
+
+    <form-control name="Role" [control]="roleControl">
+        <label for="user-role" class="mb-1.5 block text-sm font-medium">Role</label>
+        <select uiSelect id="user-role" class="w-full" formControlName="role">
+            <option value="" disabled>Select role</option>
+            @for (role of roles; track role.value) {
+                <option [value]="role.value">{{ role.label }}</option>
+            }
+        </select>
+    </form-control>
+
+    <form-control name="Password" [control]="passwordControl">
+        <label for="user-password" class="mb-1.5 block text-sm font-medium">Password</label>
+        <ui-input name="user-password" type="password"
+            placeholder='Enter password'
+            formControlName="password" />
+    </form-control>
+</form>
+
+<footer
+    class="flex justify-end gap-3 border-t border-slate-200 bg-slate-100 px-6 py-4 dark:border-slate-800 dark:bg-slate-900">
+    <button uiButton type="button" variant="outline" color="default" size="md" (click)="cancel()">
+        Cancel
+    </button>
+    <button uiButton type="submit" form="user-form" variant="filled" size="md">
+        {{ data.mode === 'add' ? 'Add user' : 'Save' }}
+    </button>
+</footer>

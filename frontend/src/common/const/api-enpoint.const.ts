@@ -6,6 +6,7 @@ const USERS = '/api/users';
 export const API_ENDPOINTS = {
     LOGIN: `${AUTH}/login`,
     REGISTERATION: `${AUTH}/registration`,
+    CHANGE_PASSWORD: `${AUTH}/change-password`,
     MANAGE_CATEGORIES: CATEGORIES,
     MANAGE_ADMIN_CATEGORIES: `${CATEGORIES}/admin`,
     MANAGE_BUDGETS: BUDGET,

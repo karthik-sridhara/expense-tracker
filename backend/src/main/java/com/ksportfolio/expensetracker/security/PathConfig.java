@@ -17,7 +17,8 @@ public class PathConfig {
         );
 
         List<String> appPaths = new ArrayList<>(List.of(
-            "/api/auth/**",
+            "/api/auth/login",
+            "/api/auth/registration",
             "/api/users/check-email",
             "/api/utilities/**"
         ));

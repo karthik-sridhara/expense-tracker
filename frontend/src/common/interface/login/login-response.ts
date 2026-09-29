@@ -6,5 +6,6 @@ export interface LoginResponse {
     email: string;
     name: string;
     role: Role;
+    passwordExpired: boolean;
 }
    

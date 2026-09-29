@@ -35,6 +35,7 @@ public class JwtService {
                 .claim(AppConstant.TOKEN_CLAIM_USERID, principal.getUserId())
                 .claim(AppConstant.TOKEN_CLAIM_ROLE, principal.getRoleId())
                 .claim(AppConstant.TOKEN_CLAIM_NAME, principal.getName())
+                .claim(AppConstant.TOKEN_CLAIM_PASSWORD_EXPIRED,principal.getPasswordExpired())
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(expiry))
                 .signWith(getSigningKey())

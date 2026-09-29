@@ -15,20 +15,26 @@ public class AppUserDetails implements UserDetails {
     private final Integer userId;
     private final String roleId;
     private final String name;
+    private final Boolean passwordExpired;
+    private Boolean _credentialsNonExpired = true;
 
-    public AppUserDetails(Integer userId, String email, String password, String name, String roleId) {
+    public AppUserDetails(Integer userId, String email, String password, String name, String roleId, Boolean passwordExpired) {
         this.userId = userId;
         this.username = email;
         this.password = password;
         this.name = name;
         this.roleId = roleId;
+        this.passwordExpired = passwordExpired;
+    }
+
+    public void setIsCredentialsNonExpired(){
+        this._credentialsNonExpired = !passwordExpired;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_"+roleId));
     }
-
 
     @Override
     public boolean isAccountNonExpired() {
@@ -42,7 +48,7 @@ public class AppUserDetails implements UserDetails {
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return _credentialsNonExpired;
     }
 
     @Override
