@@ -11,6 +11,14 @@ import { Role } from "../../common/enum/role";
 import { UserManagementService } from "./user-management.service";
 import { User } from "../../common/interface/user-management/user-management";
 import { AppDatetimeService } from "../../common/service/app-datetime";
+import { MessageDialog } from "../../common/component/app-dialog/message-dialog";
+import { MessageDialogData, MessageDialogResult } from "../../common/interface/app/app-dialog";
+import { ToastService } from "../../common/component/toast/toast-service";
+import { DialogService } from "../../common/component/app-dialog/app-dialog.service";
+import { DialogType, MessageDialogKind, MessageDialogTheme } from "../../common/enum/dialog";
+import { UserDialogData, UserDialogResult } from "../../common/interface/user-management/user-dialog";
+import { ManageUser } from "./manage-user/manage-user";
+import { ActionsCellRenderer, TableAction } from "../../common/component/app-table/cell-renderer/actions";
 
 
 @Component({
@@ -45,7 +53,9 @@ export class UserManagement implements OnInit {
     constructor(
         private userManagementService: UserManagementService,
         private _destory$: DestroyRef,
-        private appDateTimeService: AppDatetimeService
+        private appDateTimeService: AppDatetimeService,
+        private dialogService: DialogService,
+        private toastService: ToastService
     ) {
         this.loadRoles();
         this.loadUserColDefs();
@@ -71,13 +81,24 @@ export class UserManagement implements OnInit {
             },
             {
                 headerName: 'Role',
-                valueGetter: (params) => params.data?.role?.name,
+                field: 'role.id',
                 flex: 1,
             },
             { 
                 headerName: 'Last Updated', 
                 valueGetter: (params) => params.data?.modifiedAt ?? params.data?.createdAt,
                 valueFormatter: (params) => this.appDateTimeService.formatDateTime(params.value)
+            },
+            {
+                headerName: 'Actions',
+                cellRenderer: ActionsCellRenderer,
+                cellRendererParams: {
+                    actions: [
+                        { icon: '/icons/edit_fill.svg', name: 'Edit', onClick: (row) => this.onEdit(row) },
+                        { icon: '/icons/delete_fill.svg', name: 'Delete', onClick: (row) => this.onDelete(row) },
+                    ] satisfies TableAction[],
+                },
+                minWidth: 110, sortable: false, filter: false, resizable: false,
             },
         ]);
     }
@@ -113,7 +134,51 @@ export class UserManagement implements OnInit {
             });
     }
 
+
     onAddUser() {
-        // TODO: open an "add user" dialog, mirroring ManageCategory/ManageBudget pattern
+        this.openDialog({ mode: 'add', user: null });
+    }
+
+    private onEdit(row: User) {
+        this.openDialog({ mode: 'edit', user: row });
+    }
+
+    private onDelete(row: User) {
+        this.dialogService.open<MessageDialog, MessageDialogData, MessageDialogResult>(MessageDialog, {
+            data: {
+                title: 'Delete User',
+                message: 'Are you sure you want to delete this user?',
+                confirmText: 'Yes, Delete',
+                cancelText: 'Cancel',
+                kind: MessageDialogKind.CONFIRM,
+                theme: MessageDialogTheme.ERROR,
+                iconSrc: '/icons/delete_fill.svg',
+            },
+            width: '350px',
+            type: DialogType.Modal,
+            closeOnBackdrop: false,
+            ariaLabel: 'Delete user',
+        }).afterClosed().pipe(take(1)).subscribe((result) => {
+            if (result?.confirmed) {
+                this.userManagementService.deleteUser(row.id).pipe(take(1)).subscribe({
+                    next: () => {
+                        this.toastService.showSuccess('User deleted successfully');
+                        this.getUsers();
+                    },
+                });
+            }
+        });
+    }
+
+    private openDialog(data: UserDialogData) {
+        this.dialogService.open<ManageUser, UserDialogData, UserDialogResult>(ManageUser, {
+            data,
+            type: DialogType.Sidepop,
+            ariaLabel: data.mode === 'add' ? 'Add user' : 'Edit user',
+        }).afterClosed().pipe(take(1)).subscribe((result) => {
+            if (result?.saved) {
+                this.getUsers();
+            }
+        });
     }
 }

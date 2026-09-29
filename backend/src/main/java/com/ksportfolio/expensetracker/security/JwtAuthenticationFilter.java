@@ -47,6 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String role = claims.get(AppConstant.TOKEN_CLAIM_ROLE, String.class);
             String name = claims.get(AppConstant.TOKEN_CLAIM_NAME, String.class);
             Integer userId = claims.get(AppConstant.TOKEN_CLAIM_USERID, Integer.class);
+            Boolean passwordExpired = claims.get(AppConstant.TOKEN_CLAIM_PASSWORD_EXPIRED, Boolean.class);
             boolean isTokenExpired = claims.getExpiration().before(new Date());
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
@@ -56,8 +57,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             email,
                             null,
                             name,
-                            role
+                            role,
+                            passwordExpired
                     );
+                    user.setIsCredentialsNonExpired();
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

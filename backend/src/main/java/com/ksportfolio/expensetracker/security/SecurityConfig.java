@@ -38,6 +38,7 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final ObjectMapper objectMapper;
+    private final PasswordExpiryFilter passwordExpiryFilter;
 
 
     @Bean
@@ -72,7 +73,8 @@ public class SecurityConfig {
             securedPaths.forEach(path -> request.requestMatchers(path).authenticated());
             request.anyRequest().denyAll();
         });
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(passwordExpiryFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthenticationFilter, PasswordExpiryFilter.class);
         http.exceptionHandling(exception -> {
             exception.accessDeniedHandler(
                (request, response, handler) -> handleAuthorizationException(request,response,ErrorCode.ACCESS_DENIED)

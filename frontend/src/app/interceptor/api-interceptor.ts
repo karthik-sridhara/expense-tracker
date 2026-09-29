@@ -35,7 +35,6 @@ export const apiInterceptor: HttpInterceptorFn = (request, next) => {
             if(error.status === 401) {
                 const errorCode = error?.error?.code;
                 if(errorCode === ERROR_CODES.UNAUTHORIZED) {
-
                     console.error('Unauthorized access - perhaps redirect to login');
                     appSessionService.clearSession();
                     router.navigate(['/login'],{ queryParams: { returnUrl: router.routerState.snapshot.url } });
@@ -44,6 +43,22 @@ export const apiInterceptor: HttpInterceptorFn = (request, next) => {
                         data: {
                             title: 'Unauthorized',
                             message: 'Your session has expired. Please log in again.',
+                            kind: MessageDialogKind.INFO,
+                            theme: MessageDialogTheme.WARNING
+                        },
+                        type: DialogType.Modal
+                    });
+                } 
+            }else if(error.status === 403){
+                const errorCode = error?.error?.code;
+                if(errorCode === ERROR_CODES.PASSWORd_EXPIRED) {
+                    console.error('Password expired - perhaps redirect to change password');
+                    router.navigate(['/login/change-password'],{ queryParams: { returnUrl: router.routerState.snapshot.url } });
+                    dialogService.open<MessageDialog,MessageDialogData, void>
+                    (MessageDialog,{
+                        data: {
+                            title: 'Password Expired',
+                            message: 'Your password has expired. Please change your password.',
                             kind: MessageDialogKind.INFO,
                             theme: MessageDialogTheme.WARNING
                         },

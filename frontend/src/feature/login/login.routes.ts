@@ -16,6 +16,13 @@ export const LOGIN_ROUTER:Routes = [
             ),
     },
     {
+        path:'change-password',
+        loadComponent: () =>
+            import('./components/change-password/change-password').then(
+                (m) => m.ChangePasswordForm
+            ),
+    },
+    {
         path:'**',
         redirectTo: '',
     }

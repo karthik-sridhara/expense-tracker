@@ -28,7 +28,8 @@ public class DBAuthServiceImpl implements AuthService {
             userDetails.getUserId(),
             userDetails.getUsername(),
             userDetails.getName(),
-            userDetails.getRoleId()
+            userDetails.getRoleId(),
+            userDetails.getPasswordExpired()
         );
     }
 }

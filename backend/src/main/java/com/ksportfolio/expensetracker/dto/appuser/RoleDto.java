@@ -1,4 +1,4 @@
-package com.ksportfolio.expensetracker.dto;
+package com.ksportfolio.expensetracker.dto.appuser;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

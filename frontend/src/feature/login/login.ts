@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { AppSessionService } from '../../common/service/app-session';
 
 @Component({
@@ -10,7 +10,12 @@ import { AppSessionService } from '../../common/service/app-session';
 })
 export class Login {
   
-  constructor(private appSessionService: AppSessionService) {
-    appSessionService.clearSession();
+ constructor(
+    appSessionService: AppSessionService,
+    private router: Router,
+  ) {
+    if (!this.router.url.includes('/change-password')) {
+      appSessionService.clearSession();
+    }
   }
 }

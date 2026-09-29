@@ -57,8 +57,11 @@ export class LoginForm {
     const body = this.loginForm.value;
     this.loginService.login(body).subscribe({
       next: (response) => {
-        const defaultURL = response.data.role === Role.ADMIN ? '/categories' : '/';
-        const redirectUrl = this.state.snapshot.queryParams['returnUrl'] || defaultURL;
+        const defaultURL = response.data.role === Role.ADMIN ? '/users' : '/';
+        let redirectUrl = this.state.snapshot.queryParams['returnUrl'] || defaultURL;
+        if(response.data.passwordExpired){
+          redirectUrl = '/login/change-password';
+        }
         this.loginService.onLoginSuccess(response.data,redirectUrl);
       },
       error: (error: HttpErrorResponse) => {

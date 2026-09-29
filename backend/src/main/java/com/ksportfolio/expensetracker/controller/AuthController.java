@@ -1,9 +1,7 @@
 package com.ksportfolio.expensetracker.controller;
 
 import com.ksportfolio.expensetracker.constant.ErrorCode;
-import com.ksportfolio.expensetracker.dto.auth.LoginRequestDto;
-import com.ksportfolio.expensetracker.dto.auth.LoginResponseDto;
-import com.ksportfolio.expensetracker.dto.auth.RegisterRequestDto;
+import com.ksportfolio.expensetracker.dto.auth.*;
 import com.ksportfolio.expensetracker.dto.response.ApiResponse;
 import com.ksportfolio.expensetracker.exception.BusinessLogicException;
 import com.ksportfolio.expensetracker.service.AppUserService;
@@ -13,10 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -48,5 +44,17 @@ public class AuthController {
                 null
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PatchMapping(version = "1.0",value = "/change-password")
+    public ResponseEntity<ApiResponse<Void>> changePassword(
+        @Valid @RequestBody ChangePasswordRequest changePasswordRequest,
+        @AuthenticationPrincipal AppUserDetails appUserDetails
+    ){
+        appUserService.changePassword(changePasswordRequest,appUserDetails.getUserId());
+        ApiResponse<Void> response = new ApiResponse<>(
+                "Password updated successfully", null
+        );
+        return response.toResponseEntity();
     }
 }

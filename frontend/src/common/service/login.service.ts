@@ -8,6 +8,7 @@ import { ApiResponse } from "../interface/api-model/api-response";
 import { Router } from "@angular/router";
 import { RegisterRequest } from "../interface/register/register-request";
 import { API_ENDPOINTS } from "../const/api-enpoint.const";
+import { ChangePasswordRequest } from "../interface/login/change-password-request";
 
 @Injectable({
     providedIn: 'root'
@@ -48,5 +49,9 @@ export class LoginService {
     onLogout() {
         this.appSessionService.clearSession();
         this.router.navigateByUrl('/login');
+    }
+
+    changePassword(body: ChangePasswordRequest): Observable<ApiResponse<string>> {
+        return this.http.patch<ApiResponse<string>>(API_ENDPOINTS.CHANGE_PASSWORD, body);
     }
 }

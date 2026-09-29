@@ -1,6 +1,5 @@
 package com.ksportfolio.expensetracker.dto.auth;
 
-import com.ksportfolio.expensetracker.dto.AppUserDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -13,4 +12,5 @@ public class LoginResponseDto {
     private final String email;
     private final String name;
     private final String role;
+    private final boolean passwordExpired;
 }
