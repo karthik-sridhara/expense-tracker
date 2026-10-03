@@ -53,7 +53,7 @@ export class LoginForm {
       this.loginForm.markAllAsTouched();
       return;
     }
-    // this.errorMessage.set(null);
+    this.errorMessage.set(null);
     const body = this.loginForm.value;
     this.loginService.login(body).subscribe({
       next: (response) => {
