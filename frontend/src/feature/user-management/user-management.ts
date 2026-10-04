@@ -119,7 +119,7 @@ export class UserManagement implements OnInit {
         const searchText = this.searchTextFormControl.value;
         let params: HttpParams | undefined;
         if (searchText && searchText.trim() !== "") {
-            params = new HttpParams().set('searchText', searchText);
+            params = new HttpParams().set('search-text', searchText);
         }
 
         const role = this.roleFormControl.value;

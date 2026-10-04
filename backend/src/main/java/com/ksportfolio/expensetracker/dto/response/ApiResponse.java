@@ -1,6 +1,7 @@
 package com.ksportfolio.expensetracker.dto.response;
 
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.Instant;
@@ -28,6 +29,10 @@ public class ApiResponse<T> {
 
     public ResponseEntity<ApiResponse<T>> toResponseEntity() {
         return ResponseEntity.ok(this);
+    }
+
+    public ResponseEntity<ApiResponse<T>> toResponseEntity(HttpStatus status) {
+        return new ResponseEntity<>(this,status);
     }
 
 }

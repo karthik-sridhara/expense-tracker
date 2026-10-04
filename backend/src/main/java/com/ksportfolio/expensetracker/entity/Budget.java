@@ -30,7 +30,7 @@ public class Budget extends BaseEntity {
 
     @NotNull
     @DecimalMin(value = "0", inclusive = false)
-    @Column(name = "limit_amount", nullable = false)
+    @Column(name = "limit_amount", nullable = false, precision = 12, scale = 2)
     private BigDecimal amount;
 
     @NotNull
@@ -39,12 +39,12 @@ public class Budget extends BaseEntity {
     private DurationType durationType;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY,optional = false)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "user_id", nullable = false)
     private AppUser user;

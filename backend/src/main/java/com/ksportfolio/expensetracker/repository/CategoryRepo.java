@@ -13,7 +13,7 @@ import java.util.Optional;
 @Repository
 public interface CategoryRepo extends JpaRepository<Category, Integer> , JpaSpecificationExecutor<Category> {
 
-    @Query(name="Category.findByUserId")
+    @Query(name="Category.findAllVisibleToUser")
     List<Category> getAllByUser(@Param("userId") Integer userId);
     List<Category> findByUserIdOrIsUniversal(Integer userId, boolean isUniversal);
     Boolean existsByUserIdAndName(Integer userId, String name);
@@ -21,4 +21,5 @@ public interface CategoryRepo extends JpaRepository<Category, Integer> , JpaSpec
     Boolean existsByUserIdAndNameAndIdNot(Integer userId, String name, Integer id);
     Boolean existsByNameAndIsUniversalAndIdNot(String name, boolean isUniversal, Integer id);
     Optional<Category> findByIdAndUserId(Integer id, Integer userId);
+    Optional<Category> findVisibleToUser(@Param("id") Integer id, @Param("userId") Integer userId);
 }

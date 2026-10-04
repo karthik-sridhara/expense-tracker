@@ -6,6 +6,7 @@ import com.ksportfolio.expensetracker.dto.Category.CategoryRequestDto;
 import com.ksportfolio.expensetracker.dto.response.ApiResponse;
 import com.ksportfolio.expensetracker.service.CategoryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -81,7 +82,7 @@ public class CategoryController {
                 "Category retrieved successfully",
                 categoryService.getUserCategoryById(id)
         );
-        return response.toResponseEntity();
+        return response.toResponseEntity(HttpStatus.CREATED);
     }
 
     @PostMapping(version = "1.0")

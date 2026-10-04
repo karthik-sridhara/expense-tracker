@@ -12,6 +12,7 @@ import com.ksportfolio.expensetracker.mapper.BudgetMapper;
 import com.ksportfolio.expensetracker.repository.AppUserRepo;
 import com.ksportfolio.expensetracker.repository.BudgetRepo;
 import com.ksportfolio.expensetracker.repository.CategoryRepo;
+import com.ksportfolio.expensetracker.utility.DBUtility;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
@@ -23,7 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
+
 
 @Service
 @RequiredArgsConstructor
@@ -35,46 +37,20 @@ public class BudgetService {
     private final AppUserRepo appUserRepo;
     private final AppContextService appContextService;
 
-    public List<BudgetDto> getAll() {
-        List<Budget> budgets = budgetRepo.findAll();
-        List<BudgetDto> budgetDtos = new ArrayList<>();
-        for (Budget budget : budgets) {
-            budgetDtos.add(BudgetMapper.toDto(budget));
-        }
-        return budgetDtos;
-    }
-
     public BudgetDto getById(Integer id) {
-        Integer userId = appContextService.getUserId();
-        Optional<Budget> budget = budgetRepo.findByUserIdAndId(userId,id);
-        return budget.map(BudgetMapper::toDto).orElseThrow(
-                ()->new BusinessLogicException(ErrorCode.BUDGET_NOT_FOUND,id)
-        );
+        Integer userId =  appContextService.getUserId();
+        return BudgetMapper.toDto(getOwned(id,userId));
     }
 
     public List<BudgetDto> getByUser(BudgetFilter filter) {
-        Integer userId = appContextService.getUserId();
-        filter.setUserId(userId);
         List<Budget> budgets = budgetRepo.findAll(buildSpecification(filter));
-        List<BudgetDto> budgetDtos = new ArrayList<>();
-        for (Budget budget : budgets) {
-            budgetDtos.add(BudgetMapper.toDto(budget));
-        }
-        return budgetDtos;
+        return budgets.stream().map(BudgetMapper::toDto).toList();
     }
 
     @Transactional
     public void addBudget(BudgetRequestDto request) {
         Integer userId =  appContextService.getUserId();
-        Category category = categoryRepo.findById(request.getCategory()).orElseThrow(
-                ()->new BusinessLogicException(ErrorCode.CATEGORY_NOT_FOUND,request.getCategory())
-        );
-        if(!category.getIsUniversal() && !category.getUser().getId().equals(userId)) {
-            throw new BusinessLogicException(ErrorCode.CATEGORY_NOT_FOUND, request.getCategory());
-        }
-        if(category.getIsIncome()){
-            throw new BusinessLogicException(ErrorCode.BUDGET_CANT_SET_FOR_INCOME,request.getCategory());
-        }
+        Category category = getCategoryForBudget(request.getCategory(), userId);
         AppUser user =  appUserRepo.getReferenceById(userId);
         boolean isExist = budgetRepo.existsByDurationTypeAndCategoryIdAndUserId(request.getDurationType(),request.getCategory(),userId);
         if (isExist) {
@@ -87,148 +63,68 @@ public class BudgetService {
     @Transactional
     public void updateBudget(BudgetRequestDto request, Integer budgetId) {
         Integer userId =  appContextService.getUserId();
-        Budget budget = budgetRepo.findById(budgetId).orElseThrow(
-                ()->new  BusinessLogicException(ErrorCode.BUDGET_NOT_FOUND,budgetId)
-        );
-
-        if(!budget.getUser().getId().equals(userId)) {
-            throw new BusinessLogicException(ErrorCode.ACCESS_DENIED);
-        }
-
-        Category category = categoryRepo.findById(request.getCategory()).orElseThrow(
-                ()->new BusinessLogicException(ErrorCode.CATEGORY_NOT_FOUND,request.getCategory())
-        );
-
-        if(!category.getIsUniversal() && !category.getUser().getId().equals(userId)) {
-            throw new BusinessLogicException(ErrorCode.CATEGORY_NOT_FOUND, request.getCategory());
-        }
-
-        if(category.getIsIncome()){
-            throw new BusinessLogicException(ErrorCode.BUDGET_CANT_SET_FOR_INCOME,request.getCategory());
-        }
-
+        Budget budget = getOwned(budgetId, userId);
+        Category category = getCategoryForBudget(request.getCategory(), userId);
         boolean isExist = budgetRepo.existsByDurationTypeAndCategoryIdAndUserIdAndIdNot(request.getDurationType(),request.getCategory(),userId,budgetId);
         if (isExist) {
             throw new BusinessLogicException(ErrorCode.BUDGET_EXISTS,category.getName(),request.getDurationType());
         }
-        BudgetMapper.toEntity(request,budget,category);
+        BudgetMapper.updateEntity(request,budget,category);
         budgetRepo.save(budget);
     }
 
     @Transactional
     public void deleteBudget(Integer budgetId) {
         Integer userId =  appContextService.getUserId();
-        Budget budget = budgetRepo.findById(budgetId).orElseThrow(
-                ()->new  BusinessLogicException(ErrorCode.BUDGET_NOT_FOUND,budgetId)
+        int count = budgetRepo.deleteOwned(budgetId,userId);
+        if (count == 0) {
+            throw new BusinessLogicException(ErrorCode.BUDGET_NOT_FOUND,budgetId);
+        }
+    }
+
+    private Budget getOwned(Integer id,Integer userId) {
+        return budgetRepo.findByUserIdAndId(userId,id).orElseThrow(
+            ()->new  BusinessLogicException(ErrorCode.BUDGET_NOT_FOUND,id)
+        );
+    }
+
+    private Category getCategoryForBudget(Integer categoryId, Integer userId) {
+        Category category = categoryRepo.findVisibleToUser(categoryId,userId).orElseThrow(
+                ()->new BusinessLogicException(ErrorCode.CATEGORY_NOT_FOUND,categoryId)
         );
 
-        if(!budget.getUser().getId().equals(userId)) {
-            throw new BusinessLogicException(ErrorCode.ACCESS_DENIED);
+        if (Boolean.TRUE.equals(category.getIsIncome())) {
+            throw new BusinessLogicException(ErrorCode.BUDGET_CANT_SET_FOR_INCOME, categoryId);
         }
-        budgetRepo.delete(budget);
+        return category;
     }
 
     private Specification<Budget> buildSpecification(BudgetFilter filter) {
+        Integer userId = Objects.requireNonNull(filter.getUserId(), "userId is required");
 
-        return (root, query, criteriaBuilder) -> {
-
+        return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            /*
-             * Equivalent to:
-             * JOIN FETCH b.category c
-             *
-             * Fetch category only for the main entity query.
-             * This avoids issues when Spring executes a count query
-             * for pagination.
-             */
-            if (query.getResultType() != Long.class
-                    && query.getResultType() != long.class) {
+            // mandatory: b.user.id = :userId (always applied)
+            predicates.add(cb.equal(root.get("user").get("id"), userId));
 
-                root.fetch("category", JoinType.INNER);
-            }
-
-            /*
-             * Creates a normal join so that category fields
-             * can be used in WHERE conditions.
-             */
-            Join<Budget, Category> categoryJoin =
-                    root.join("category", JoinType.INNER);
-
-            /*
-             * Mandatory filter:
-             * b.user.id = :userId
-             */
-            predicates.add(
-                    criteriaBuilder.equal(
-                            root.get("user").get("id"),
-                            filter.getUserId()
-                    )
-            );
-
-            /*
-             * Optional filter:
-             * c.durationType = :durationType
-             *
-             * If durationType is null, this predicate is not added.
-             */
+            // optional: b.durationType = :durationType
             if (filter.getDurationType() != null) {
-                predicates.add(
-                        criteriaBuilder.equal(
-                                root.get("durationType"),
-                                filter.getDurationType()
-                        )
-                );
+                predicates.add(cb.equal(root.get("durationType"), filter.getDurationType()));
             }
 
-            /*
-             * Optional global search.
-             *
-             * Searches:
-             * 1. Category name
-             * 2. Category description
-             *
-             * The OR conditions are grouped together and then combined
-             * with userId and durationType using AND.
-             */
-            if (filter.getSearchText() != null
-                    && !filter.getSearchText().isBlank()) {
+            // optional: search on category name or description
+            if (filter.getSearchText() != null && !filter.getSearchText().isBlank()) {
+                Join<Budget, Category> category = root.join("category", JoinType.INNER);
+                String pattern = "%" + DBUtility.escapeLike(filter.getSearchText().trim().toLowerCase()) + "%";
 
-                String searchValue =
-                        "%" + filter.getSearchText().trim().toLowerCase() + "%";
-
-                List<Predicate> searchPredicates = new ArrayList<>();
-
-                searchPredicates.add(
-                        criteriaBuilder.like(
-                                criteriaBuilder.lower(
-                                        categoryJoin.get("name")
-                                ),
-                                searchValue
-                        )
-                );
-
-                searchPredicates.add(
-                        criteriaBuilder.like(
-                                criteriaBuilder.lower(
-                                        categoryJoin.get("description")
-                                ),
-                                searchValue
-                        )
-                );
-
-                predicates.add(
-                        criteriaBuilder.or(
-                                searchPredicates.toArray(new Predicate[0])
-                        )
-                );
+                predicates.add(cb.or(
+                        cb.like(cb.lower(category.get("name")), pattern, '\\'),
+                        cb.like(cb.lower(category.get("description")), pattern, '\\')
+                ));
             }
 
-            query.distinct(true);
-
-            return criteriaBuilder.and(
-                    predicates.toArray(new Predicate[0])
-            );
+            return cb.and(predicates.toArray(new Predicate[0]));
         };
     }
 
