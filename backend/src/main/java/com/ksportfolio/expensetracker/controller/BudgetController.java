@@ -3,12 +3,15 @@ package com.ksportfolio.expensetracker.controller;
 import com.ksportfolio.expensetracker.dto.Budget.BudgetDto;
 import com.ksportfolio.expensetracker.dto.Budget.BudgetFilter;
 import com.ksportfolio.expensetracker.dto.Budget.BudgetRequestDto;
+import com.ksportfolio.expensetracker.dto.auth.AppUserDetails;
 import com.ksportfolio.expensetracker.dto.response.ApiResponse;
 import com.ksportfolio.expensetracker.service.BudgetService;
 import com.ksportfolio.expensetracker.type.DurationType;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,22 +23,16 @@ public class BudgetController {
 
     private final BudgetService budgetService;
 
-    @GetMapping(version = "1.0",value = "/admin")
-    public ResponseEntity<ApiResponse<List<BudgetDto>>> getAll() {
-        ApiResponse<List<BudgetDto>> response = new ApiResponse<>(
-                "Budgets retrieved successfully", budgetService.getAll()
-        );
-        return response.toResponseEntity();
-    }
-
     @GetMapping(version = "1.0")
     public ResponseEntity<ApiResponse<List<BudgetDto>>> getAllByUserId(
+        @AuthenticationPrincipal AppUserDetails user,
         @RequestParam(required = false) DurationType durationType,
         @RequestParam(required = false) String searchText
     ) {
         BudgetFilter budgetFilter = new BudgetFilter();
         budgetFilter.setDurationType(durationType);
         budgetFilter.setSearchText(searchText);
+        budgetFilter.setUserId(user.getUserId());
         ApiResponse<List<BudgetDto>> response = new ApiResponse<>(
         "Budgets retrieved successfully",
                 budgetService.getByUser(budgetFilter)
@@ -57,7 +54,7 @@ public class BudgetController {
         ApiResponse<Void> response = new ApiResponse<>(
                 "Budget added successfully", null
         );
-        return response.toResponseEntity();
+        return response.toResponseEntity(HttpStatus.CREATED);
     }
 
     @PutMapping(value="/{id}",version = "1.0")

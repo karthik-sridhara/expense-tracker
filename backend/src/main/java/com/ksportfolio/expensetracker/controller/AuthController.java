@@ -43,7 +43,7 @@ public class AuthController {
                 "Registration successful",
                 null
         );
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return response.toResponseEntity(HttpStatus.CREATED);
     }
 
     @PatchMapping(version = "1.0",value = "/change-password")

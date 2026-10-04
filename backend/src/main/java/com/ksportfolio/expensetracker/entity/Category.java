@@ -17,8 +17,15 @@ import org.hibernate.annotations.OnDeleteAction;
 @Setter
 @NamedQueries({
     @NamedQuery(
-        name = "Category.findByUserId",
+        name = "Category.findAllVisibleToUser",
         query = "SELECT c FROM Category c WHERE c.user.id = :userId  OR c.isUniversal = true"
+    ),
+    @NamedQuery(
+        name="Category.findVisibleToUser",
+        query = """
+            SELECT c FROM Category c 
+            WHERE c.id = :id AND (c.user.id = :userId  OR c.isUniversal = true)
+        """
     )
 })
 public class Category extends BaseEntity {

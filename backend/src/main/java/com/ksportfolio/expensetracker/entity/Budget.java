@@ -39,7 +39,7 @@ public class Budget extends BaseEntity {
     private DurationType durationType;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.EAGER,optional = false)
+    @ManyToOne(fetch = FetchType.LAZY,optional = false)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 

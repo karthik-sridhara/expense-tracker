@@ -40,7 +40,7 @@ public class BudgetMapper {
         return budget;
     }
 
-    public static Budget toEntity(BudgetRequestDto dto, Budget budget,Category category) {
+    public static Budget updateEntity(BudgetRequestDto dto, Budget budget,Category category) {
         if (dto == null) {
             return null;
         }
