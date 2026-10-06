@@ -19,15 +19,6 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
-    @GetMapping(value="/admin",version = "1.0")
-    public ResponseEntity<ApiResponse<List<CategoryDto>>> getCategories() {
-        ApiResponse<List<CategoryDto>> response =  new ApiResponse<List<CategoryDto>>(
-                "Categories retrieved successfully",
-                categoryService.getAll()
-        );
-        return response.toResponseEntity();
-    }
-
     @GetMapping(value = "/admin/{id}",version = "1.0")
     public ResponseEntity<ApiResponse<CategoryDto>> getCategoryById(@PathVariable Integer id) {
         ApiResponse<CategoryDto> response =  new ApiResponse<CategoryDto>(
@@ -39,21 +30,21 @@ public class CategoryController {
 
     @PostMapping(version = "1.0",value = "/admin")
     public ResponseEntity<ApiResponse<Void>> addCategory(@RequestBody CategoryRequestDto categoryDto) {
-        categoryService.addCategory(categoryDto);
+        categoryService.addUniversalCategory(categoryDto);
         ApiResponse<Void> response = new ApiResponse<>("Category added successfully", null);
         return response.toResponseEntity();
     }
 
     @PutMapping(version = "1.0",value = "/admin/{id}")
     public ResponseEntity<ApiResponse<Void>> editCategory(@RequestBody CategoryRequestDto categoryDto,@PathVariable Integer id) {
-        categoryService.editCategory(categoryDto, id);
+        categoryService.editUniversalCategory(categoryDto, id);
         ApiResponse<Void> response = new ApiResponse<>("Category edited successfully", null);
         return response.toResponseEntity();
     }
 
     @DeleteMapping(version = "1.0",value = "/admin/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteCategory(@PathVariable Integer id) {
-        categoryService.deleteCategory(id);
+        categoryService.deleteUniversalCategory(id);
         ApiResponse<Void> response = new ApiResponse<>("Category deleted successfully", null);
         return response.toResponseEntity();
     }

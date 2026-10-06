@@ -13,8 +13,6 @@ import com.ksportfolio.expensetracker.exception.BusinessLogicException;
 import com.ksportfolio.expensetracker.mapper.AppUserMapper;
 import com.ksportfolio.expensetracker.repository.AppUserRepo;
 import com.ksportfolio.expensetracker.repository.RoleRepo;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
@@ -37,19 +35,11 @@ public class AppUserService {
 
     public List<AppUserDto> getUsers(AppUserFilter filter) {
         return appUserRepo.findAll(getFilterForFindAll(filter))
-                .stream().map(AppUserMapper::builder).toList();
+                .stream().map(AppUserMapper::toDto).toList();
     }
 
     public AppUserDto getUserById(Integer id) {
-        return appUserRepo.findById(id).map(AppUserMapper::builder).orElseThrow(
-                () -> new BusinessLogicException(ErrorCode.USER_NOT_FOUND, id)
-        );
-    }
-
-    public AppUserDto getUserByEmail(String email) {
-        return appUserRepo.findByEmail(email).map(AppUserMapper::builder).orElseThrow(
-                ()-> new BusinessLogicException(ErrorCode.USER_NOT_FOUND_WITH_EMAIL, email)
-        );
+        return AppUserMapper.toDto(getUser(id));
     }
 
     @Transactional
@@ -79,9 +69,7 @@ public class AppUserService {
 
     @Transactional
     public void deleteUser(Integer id) {
-        AppUser user = appUserRepo.findById(id).orElseThrow(
-                () -> new BusinessLogicException(ErrorCode.USER_NOT_FOUND, id)
-        );
+        AppUser user = getUser(id);
         appUserRepo.delete(user);
     }
 
@@ -92,9 +80,7 @@ public class AppUserService {
 
     @Transactional
     public void changePassword(ChangePasswordRequest request,Integer id) {
-        AppUser user = appUserRepo.findById(id).orElseThrow(
-                () -> new BusinessLogicException(ErrorCode.USER_NOT_FOUND, id)
-        );
+        AppUser user = getUser(id);
         if(!passwordEncoder.matches(request.getCurrentPassword(),user.getPassword()))
             throw new BusinessLogicException(ErrorCode.PASSWORD_MISMATCH);
         if(passwordEncoder.matches(request.getNewPassword(),user.getPassword()))
@@ -118,24 +104,25 @@ public class AppUserService {
     }
 
     private void updateUserInternal(AppUserRequestDto request, Integer id) {
-        AppUser user = appUserRepo.findById(id)
-                .orElseThrow(() ->
-                        new BusinessLogicException(ErrorCode.USER_NOT_FOUND, id)
-                );
+        AppUser user = getUser(id);
 
-        boolean emailExists =
-                appUserRepo.existsByEmailAndIdNot(request.getEmail(), id);
-
+        boolean emailExists = appUserRepo.existsByEmailAndIdNot(request.getEmail(), id);
         if (emailExists) {
             throw new BusinessLogicException(
-                    ErrorCode.EMAIL_ALREADY_EXIST,
-                    request.getEmail()
+                ErrorCode.EMAIL_ALREADY_EXIST,
+                request.getEmail()
             );
         }
 
         Role role = roleRepo.getReferenceById(request.getRole());
-        AppUserMapper.toEntity(user, request, role);
+        AppUserMapper.updateEntity(user, request, role);
         appUserRepo.save(user);
+    }
+
+    private AppUser getUser(Integer id) {
+        return appUserRepo.findById(id).orElseThrow(
+            () -> new BusinessLogicException(ErrorCode.USER_NOT_FOUND, id)
+        );
     }
 
     private Specification<AppUser> getFilterForFindAll(AppUserFilter filter){
@@ -144,52 +131,24 @@ public class AppUserService {
 
             List<Predicate> predicates = new ArrayList<>();
 
-            if (query.getResultType() != Long.class &&
-                    query.getResultType() != long.class) {
-
-                root.fetch("role", JoinType.INNER);
-            }
-
             // Role filter
             if (filter.getRole() != null) {
-
-                Join<AppUser, Role> roleJoin =
-                        root.join("role", JoinType.INNER);
-
                 predicates.add(
-                        cb.equal(
-                                roleJoin.get("id"),
-                                filter.getRole()
-                        )
+                    cb.equal(root.get("role").get("id"), filter.getRole())
                 );
             }
 
             // Search by email OR name
             String searchText = filter.getSearchText();
-
             if (searchText != null && !searchText.isBlank()) {
-
-                String searchPattern =
-                        "%" + searchText.trim().toLowerCase() + "%";
-
-                Predicate emailPredicate =
-                        cb.like(
-                                cb.lower(root.get("email")),
-                                searchPattern
-                        );
-
-                Predicate namePredicate =
-                        cb.like(
-                                cb.lower(root.get("name")),
-                                searchPattern
-                        );
-
+                String searchPattern = "%" + searchText.trim().toLowerCase() + "%";
                 predicates.add(
-                        cb.or(emailPredicate, namePredicate)
+                    cb.or(
+                        cb.like(cb.lower(root.get("email")),searchPattern),
+                        cb.like(cb.lower(root.get("name")),searchPattern)
+                    )
                 );
             }
-
-            query.distinct(true);
 
             return cb.and(
                     predicates.toArray(new Predicate[0])

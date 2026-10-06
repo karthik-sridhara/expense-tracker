@@ -10,4 +10,5 @@ public class CategoryFilter {
     private Boolean isIncome;
     private Boolean isActive;
     private String searchText;
+    private Boolean universal;
 }

@@ -10,6 +10,7 @@ import com.ksportfolio.expensetracker.exception.BusinessLogicException;
 import com.ksportfolio.expensetracker.mapper.CategoryMapper;
 import com.ksportfolio.expensetracker.repository.AppUserRepo;
 import com.ksportfolio.expensetracker.repository.CategoryRepo;
+import com.ksportfolio.expensetracker.utility.DBUtility;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
@@ -28,38 +29,23 @@ public class CategoryService {
     private final CategoryRepo  categoryRepo;
     private final AppUserRepo appUserRepo;
 
-    public List<CategoryDto> getAll() {
-        List<Category> categories = categoryRepo.findAll();
-        List<CategoryDto> categoryDtos = new ArrayList<>();
-        for (Category category : categories) {
-            categoryDtos.add(CategoryMapper.toDto(category));
-        }
-        return categoryDtos;
-    }
-
     public CategoryDto getById(Integer id) {
         Category category = categoryRepo.findById(id).orElseThrow(
-                ()-> new BusinessLogicException(ErrorCode.CATEGORY_NOT_FOUND,id)
+            ()-> new BusinessLogicException(ErrorCode.CATEGORY_NOT_FOUND,id)
         );
         return CategoryMapper.toDto(category);
     }
 
     public CategoryDto getUserCategoryById(Integer id) {
         Integer userId = appContextService.getUserId();
-        Category category = categoryRepo.findByIdAndUserId(id,userId).orElseThrow(
-                ()-> new BusinessLogicException(ErrorCode.CATEGORY_NOT_FOUND,id)
-        );
+        Category category = getOwnedCategory(id, userId);
         return CategoryMapper.toDto(category);
     }
 
     public List<CategoryDto> getAllByUser(CategoryFilter categoryFilter) {
         categoryFilter.setUserId(appContextService.getUserId());
         List<Category> categories = categoryRepo.findAll(filter(categoryFilter));
-        List<CategoryDto> categoryDtos = new ArrayList<>();
-        for (Category category : categories) {
-            categoryDtos.add(CategoryMapper.toDto(category));
-        }
-        return categoryDtos;
+        return categories.stream().map(CategoryMapper::toDto).toList();
     }
 
     @Transactional
@@ -77,7 +63,7 @@ public class CategoryService {
     }
 
     @Transactional
-    public void addCategory(CategoryRequestDto dto) {
+    public void addUniversalCategory(CategoryRequestDto dto) {
         boolean isExist = categoryRepo.existsByNameAndIsUniversal(dto.getName(),true);
         if (isExist) {
             throw new BusinessLogicException(ErrorCode.CATEGORY_ALREADY_EXIST,dto.getName());
@@ -91,12 +77,7 @@ public class CategoryService {
     @Transactional
     public void editUserCategory(CategoryRequestDto dto,Integer categoryId) {
         Integer userId = appContextService.getUserId();
-        Category category = categoryRepo.findById(categoryId).orElseThrow(
-                ()-> new BusinessLogicException(ErrorCode.CATEGORY_NOT_FOUND,categoryId)
-        );
-        if(category.getIsUniversal()||category.getUser() == null || !category.getUser().getId().equals(userId)) {
-            throw new BusinessLogicException(ErrorCode.ACCESS_DENIED);
-        }
+        Category category = getOwnedCategory(categoryId, userId);
         boolean isExist = categoryRepo.existsByUserIdAndNameAndIdNot(userId, dto.getName(), categoryId);
         if (isExist) {
             throw new BusinessLogicException(ErrorCode.CATEGORY_ALREADY_EXIST,dto.getName());
@@ -108,13 +89,8 @@ public class CategoryService {
     }
 
     @Transactional
-    public void editCategory(CategoryRequestDto dto,Integer categoryId) {
-        Category category = categoryRepo.findById(categoryId).orElseThrow(
-                ()-> new BusinessLogicException(ErrorCode.CATEGORY_NOT_FOUND,categoryId)
-        );
-        if(!category.getIsUniversal()) {
-            throw new BusinessLogicException(ErrorCode.ACCESS_DENIED);
-        }
+    public void editUniversalCategory(CategoryRequestDto dto, Integer categoryId) {
+        Category category = getUniversalCategory(categoryId);
         boolean isExist = categoryRepo.existsByNameAndIsUniversalAndIdNot(dto.getName(),true,categoryId);
         if (isExist) {
             throw new BusinessLogicException(ErrorCode.CATEGORY_ALREADY_EXIST,dto.getName());
@@ -125,26 +101,28 @@ public class CategoryService {
     }
 
     @Transactional
-    public void deleteCategory(Integer categoryId) {
-        Category category = categoryRepo.findById(categoryId).orElseThrow(
-                ()-> new BusinessLogicException(ErrorCode.CATEGORY_NOT_FOUND,categoryId)
-        );
-        if(!category.getIsUniversal()) {
-            throw new BusinessLogicException(ErrorCode.ACCESS_DENIED);
-        }
+    public void deleteUniversalCategory(Integer categoryId) {
+        Category category = getUniversalCategory(categoryId);
         categoryRepo.delete(category);
     }
 
     @Transactional
     public void deleteUserCategory(Integer categoryId) {
         Integer userId = appContextService.getUserId();
-        Category category = categoryRepo.findById(categoryId).orElseThrow(
-                ()-> new BusinessLogicException(ErrorCode.CATEGORY_NOT_FOUND,categoryId)
-        );
-        if(category.getIsUniversal() || category.getUser() == null || !category.getUser().getId().equals(userId)) {
-            throw new BusinessLogicException(ErrorCode.ACCESS_DENIED);
-        }
+        Category category = getOwnedCategory(categoryId, userId);
         categoryRepo.delete(category);
+    }
+
+    private Category getOwnedCategory(Integer categoryId, Integer userId) {
+        return categoryRepo.findByIdAndUserId(categoryId,userId).orElseThrow(
+            ()-> new BusinessLogicException(ErrorCode.CATEGORY_NOT_FOUND,categoryId)
+        );
+    }
+
+    private Category getUniversalCategory(Integer categoryId) {
+        return categoryRepo.findUniversal(categoryId).orElseThrow(
+            ()-> new BusinessLogicException(ErrorCode.CATEGORY_NOT_FOUND,categoryId)
+        );
     }
 
     private static Specification<Category> filter(CategoryFilter filter) {
@@ -154,69 +132,41 @@ public class CategoryService {
             List<Predicate> predicates = new ArrayList<>();
 
             if (filter.getUserId() != null) {
-                Predicate userPredicate = criteriaBuilder.equal(
-                        root.get("user").get("id"),
-                        filter.getUserId()
-                );
-
-                Predicate universalPredicate = criteriaBuilder.isTrue(
-                        root.get("isUniversal")
-                );
-
                 predicates.add(
-                        criteriaBuilder.or(
-                                userPredicate,
-                                universalPredicate
-                        )
+                    criteriaBuilder.or(
+                        criteriaBuilder.equal(root.get("user").get("id"), filter.getUserId()),
+                        criteriaBuilder.isTrue(root.get("isUniversal"))
+                    )
                 );
             }
 
             if (filter.getIsIncome() != null) {
                 predicates.add(
-                        criteriaBuilder.equal(
-                                root.get("isIncome"),
-                                filter.getIsIncome()
-                        )
+                    criteriaBuilder.equal(root.get("isIncome"),filter.getIsIncome())
                 );
             }
 
             if (filter.getIsActive() != null) {
                 predicates.add(
-                        criteriaBuilder.equal(
-                                root.get("isActive"),
-                                filter.getIsActive()
-                        )
+                    criteriaBuilder.equal(root.get("isActive"), filter.getIsActive())
+                );
+            }
+
+            if (filter.getUniversal() != null) {
+                predicates.add(
+                    criteriaBuilder.equal(root.get("isUniversal"), filter.getUniversal())
                 );
             }
 
             String searchText = filter.getSearchText();
 
-            if(searchText != null && !searchText.trim().isBlank()) {
-                searchText = "%" + searchText.trim().toLowerCase() + "%";
-                List<Predicate> searchPredicates = new ArrayList<>();
-                searchPredicates.add(
-                    criteriaBuilder.like(
-                        criteriaBuilder.lower(
-                            root.get("name")
-                        ),
-                        searchText
-                    )
-                );
-                searchPredicates.add(
-                    criteriaBuilder.like(
-                        criteriaBuilder.lower(
-                            root.get("description")
-                        ),
-                        searchText
-                    )
-                );
-                predicates.add(
-                    criteriaBuilder.or(
-                        searchPredicates.toArray(new Predicate[0])
-                    )
-                );
+            if(searchText != null && !searchText.isBlank()) {
+                String pattern = "%" + DBUtility.escapeLike(searchText.trim().toLowerCase()) + "%";
+                predicates.add(criteriaBuilder.or(
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), pattern, '\\'),
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("description")), pattern, '\\')
+                ));
             }
-
             return criteriaBuilder.and(
                 predicates.toArray(new Predicate[0])
             );

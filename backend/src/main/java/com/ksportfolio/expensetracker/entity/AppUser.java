@@ -48,7 +48,7 @@ public class AppUser extends BaseEntity {
     private Boolean passwordExpired;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "role", nullable = false)
     private Role role;
 

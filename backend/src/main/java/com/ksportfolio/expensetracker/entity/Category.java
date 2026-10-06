@@ -26,7 +26,15 @@ import org.hibernate.annotations.OnDeleteAction;
             SELECT c FROM Category c 
             WHERE c.id = :id AND (c.user.id = :userId  OR c.isUniversal = true)
         """
-    )
+    ),
+    @NamedQuery(
+            name="Category.findUniversal",
+            query = """
+                SELECT c FROM Category c 
+                WHERE c.id = :id AND c.isUniversal = true
+            """
+    ),
+
 })
 public class Category extends BaseEntity {
 
