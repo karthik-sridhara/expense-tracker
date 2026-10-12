@@ -1,4 +1,4 @@
-package com.ksportfolio.expensetracker.dto.Category;
+package com.ksportfolio.expensetracker.dto.category;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

@@ -1,7 +1,6 @@
 package com.ksportfolio.expensetracker.dto.apptransaction;
 
-import com.ksportfolio.expensetracker.dto.Category.CategoryDto;
-import com.ksportfolio.expensetracker.dto.appuser.AppUserDto;
+import com.ksportfolio.expensetracker.dto.category.CategoryDto;
 import lombok.Getter;
 import lombok.Setter;
 import java.math.BigDecimal;

@@ -1,8 +1,8 @@
 package com.ksportfolio.expensetracker.controller;
 
-import com.ksportfolio.expensetracker.dto.Budget.BudgetDto;
-import com.ksportfolio.expensetracker.dto.Budget.BudgetFilter;
-import com.ksportfolio.expensetracker.dto.Budget.BudgetRequestDto;
+import com.ksportfolio.expensetracker.dto.budget.BudgetDto;
+import com.ksportfolio.expensetracker.dto.budget.BudgetFilter;
+import com.ksportfolio.expensetracker.dto.budget.BudgetRequestDto;
 import com.ksportfolio.expensetracker.dto.auth.AppUserDetails;
 import com.ksportfolio.expensetracker.dto.response.ApiResponse;
 import com.ksportfolio.expensetracker.service.BudgetService;

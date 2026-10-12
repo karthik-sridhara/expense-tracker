@@ -1,8 +1,8 @@
 package com.ksportfolio.expensetracker.controller;
 
-import com.ksportfolio.expensetracker.dto.Category.CategoryDto;
-import com.ksportfolio.expensetracker.dto.Category.CategoryFilter;
-import com.ksportfolio.expensetracker.dto.Category.CategoryRequestDto;
+import com.ksportfolio.expensetracker.dto.category.CategoryDto;
+import com.ksportfolio.expensetracker.dto.category.CategoryFilter;
+import com.ksportfolio.expensetracker.dto.category.CategoryRequestDto;
 import com.ksportfolio.expensetracker.dto.response.ApiResponse;
 import com.ksportfolio.expensetracker.service.CategoryService;
 import lombok.RequiredArgsConstructor;

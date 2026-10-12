@@ -2,10 +2,12 @@ package com.ksportfolio.expensetracker.constant;
 
 import lombok.Getter;
 
+import java.text.MessageFormat;
+
 @Getter
 public enum MessageCode {
 
-    USER_NOT_FOUND("INF-888","User not found");
+    DELETED_PAYMENT_LINKED_TRANSACTION("INF-1001","Deleted payment linked transaction : {0}"),;
 
     private final String message;
     private final String code;
@@ -15,5 +17,8 @@ public enum MessageCode {
         this.message = message;
     }
 
+    public String formatMessage(Object... args) {
+        return MessageFormat.format(message, args);
+    }
 
 }
