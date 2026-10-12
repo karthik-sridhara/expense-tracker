@@ -34,6 +34,11 @@ public enum ErrorCode {
     ROLE_NOT_FOUND("ERR-2011", HttpStatus.BAD_REQUEST, "Role not found with id: {0}"),
     PASSWORD_EXPIRED("ERR-2012", HttpStatus.FORBIDDEN, "Password has expired"),
     NO_TRANSACTION_FOUND("ERR-2013", HttpStatus.BAD_REQUEST, "No transaction found with id: {0}"),
+    RECURRING_PAYMENT_NOT_FOUND("ERR-2014", HttpStatus.BAD_REQUEST, "Recurring payment not found with id: {0}"),
+    INVALID_RECURRING_SCHEDULE("ERR-2015", HttpStatus.BAD_REQUEST, "Invalid schedule: {0}"),
+    PAYMENT_NOT_FOUND("ERR-2016", HttpStatus.BAD_REQUEST, "Payment not found with id: {0}"),
+    PAYMENT_ALREADY_COMPLETED("ERR-2017", HttpStatus.BAD_REQUEST, "Payment already completed with id: {0}"),
+    CANNOT_UPDATE_PAYMENT("ERR-2018", HttpStatus.BAD_REQUEST, "Cannot update payment which already completed"),
     ;
 
     private final String code;

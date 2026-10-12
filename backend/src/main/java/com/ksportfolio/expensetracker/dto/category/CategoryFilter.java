@@ -1,4 +1,4 @@
-package com.ksportfolio.expensetracker.dto.Category;
+package com.ksportfolio.expensetracker.dto.category;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -10,4 +10,5 @@ public class CategoryFilter {
     private Boolean isIncome;
     private Boolean isActive;
     private String searchText;
+    private Boolean universal;
 }

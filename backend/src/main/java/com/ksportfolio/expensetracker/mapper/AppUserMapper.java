@@ -9,7 +9,7 @@ import com.ksportfolio.expensetracker.entity.Role;
 
 public class AppUserMapper {
 
-    public static AppUserDto builder(AppUser entity) {
+    public static AppUserDto toDto(AppUser entity) {
         AppUserDto dto = new AppUserDto();
         dto.setId(entity.getId());
         dto.setName(entity.getName());
@@ -44,7 +44,7 @@ public class AppUserMapper {
         return entity;
     }
 
-    public static AppUser toEntity(AppUser entity, AppUserRequestDto dto, Role role) {
+    public static AppUser updateEntity(AppUser entity, AppUserRequestDto dto, Role role) {
         entity.setName(dto.getName());
         entity.setDob(dto.getDob());
         entity.setEmail(dto.getEmail());

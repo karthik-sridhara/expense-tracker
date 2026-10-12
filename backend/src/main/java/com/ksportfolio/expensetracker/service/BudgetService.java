@@ -1,9 +1,9 @@
 package com.ksportfolio.expensetracker.service;
 
 import com.ksportfolio.expensetracker.constant.ErrorCode;
-import com.ksportfolio.expensetracker.dto.Budget.BudgetDto;
-import com.ksportfolio.expensetracker.dto.Budget.BudgetFilter;
-import com.ksportfolio.expensetracker.dto.Budget.BudgetRequestDto;
+import com.ksportfolio.expensetracker.dto.budget.BudgetDto;
+import com.ksportfolio.expensetracker.dto.budget.BudgetFilter;
+import com.ksportfolio.expensetracker.dto.budget.BudgetRequestDto;
 import com.ksportfolio.expensetracker.entity.AppUser;
 import com.ksportfolio.expensetracker.entity.Budget;
 import com.ksportfolio.expensetracker.entity.Category;

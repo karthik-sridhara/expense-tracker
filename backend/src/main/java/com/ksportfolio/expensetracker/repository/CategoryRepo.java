@@ -22,4 +22,5 @@ public interface CategoryRepo extends JpaRepository<Category, Integer> , JpaSpec
     Boolean existsByNameAndIsUniversalAndIdNot(String name, boolean isUniversal, Integer id);
     Optional<Category> findByIdAndUserId(Integer id, Integer userId);
     Optional<Category> findVisibleToUser(@Param("id") Integer id, @Param("userId") Integer userId);
+    Optional<Category> findUniversal(@Param("id") Integer id);
 }
