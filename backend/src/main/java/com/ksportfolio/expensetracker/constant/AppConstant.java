@@ -14,4 +14,5 @@ public class AppConstant {
     public static final String ROLE_ADMIN = "ADMIN";
     public static final String ROLE_EMPLOYEE = "EMPLOYEE";
     public static final String CHANGE_PASSWORD_URL = "/api/auth/change-password";
+    public static final String Trace_ID = "app_trace_id";
 }
