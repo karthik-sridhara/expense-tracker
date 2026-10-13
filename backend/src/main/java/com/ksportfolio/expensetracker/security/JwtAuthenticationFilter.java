@@ -40,7 +40,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String token = authHeader.substring(AppConstant.TOKEN_HEADER_PREFIX.length());
-
         try {
             Claims claims = jwtService.extractClaims(token);
             String email = claims.getSubject();
