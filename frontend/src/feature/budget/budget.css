@@ -1,3 +1,4 @@
 #budget-app-table {
-    height: calc(100vh - 300px) ;
+    height: calc(100vh - 342px) ;
+    min-height: 300px;
 }

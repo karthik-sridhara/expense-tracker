@@ -32,7 +32,7 @@ public class BaseEntity {
      * it's done by hibernate @UpdateTimeStamp
      * */
     @UpdateTimestamp
-    @Column(name="modified_at",insertable = false)
+    @Column(name="modified_at",nullable = false)
     @JdbcTypeCode(SqlTypes.TIMESTAMP)
     private Instant modifiedAt;
 

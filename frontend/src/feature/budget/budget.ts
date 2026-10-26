@@ -22,9 +22,10 @@ import { HttpParams } from '@angular/common/http';
 import { SvgIcon } from '../../common/ui/svg-icon';
 import { ToastService } from '../../common/component/toast/toast-service';
 import { UiMenu } from '../../common/ui/menu';
+import { AppPagination, PaginationChange } from '../../common/component/app-pagination/app-pagination';
 
 @Component({
-  imports: [Button, Input, AppSelect,AppTable,ReactiveFormsModule,SvgIcon,UiMenu],
+  imports: [Button, Input, AppSelect,AppTable,ReactiveFormsModule,SvgIcon,UiMenu,AppPagination],
   selector: 'app-budget',
   styleUrl: './budget.css',
   templateUrl: './budget.html',
@@ -37,6 +38,10 @@ export class Budget implements OnInit{
   
   budgetColDefs = signal<ColDef[]>([]);
   budgetRowData = signal<any[]>([]);
+  page = signal(0);
+  pageSize = signal(10);
+  totalElements = signal(0);
+  totalPages = signal(0);
 
   durationTypeFormControl!:FormControl;
   searchTextFormControl!: FormControl;
@@ -75,6 +80,7 @@ export class Budget implements OnInit{
   private createFilterFormControls() {
     this.durationTypeFormControl = new FormControl("ALL");
     const durationTypeSubscription = this.durationTypeFormControl.valueChanges.subscribe(value => {
+      this.page.set(0);
       this.getBudgets();
     });
 
@@ -85,6 +91,7 @@ export class Budget implements OnInit{
       distinctUntilChanged()
     )
     .subscribe((value:string) => {
+      this.page.set(0);
         this.getBudgets();
     });
 
@@ -143,12 +150,14 @@ export class Budget implements OnInit{
   private getBudgets() {
     const durationType = this.durationTypeFormControl.value;
     const searchText = this.searchTextFormControl.value;
-    let params: HttpParams | undefined;
+    let params = new HttpParams()
+      .set('page', this.page())
+      .set('size', this.pageSize());
     if(durationType!="ALL"){
-      params = new HttpParams().set('durationType', durationType);
+      params = params.set('durationType', durationType);
     }
     if(searchText && searchText.trim() !== ""){
-      params = (params ?? new HttpParams()).set('searchText', searchText);
+      params = params.set('searchText', searchText);
     }
 
     this.budgetService.getBudgets(params)
@@ -156,10 +165,20 @@ export class Budget implements OnInit{
     .subscribe({
       next: (response) => {
         if (response.data) {
-          this.budgetRowData.set(response.data);
+          this.budgetRowData.set(response.data.content);
+          this.page.set(response.data.page);
+          this.pageSize.set(response.data.size);
+          this.totalElements.set(response.data.totalElement);
+          this.totalPages.set(response.data.totalPage);
         }
       }
     });
+  }
+
+  onPaginationChange(event: PaginationChange): void {
+    this.page.set(event.page);
+    this.pageSize.set(event.size);
+    this.getBudgets();
   }
 
   private categoryComparator:SortComparatorFn = (a: any, b: any) => {

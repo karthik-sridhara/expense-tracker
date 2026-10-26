@@ -4,20 +4,25 @@ import com.ksportfolio.expensetracker.constant.ErrorCode;
 import com.ksportfolio.expensetracker.dto.budget.BudgetDto;
 import com.ksportfolio.expensetracker.dto.budget.BudgetFilter;
 import com.ksportfolio.expensetracker.dto.budget.BudgetRequestDto;
+import com.ksportfolio.expensetracker.dto.response.ApiPage;
 import com.ksportfolio.expensetracker.entity.AppUser;
 import com.ksportfolio.expensetracker.entity.Budget;
 import com.ksportfolio.expensetracker.entity.Category;
 import com.ksportfolio.expensetracker.exception.BusinessLogicException;
 import com.ksportfolio.expensetracker.mapper.BudgetMapper;
+import com.ksportfolio.expensetracker.mapper.PageMapper;
 import com.ksportfolio.expensetracker.repository.AppUserRepo;
 import com.ksportfolio.expensetracker.repository.BudgetRepo;
 import com.ksportfolio.expensetracker.repository.CategoryRepo;
 import com.ksportfolio.expensetracker.utility.DBUtility;
+import com.ksportfolio.expensetracker.utility.PaginationUtility;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 
 @Service
@@ -36,15 +42,19 @@ public class BudgetService {
     private final CategoryRepo categoryRepo;
     private final AppUserRepo appUserRepo;
     private final AppContextService appContextService;
+    private static final Set<String> SORTABLE = Set.of("amount", "createdAt","modifiedAt");
 
     public BudgetDto getById(Integer id) {
         Integer userId =  appContextService.getUserId();
         return BudgetMapper.toDto(getOwned(id,userId));
     }
 
-    public List<BudgetDto> getByUser(BudgetFilter filter) {
-        List<Budget> budgets = budgetRepo.findAll(buildSpecification(filter));
-        return budgets.stream().map(BudgetMapper::toDto).toList();
+    public ApiPage<BudgetDto> getAllByUser(BudgetFilter filter, Pageable  pageable) {
+        PaginationUtility.validateSort(pageable, SORTABLE);
+        filter.setUser(appContextService.getUserId());
+        Specification<Budget> spec = buildSpecification(filter);
+        Page<BudgetDto> page = budgetRepo.findAll(spec,pageable).map(BudgetMapper::toDto);
+        return PageMapper.toDto(page);
     }
 
     @Transactional
