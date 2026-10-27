@@ -28,12 +28,12 @@ import { AppPagination, PaginationChange } from "../../common/component/app-pagi
     imports: [Input, AppSelect, Button, AppTable, ReactiveFormsModule, AppPagination],
     styles: [`
         #user-app-table {
-            height: calc(100vh - 442px);
+            height: calc(100vh - 402px);
             min-height: 300px;
         }
         @media (min-width: 768px) {
             #user-app-table {
-                height: calc(100vh - 342px);
+                height: calc(100vh - 302px);
             }
         }
         

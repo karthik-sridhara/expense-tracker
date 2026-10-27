@@ -19,15 +19,24 @@
 <div class="flex h-dvh flex-col overflow-hidden">
     <header shellHeader></header>
     <main id="layout" 
-        class="relative min-h-0 flex-1 overflow-hidden md:grid md:grid-cols-[auto_minmax(0,1fr)]"
+        class="relative min-h-0 flex-1 overflow-hidden lg:grid lg:grid-cols-[auto_minmax(0,1fr)]"
     >
         @if (isMenuOpen()) {
             <button
                 type="button"
-                class="absolute inset-0 z-10 bg-slate-950/35 backdrop-blur-[1px] md:hidden"
+                class="absolute inset-0 z-10 bg-slate-950/35 backdrop-blur-[1px] lg:hidden"
                 aria-label="Close navigation"
                 (click)="onMenuClick()"
             ></button>
+        } @else {
+            <div
+                class="fixed left-0 top-40 z-30 
+                rounded-r-md border border-l-0  p-1 shadow-lg
+                border-slate-200 bg-slate-100  dark:border-slate-800 dark:bg-slate-900 
+                md:hidden"
+            >
+                <ng-container [ngTemplateOutlet]="menuButton"></ng-container>
+            </div>
         }
 
         <aside
@@ -36,8 +45,8 @@
                 border-r border-slate-200 
                 bg-slate-100  dark:border-slate-800 dark:bg-slate-900 shadow-xl
                 transition-transform duration-200 ease-out
-                md:relative md:z-auto md:shrink-0 md:translate-x-0
-                md:transition-[width] md:shadow-none
+                lg:relative lg:z-auto lg:shrink-0 lg:translate-x-0
+                lg:transition-[width] lg:shadow-none
             "
             [ngClass]="{
                 'visible translate-x-0 md:w-56': isMenuOpen(),
@@ -85,16 +94,8 @@
         </aside>
 
         <section id="main-container" 
-            class="flex h-full min-h-0 min-w-0 flex-col overflow-hidden"
+            class="flex h-full min-h-0 min-w-0 flex-col overflow-hidden md:ml-14 lg:ml-0"
         >
-            <div id="breadcrumb" 
-                class="z-10 flex h-10 items-center border-b border-slate-200 bg-slate-100 px-2 backdrop-blur dark:border-slate-800 dark:bg-slate-900"
-            >
-                <div class="md:hidden">
-                    <ng-container [ngTemplateOutlet]="menuButton"></ng-container>
-                </div>
-            </div>
-
             <div id="content" class="w-full overflow-y-auto">
                 <router-outlet></router-outlet>
             </div>
