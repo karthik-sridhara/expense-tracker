@@ -5,13 +5,14 @@ import { ApiResponse } from "../../common/interface/api-model/api-response";
 import { API_ENDPOINTS } from "../../common/const/api-enpoint.const";
 import { User } from "../../common/interface/user-management/user-management";
 import { UserUpsertRequest } from "../../common/interface/user-management/user-upsert";
+import { Page } from "../../common/interface/api-model/page";
     
 @Injectable({ providedIn: 'root' })
 export class UserManagementService {
     constructor(private http: HttpClient) {}
 
-    getUsers(params?: HttpParams): Observable<ApiResponse<User[]>> {
-        return this.http.get<ApiResponse<User[]>>(API_ENDPOINTS.MANAGE_ADMIN_USERS, { params });
+    getUsers(params?: HttpParams): Observable<ApiResponse<Page<User>>> {
+        return this.http.get<ApiResponse<Page<User>>>(API_ENDPOINTS.MANAGE_ADMIN_USERS, { params });
     }
 
     

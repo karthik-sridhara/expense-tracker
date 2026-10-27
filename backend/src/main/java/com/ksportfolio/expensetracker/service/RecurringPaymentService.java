@@ -12,8 +12,13 @@ import com.ksportfolio.expensetracker.repository.AppUserRepo;
 import com.ksportfolio.expensetracker.repository.CategoryRepo;
 import com.ksportfolio.expensetracker.repository.RecurringPaymentRepo;
 import com.ksportfolio.expensetracker.utility.DBUtility;
+import com.ksportfolio.expensetracker.dto.response.ApiPage;
+import com.ksportfolio.expensetracker.mapper.PageMapper;
+import com.ksportfolio.expensetracker.utility.PaginationUtility;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,20 +27,24 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class RecurringPaymentService {
 
+    private static final Set<String> SORTABLE = Set.of("name", "amount", "recurring", "endDate", "createdAt", "modifiedAt");
+
     private final RecurringPaymentRepo recurringPaymentRepo;
     private final AppUserRepo appUserRepo;
     private final CategoryRepo categoryRepo;
 
-    public List<RecurringPaymentDto> getAllByUser(RecurringPaymentFilter filter) {
-        return recurringPaymentRepo.findAll(buildSpec(filter)).stream()
-                .map(RecurringPaymentMapper::toDto)
-                .toList();
+    public ApiPage<RecurringPaymentDto> getAllByUser(RecurringPaymentFilter filter, Pageable pageable) {
+        PaginationUtility.validateSort(pageable, SORTABLE);
+        Page<RecurringPaymentDto> page = recurringPaymentRepo.findAll(buildSpec(filter), pageable)
+                .map(RecurringPaymentMapper::toDto);
+        return PageMapper.toDto(page);
     }
 
     public RecurringPaymentDto getByUser(Integer id, Integer userId) {
@@ -131,7 +140,7 @@ public class RecurringPaymentService {
     }
 
     private Specification<RecurringPayment> buildSpec(RecurringPaymentFilter filter) {
-        Integer userId = Objects.requireNonNull(filter.getCurrentlyLoggedInUser(), "userId is required");
+        Integer userId = Objects.requireNonNull(filter.appGetUser(), "userId is required");
 
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();

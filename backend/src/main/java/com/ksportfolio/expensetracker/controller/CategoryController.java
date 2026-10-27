@@ -3,14 +3,18 @@ package com.ksportfolio.expensetracker.controller;
 import com.ksportfolio.expensetracker.dto.category.CategoryDto;
 import com.ksportfolio.expensetracker.dto.category.CategoryFilter;
 import com.ksportfolio.expensetracker.dto.category.CategoryRequestDto;
+import com.ksportfolio.expensetracker.dto.response.ApiPage;
 import com.ksportfolio.expensetracker.dto.response.ApiResponse;
 import com.ksportfolio.expensetracker.service.CategoryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/categories")
@@ -50,19 +54,14 @@ public class CategoryController {
     }
 
     @GetMapping(version = "1.0")
-    public ResponseEntity<ApiResponse<List<CategoryDto>>> getCategoriesForUser(
-        @RequestParam(required = false) Boolean isIncome,
-        @RequestParam(required = false) Boolean isActive,
-        @RequestParam(required = false) String searchText
+    public ResponseEntity<ApiResponse<ApiPage<CategoryDto>>> getCategoriesForUser(
+        @Valid @ModelAttribute CategoryFilter filter,
+        @PageableDefault(size = 20, sort = "modifiedAt", direction = Sort.Direction.ASC)
+        Pageable pageable
     ) {
-        CategoryFilter filter = new CategoryFilter();
-        filter.setIsIncome(isIncome);
-        filter.setIsActive(isActive);
-        filter.setSearchText(searchText);
-
-        ApiResponse<List<CategoryDto>> response =  new ApiResponse<List<CategoryDto>>(
+        ApiResponse<ApiPage<CategoryDto>> response = new ApiResponse<>(
                 "Categories retrieved successfully",
-                categoryService.getAllByUser(filter)
+                categoryService.getAllByUser(filter, pageable)
         );
         return response.toResponseEntity();
     }

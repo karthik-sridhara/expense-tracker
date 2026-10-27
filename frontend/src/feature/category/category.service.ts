@@ -7,6 +7,7 @@ import { ApiResponse } from "../../common/interface/api-model/api-response";
 import { Category } from "../../common/interface/category/category";
 import { CategoryUpsertRequest } from "../../common/interface/category/category-upsert";
 import { Role } from "../../common/enum/role";
+import { Page } from "../../common/interface/api-model/page";
 
 
 @Injectable({
@@ -20,8 +21,8 @@ export class CategoryService {
         private appSessionService: AppSessionService,
     ) {}
 
-    getCategories(params?: HttpParams): Observable<ApiResponse<Category[]>> {
-        return this.http.get<ApiResponse<Category[]>>(API_ENDPOINTS.MANAGE_CATEGORIES, { params });
+    getCategories(params?: HttpParams): Observable<ApiResponse<Page<Category>>> {
+        return this.http.get<ApiResponse<Page<Category>>>(API_ENDPOINTS.MANAGE_CATEGORIES, { params });
     }
 
     private getEndpointForCategory(isUniversal: boolean): string {

@@ -4,18 +4,19 @@ import com.ksportfolio.expensetracker.dto.payment.PaymentDto;
 import com.ksportfolio.expensetracker.dto.payment.PaymentFilter;
 import com.ksportfolio.expensetracker.dto.payment.PaymentRequestDto;
 import com.ksportfolio.expensetracker.dto.response.ApiMessage;
+import com.ksportfolio.expensetracker.dto.response.ApiPage;
 import com.ksportfolio.expensetracker.dto.response.ApiResponse;
 import com.ksportfolio.expensetracker.service.PaymentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -26,26 +27,12 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @GetMapping(version = "1.0")
-    public ResponseEntity<ApiResponse<List<PaymentDto>>> getAll(
-        @RequestParam(required = false) String searchText,
-        @RequestParam(required = false) Integer categoryId,
-        @RequestParam(required = false) Boolean completed,
-        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dueFrom,
-        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dueTo,
-        @RequestParam(required = false) BigDecimal minAmount,
-        @RequestParam(required = false) BigDecimal maxAmount
+    public ResponseEntity<ApiResponse<ApiPage<PaymentDto>>> getAll(
+        @Valid @ModelAttribute PaymentFilter filter,
+        @PageableDefault(size = 20, sort = "dueDate", direction = Sort.Direction.ASC)
+        Pageable pageable
     ) {
-
-        PaymentFilter filter = new PaymentFilter();
-        filter.setSearchText(searchText);
-        filter.setCategoryId(categoryId);
-        filter.setCompleted(completed);
-        filter.setDueFrom(dueFrom);
-        filter.setDueTo(dueTo);
-        filter.setMinAmount(minAmount);
-        filter.setMaxAmount(maxAmount);
-
-        return new ApiResponse<>("Payments retrieved successfully", paymentService.getAll(filter))
+        return new ApiResponse<>("Payments retrieved successfully", paymentService.getAll(filter, pageable))
                 .toResponseEntity();
     }
 

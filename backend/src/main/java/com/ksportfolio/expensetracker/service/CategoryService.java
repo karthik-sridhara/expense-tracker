@@ -10,7 +10,12 @@ import com.ksportfolio.expensetracker.exception.BusinessLogicException;
 import com.ksportfolio.expensetracker.mapper.CategoryMapper;
 import com.ksportfolio.expensetracker.repository.AppUserRepo;
 import com.ksportfolio.expensetracker.repository.CategoryRepo;
+import com.ksportfolio.expensetracker.dto.response.ApiPage;
+import com.ksportfolio.expensetracker.mapper.PageMapper;
 import com.ksportfolio.expensetracker.utility.DBUtility;
+import com.ksportfolio.expensetracker.utility.PaginationUtility;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
@@ -19,11 +24,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class CategoryService {
+
+    private static final Set<String> SORTABLE = Set.of("name", "isIncome", "isActive","modifiedAt");
 
     private final AppContextService appContextService;
     private final CategoryRepo  categoryRepo;
@@ -42,10 +50,12 @@ public class CategoryService {
         return CategoryMapper.toDto(category);
     }
 
-    public List<CategoryDto> getAllByUser(CategoryFilter categoryFilter) {
-        categoryFilter.setUserId(appContextService.getUserId());
-        List<Category> categories = categoryRepo.findAll(filter(categoryFilter));
-        return categories.stream().map(CategoryMapper::toDto).toList();
+    public ApiPage<CategoryDto> getAllByUser(CategoryFilter categoryFilter, Pageable pageable) {
+        PaginationUtility.validateSort(pageable, SORTABLE);
+        categoryFilter.appSetUser(appContextService.getUserId());
+        Page<CategoryDto> page = categoryRepo.findAll(filter(categoryFilter), pageable)
+                .map(CategoryMapper::toDto);
+        return PageMapper.toDto(page);
     }
 
     @Transactional
@@ -131,10 +141,10 @@ public class CategoryService {
 
             List<Predicate> predicates = new ArrayList<>();
 
-            if (filter.getUserId() != null) {
+            if (filter.appGetUser() != null) {
                 predicates.add(
                     criteriaBuilder.or(
-                        criteriaBuilder.equal(root.get("user").get("id"), filter.getUserId()),
+                        criteriaBuilder.equal(root.get("user").get("id"), filter.appGetUser()),
                         criteriaBuilder.isTrue(root.get("isUniversal"))
                     )
                 );

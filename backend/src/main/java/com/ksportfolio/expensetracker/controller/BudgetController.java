@@ -3,19 +3,20 @@ package com.ksportfolio.expensetracker.controller;
 import com.ksportfolio.expensetracker.dto.budget.BudgetDto;
 import com.ksportfolio.expensetracker.dto.budget.BudgetFilter;
 import com.ksportfolio.expensetracker.dto.budget.BudgetRequestDto;
-import com.ksportfolio.expensetracker.dto.auth.AppUserDetails;
+import com.ksportfolio.expensetracker.dto.response.ApiPage;
 import com.ksportfolio.expensetracker.dto.response.ApiResponse;
 import com.ksportfolio.expensetracker.service.BudgetService;
-import com.ksportfolio.expensetracker.type.DurationType;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/budgets")
@@ -24,18 +25,14 @@ public class BudgetController {
     private final BudgetService budgetService;
 
     @GetMapping(version = "1.0")
-    public ResponseEntity<ApiResponse<List<BudgetDto>>> getAllByUserId(
-        @AuthenticationPrincipal AppUserDetails user,
-        @RequestParam(required = false) DurationType durationType,
-        @RequestParam(required = false) String searchText
+    public ResponseEntity<ApiResponse<ApiPage<BudgetDto>>> getAllByUser(
+        @Valid BudgetFilter budgetFilter,
+        @PageableDefault(size = 20, sort = "modifiedAt", direction = Sort.Direction.DESC)
+        Pageable pageable
     ) {
-        BudgetFilter budgetFilter = new BudgetFilter();
-        budgetFilter.setDurationType(durationType);
-        budgetFilter.setSearchText(searchText);
-        budgetFilter.setUserId(user.getUserId());
-        ApiResponse<List<BudgetDto>> response = new ApiResponse<>(
+        ApiResponse<ApiPage<BudgetDto>> response = new ApiResponse<>(
         "Budgets retrieved successfully",
-                budgetService.getByUser(budgetFilter)
+            budgetService.getAllByUser(budgetFilter,pageable)
         );
         return response.toResponseEntity();
     }

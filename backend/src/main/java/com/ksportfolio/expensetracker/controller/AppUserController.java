@@ -4,18 +4,21 @@ import com.ksportfolio.expensetracker.dto.appuser.AppUserDto;
 import com.ksportfolio.expensetracker.dto.appuser.AppUserFilter;
 import com.ksportfolio.expensetracker.dto.appuser.AppUserRequestDto;
 import com.ksportfolio.expensetracker.dto.auth.AppUserDetails;
+import com.ksportfolio.expensetracker.dto.response.ApiPage;
 import com.ksportfolio.expensetracker.dto.response.ApiResponse;
 import com.ksportfolio.expensetracker.service.AppUserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -25,16 +28,13 @@ public class AppUserController {
     private final AppUserService appUserService;
 
     @GetMapping(version = "1.0",value="/admin")
-    public ResponseEntity<ApiResponse<List<AppUserDto>>> getUsers(
-        @RequestParam(required = false,value = "search-text") String searchText,
-        @RequestParam(required = false) String role
+    public ResponseEntity<ApiResponse<ApiPage<AppUserDto>>> getUsers(
+        @Valid @ModelAttribute AppUserFilter filter,
+        @PageableDefault(size = 20, sort = "modifiedAt", direction = Sort.Direction.DESC)
+        Pageable pageable
     ) {
-        AppUserFilter filter = new AppUserFilter();
-        filter.setSearchText(searchText);
-        filter.setRole(role);
-
-        ApiResponse<List<AppUserDto>> response = new ApiResponse<>(
-                "Users retrieved successfully", appUserService.getUsers(filter)
+        ApiResponse<ApiPage<AppUserDto>> response = new ApiResponse<>(
+                "Users retrieved successfully", appUserService.getUsers(filter, pageable)
         );
         return response.toResponseEntity();
     }

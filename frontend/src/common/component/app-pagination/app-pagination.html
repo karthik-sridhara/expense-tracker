@@ -1,0 +1,50 @@
+
+<nav aria-label="Pagination"
+    class="flex items-center justify-end sm:justify-between gap-3 text-sm text-slate-600 dark:border-slate-800 dark:text-slate-300">
+    <p class="hidden whitespace-nowrap sm:block" aria-live="polite">
+        Showing {{ firstItem() }}&ndash;{{ lastItem() }} of {{ totalElements() }}
+    </p>
+
+    <div class="flex flex-row items-center gap-2">
+        <div class="flex items-center gap-2">
+            <select uiSelect id="pagination-page-size" class="h-9! w-20 py-0!" [value]="size()"
+                (change)="changePageSize($event)">
+                @for (option of pageSizeOptions(); track option) {
+                <option [value]="option">{{ option }}</option>
+                }
+            </select>
+        </div>
+
+        <div class="flex items-center justify-end gap-2">
+        <button uiButton type="button" variant="outline" color="default" icon="/icons/arrow_back_fill.svg"
+            iconClass="h-4! w-4! p-0!" class="h-9! w-9! p-0!"
+            aria-label="Previous page" title="Previous page" [disabled]="isFirstPage()" (click)="goToPage(page() - 1)">
+        </button>
+
+        <span class="min-w-20 text-center sm:hidden">
+            Page {{ totalPages() === 0 ? 0 : page() + 1 }} of {{ totalPages() }}
+        </span>
+
+        <div class="hidden items-center gap-1 sm:flex">
+            @for (pageItem of pageItems(); track $index) {
+                @if (pageItem === null) {
+                <span class="flex h-9 w-7 items-center justify-center" aria-hidden="true">...</span>
+                } @else {
+                <button uiButton type="button" [variant]="pageItem === page() + 1 ? 'filled' : 'outline'"
+                    [color]="pageItem === page() + 1 ? 'primary' : 'default'" class="h-9! min-w-9! px-2!"
+                    [attr.aria-label]="'Go to page ' + pageItem"
+                    [attr.aria-current]="pageItem === page() + 1 ? 'page' : null" (click)="goToPage(pageItem - 1)"
+                >
+                    {{ pageItem }}
+                </button>
+                }
+            }
+        </div>
+
+        <button uiButton type="button" variant="outline" color="default" icon="/icons/arrow_forward_fill.svg"
+            iconClass="h-4! w-4! p-0!" class="h-9! w-9! p-0!" aria-label="Next page"
+            title="Next page" [disabled]="isLastPage()" (click)="goToPage(page() + 1)">
+        </button>
+        </div>
+    </div>
+</nav>

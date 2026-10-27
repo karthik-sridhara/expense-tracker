@@ -18,8 +18,8 @@ public class JwtService {
 
     @Value("${jwt.secret}")
     private String secretKey;
-    @Value("${jwt.expiration-ms}")
-    private Long expirationMs;
+    @Value("${jwt.expiration}")
+    private Long expiration;
 
     private SecretKey getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
@@ -28,7 +28,7 @@ public class JwtService {
 
     public String generateToken(AppUserDetails principal) {
         Instant now = Instant.now();
-        Instant expiry = now.plusMillis(expirationMs);
+        Instant expiry = now.plusSeconds(expiration);
 
         return Jwts.builder()
                 .subject(principal.getUsername())

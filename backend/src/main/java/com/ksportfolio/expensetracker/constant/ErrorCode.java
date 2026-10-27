@@ -39,6 +39,7 @@ public enum ErrorCode {
     PAYMENT_NOT_FOUND("ERR-2016", HttpStatus.BAD_REQUEST, "Payment not found with id: {0}"),
     PAYMENT_ALREADY_COMPLETED("ERR-2017", HttpStatus.BAD_REQUEST, "Payment already completed with id: {0}"),
     CANNOT_UPDATE_PAYMENT("ERR-2018", HttpStatus.BAD_REQUEST, "Cannot update payment which already completed"),
+    INVALID_SORT_FIELD("ERR-2019", HttpStatus.BAD_REQUEST, "Invalid sort field: {0}"),
     ;
 
     private final String code;

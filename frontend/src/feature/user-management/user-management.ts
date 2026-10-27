@@ -19,19 +19,21 @@ import { DialogType, MessageDialogKind, MessageDialogTheme } from "../../common/
 import { UserDialogData, UserDialogResult } from "../../common/interface/user-management/user-dialog";
 import { ManageUser } from "./manage-user/manage-user";
 import { ActionsCellRenderer, TableAction } from "../../common/component/app-table/cell-renderer/actions";
+import { AppPagination, PaginationChange } from "../../common/component/app-pagination/app-pagination";
 
 
 @Component({
     selector: 'user-management',
     templateUrl: './user-management.html',
-    imports: [Input, AppSelect, Button, AppTable, ReactiveFormsModule],
+    imports: [Input, AppSelect, Button, AppTable, ReactiveFormsModule, AppPagination],
     styles: [`
         #user-app-table {
-            height: calc(100vh - 390px);
+            height: calc(100vh - 442px);
+            min-height: 300px;
         }
         @media (min-width: 768px) {
             #user-app-table {
-                height: calc(100vh - 290px);
+                height: calc(100vh - 342px);
             }
         }
         
@@ -46,6 +48,10 @@ export class UserManagement implements OnInit {
 
     userColDefs = signal<ColDef[]>([]);
     userRowData = signal<User[]>([]);
+    page = signal(0);
+    pageSize = signal(10);
+    totalElements = signal(0);
+    totalPages = signal(0);
 
     searchTextFormControl!: FormControl;
     roleFormControl!: FormControl;
@@ -110,28 +116,43 @@ export class UserManagement implements OnInit {
         const filterSubscription = merge(
             this.searchTextFormControl.valueChanges.pipe(debounceTime(700), distinctUntilChanged()),
             this.roleFormControl.valueChanges
-        ).subscribe(() => this.getUsers());
+        ).subscribe(() => {
+            this.page.set(0);
+            this.getUsers();
+        });
 
         this._destory$.onDestroy(() => filterSubscription.unsubscribe());
     }
 
     private getUsers() {
         const searchText = this.searchTextFormControl.value;
-        let params: HttpParams | undefined;
+        let params = new HttpParams()
+            .set('page', this.page())
+            .set('size', this.pageSize());
         if (searchText && searchText.trim() !== "") {
-            params = new HttpParams().set('search-text', searchText);
+            params = params.set('search-text', searchText);
         }
 
         const role = this.roleFormControl.value;
         if (role && role !== "ALL") {
-            params = (params ?? new HttpParams()).set('role', role);
+            params = params.set('role', role);
         }
 
         this.userManagementService.getUsers(params)
             .pipe(take(1))
             .subscribe(response => {
-                this.userRowData.set(response.data);
+                this.userRowData.set(response.data.content);
+                this.page.set(response.data.page);
+                this.pageSize.set(response.data.size);
+                this.totalElements.set(response.data.totalElement);
+                this.totalPages.set(response.data.totalPage);
             });
+    }
+
+    onPaginationChange(event: PaginationChange): void {
+        this.page.set(event.page);
+        this.pageSize.set(event.size);
+        this.getUsers();
     }
 
 

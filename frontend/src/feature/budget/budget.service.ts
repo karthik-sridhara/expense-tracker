@@ -3,8 +3,9 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_ENDPOINTS } from '../../common/const/api-enpoint.const';
 import { ApiResponse } from '../../common/interface/api-model/api-response';
-import { Budget } from './budget';
+import { Page } from '../../common/interface/api-model/page';
 import { BudgetUpsertRequest } from '../../common/interface/budget/budget-upsert-request';
+import { Budget } from '../../common/interface/budget/budget';
 
 
 @Injectable({
@@ -13,8 +14,8 @@ import { BudgetUpsertRequest } from '../../common/interface/budget/budget-upsert
 export class BudgetService {
     constructor(private http: HttpClient) { }
 
-    getBudgets(params?:HttpParams): Observable<ApiResponse<Budget[]>> {
-        return this.http.get<ApiResponse<Budget[]>>(API_ENDPOINTS.MANAGE_BUDGETS, { params });
+    getBudgets(params?:HttpParams): Observable<ApiResponse<Page<Budget>>> {
+        return this.http.get<ApiResponse<Page<Budget>>>(API_ENDPOINTS.MANAGE_BUDGETS, { params });
     }
 
     getBudget(budgetId: number): Observable<ApiResponse<Budget>> {

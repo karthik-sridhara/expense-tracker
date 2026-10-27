@@ -51,4 +51,13 @@
             [rowData]="userRowData()"
         />
     </section>
+
+    <app-pagination
+        class="mt-4 block"
+        [page]="page()"
+        [size]="pageSize()"
+        [totalElements]="totalElements()"
+        [totalPages]="totalPages()"
+        (paginationChange)="onPaginationChange($event)"
+    />
 </div>
