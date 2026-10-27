@@ -1,6 +1,9 @@
 package com.ksportfolio.expensetracker.repository;
 
 import com.ksportfolio.expensetracker.entity.AppUser;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
@@ -24,6 +27,10 @@ public interface AppUserRepo extends JpaRepository<AppUser, Integer>, JpaSpecifi
     @Override
     @EntityGraph(attributePaths="role")
     List<AppUser> findAll(Specification<AppUser> spec);
+
+    @Override
+    @EntityGraph(attributePaths="role")
+    Page<AppUser> findAll(Specification<AppUser> spec, Pageable pageable);
 
     @Modifying
     @Query("UPDATE AppUser a SET a.password = :newPassword,a.passwordExpired = false WHERE a.id = :userId")

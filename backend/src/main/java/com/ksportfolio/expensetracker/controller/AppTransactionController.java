@@ -4,17 +4,18 @@ import com.ksportfolio.expensetracker.dto.apptransaction.AppTransactionDto;
 import com.ksportfolio.expensetracker.dto.apptransaction.AppTransactionFilter;
 import com.ksportfolio.expensetracker.dto.apptransaction.AppTransactionRequestDto;
 import com.ksportfolio.expensetracker.dto.auth.AppUserDetails;
+import com.ksportfolio.expensetracker.dto.response.ApiPage;
 import com.ksportfolio.expensetracker.dto.response.ApiResponse;
 import com.ksportfolio.expensetracker.service.AppTransactionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.Instant;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,14 +25,16 @@ public class AppTransactionController {
     private final AppTransactionService appTransactionService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<AppTransactionDto>>> fetchAll(
+    public ResponseEntity<ApiResponse<ApiPage<AppTransactionDto>>> fetchAll(
         @AuthenticationPrincipal AppUserDetails appUserDetails,
-        @Valid AppTransactionFilter filter
+        @Valid AppTransactionFilter filter,
+        @PageableDefault(size = 20, sort = "transactionDate", direction = Sort.Direction.DESC)
+        Pageable pageable
     ) {
-        filter.setCurrentlyLoggedInUser(appUserDetails.getUserId());
+        filter.appSetUser(appUserDetails.getUserId());
         return new ApiResponse<>(
             "User Transaction List",
-            appTransactionService.fetchAll(filter)
+            appTransactionService.fetchAll(filter, pageable)
         ).toResponseEntity();
     }
 

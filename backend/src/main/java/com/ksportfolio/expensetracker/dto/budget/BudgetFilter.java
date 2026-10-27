@@ -14,12 +14,16 @@ import org.springframework.validation.annotation.Validated;
 public class BudgetFilter {
 
     @Setter(AccessLevel.NONE)
+    @Getter(AccessLevel.NONE)
     private Integer userId;
     private DurationType durationType;
     @Size(max = 100)
     private String searchText;
 
-    public void setUser(Integer userId) {
+    public void appSetUser(Integer userId) {
         this.userId = userId;
+    }
+    public Integer appGetUser() {
+        return this.userId;
     }
 }

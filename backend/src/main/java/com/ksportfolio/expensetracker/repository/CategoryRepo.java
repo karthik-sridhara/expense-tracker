@@ -1,6 +1,10 @@
 package com.ksportfolio.expensetracker.repository;
 
 import com.ksportfolio.expensetracker.entity.Category;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -23,4 +27,6 @@ public interface CategoryRepo extends JpaRepository<Category, Integer> , JpaSpec
     Optional<Category> findByIdAndUserId(Integer id, Integer userId);
     Optional<Category> findVisibleToUser(@Param("id") Integer id, @Param("userId") Integer userId);
     Optional<Category> findUniversal(@Param("id") Integer id);
+    @Override
+    Page<Category> findAll(Specification<Category> spec, Pageable pageable);
 }

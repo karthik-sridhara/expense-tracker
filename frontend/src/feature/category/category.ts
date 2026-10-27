@@ -18,9 +18,10 @@ import { Button } from "../../common/ui/button";
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { HttpParams } from '@angular/common/http';
 import { AppSelect } from "../../common/ui/select";
+import { AppPagination, PaginationChange } from '../../common/component/app-pagination/app-pagination';
 
 @Component({
-  imports: [SvgIcon, UiMenu, Input, Button, ReactiveFormsModule, AppSelect],
+  imports: [SvgIcon, UiMenu, Input, Button, ReactiveFormsModule, AppSelect, AppPagination],
   selector: 'app-category',
   styleUrl: './category.css',
   templateUrl: './category.html',
@@ -32,6 +33,10 @@ export class Category implements OnInit{
 
   categories = signal<CategoryModel[]>([]); 
   userRole = signal<string>('unknown');
+  page = signal(0);
+  pageSize = signal(10);
+  totalElements = signal(0);
+  totalPages = signal(0);
 
   searchTextFormControl!: FormControl;
   statusFormControl!: FormControl;
@@ -83,6 +88,7 @@ export class Category implements OnInit{
       distinctUntilChanged()
     )
     .subscribe(() => {
+      this.page.set(0);
       this.getCategories();
     });
 
@@ -90,6 +96,7 @@ export class Category implements OnInit{
       this.incomeExpenseFormControl.valueChanges,
       this.statusFormControl.valueChanges,
     ).subscribe((value:[string, string, string]) => {
+      this.page.set(0);
       this.getCategories();
     });
 
@@ -102,25 +109,37 @@ export class Category implements OnInit{
 
   private getCategories() {
     const searchText = this.searchTextFormControl.value;
-    let params: HttpParams | undefined;
+    let params = new HttpParams()
+      .set('page', this.page())
+      .set('size', this.pageSize());
     if(searchText && searchText.trim() !== ""){
-      params = new HttpParams().set('searchText', searchText);
+      params = params.set('searchText', searchText);
     }
     const incomeExpense = this.incomeExpenseFormControl.value;
     if(incomeExpense && incomeExpense !== "ALL"){
-      params = (params ?? new HttpParams()).set('isIncome', incomeExpense);
+      params = params.set('isIncome', incomeExpense);
     }
     
     const status = this.statusFormControl.value;
     if(status && status !== "ALL"){
-      params = (params ?? new HttpParams()).set('isActive', status);
+      params = params.set('isActive', status);
     }
 
     this.categoryService.getCategories(params)
     .pipe(take(1))
     .subscribe(response => {
-      this.categories.set(response.data);
+      this.categories.set(response.data.content);
+      this.page.set(response.data.page);
+      this.pageSize.set(response.data.size);
+      this.totalElements.set(response.data.totalElement);
+      this.totalPages.set(response.data.totalPage);
     });
+  }
+
+  onPaginationChange(event: PaginationChange): void {
+    this.page.set(event.page);
+    this.pageSize.set(event.size);
+    this.getCategories();
   }
 
   private openDialog(data:CategoryDialogData) {

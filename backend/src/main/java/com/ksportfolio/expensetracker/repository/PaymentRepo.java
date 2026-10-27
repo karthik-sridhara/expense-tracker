@@ -1,9 +1,10 @@
 package com.ksportfolio.expensetracker.repository;
 
 import com.ksportfolio.expensetracker.entity.Payment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.*;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,5 +18,9 @@ public interface PaymentRepo extends JpaRepository<Payment, Integer>,JpaSpecific
 
     @EntityGraph(attributePaths = "category")
     List<Payment> findAll(Specification<Payment> spec);
+
+    @Override
+    @EntityGraph(attributePaths = "category")
+    Page<Payment> findAll(Specification<Payment> spec, Pageable pageable);
 
 }

@@ -1,6 +1,8 @@
 package com.ksportfolio.expensetracker.repository;
 
 import com.ksportfolio.expensetracker.entity.AppTransaction;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -15,6 +17,11 @@ public interface AppTransactionRepo extends CrudRepository<AppTransaction, Integ
 
     @EntityGraph(attributePaths = "category")
     List<AppTransaction> findAll(Specification<AppTransaction> spec);
+
+    @Override
+    @EntityGraph(attributePaths = "category")
+    Page<AppTransaction> findAll(Specification<AppTransaction> spec, Pageable pageable);
+
     Optional<AppTransaction> findByIdAndUserId(Integer id,Integer userId);
 
 }

@@ -1,6 +1,8 @@
 package com.ksportfolio.expensetracker.repository;
 
 import com.ksportfolio.expensetracker.entity.RecurringPayment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,6 +18,10 @@ public interface RecurringPaymentRepo extends JpaRepository<RecurringPayment, In
 
     @EntityGraph(attributePaths = "category")
     List<RecurringPayment> findAll(Specification<RecurringPayment> spec);
+
+    @Override
+    @EntityGraph(attributePaths = "category")
+    Page<RecurringPayment> findAll(Specification<RecurringPayment> spec, Pageable pageable);
 
     @EntityGraph(attributePaths = "category")
     Optional<RecurringPayment> findByIdAndUserId(Integer id, Integer userId);

@@ -13,8 +13,13 @@ import com.ksportfolio.expensetracker.exception.BusinessLogicException;
 import com.ksportfolio.expensetracker.mapper.AppUserMapper;
 import com.ksportfolio.expensetracker.repository.AppUserRepo;
 import com.ksportfolio.expensetracker.repository.RoleRepo;
+import com.ksportfolio.expensetracker.dto.response.ApiPage;
+import com.ksportfolio.expensetracker.mapper.PageMapper;
+import com.ksportfolio.expensetracker.utility.PaginationUtility;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,6 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
 
 @Service
 @RequiredArgsConstructor
@@ -33,9 +40,13 @@ public class AppUserService {
     private final PasswordEncoder passwordEncoder;
     private final AppContextService  appContextService;
 
-    public List<AppUserDto> getUsers(AppUserFilter filter) {
-        return appUserRepo.findAll(getFilterForFindAll(filter))
-                .stream().map(AppUserMapper::toDto).toList();
+    private static final Set<String> SORTABLE = Set.of("name", "email", "createdAt", "modifiedAt");
+
+    public ApiPage<AppUserDto> getUsers(AppUserFilter filter, Pageable pageable) {
+        PaginationUtility.validateSort(pageable, SORTABLE);
+        Page<AppUserDto> page = appUserRepo.findAll(getFilterForFindAll(filter), pageable)
+                .map(AppUserMapper::toDto);
+        return PageMapper.toDto(page);
     }
 
     public AppUserDto getUserById(Integer id) {

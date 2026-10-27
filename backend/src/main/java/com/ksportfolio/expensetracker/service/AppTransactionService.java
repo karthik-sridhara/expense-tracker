@@ -12,10 +12,15 @@ import com.ksportfolio.expensetracker.repository.AppTransactionRepo;
 import com.ksportfolio.expensetracker.repository.AppUserRepo;
 import com.ksportfolio.expensetracker.repository.CategoryRepo;
 import com.ksportfolio.expensetracker.utility.DBUtility;
+import com.ksportfolio.expensetracker.dto.response.ApiPage;
+import com.ksportfolio.expensetracker.mapper.PageMapper;
+import com.ksportfolio.expensetracker.utility.PaginationUtility;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,19 +28,24 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Service
 @Transactional(readOnly=true)
 @RequiredArgsConstructor
 public class AppTransactionService {
 
+    private static final Set<String> SORTABLE = Set.of("name", "amount", "transactionDate", "createdAt", "modifiedAt");
+
     private final AppTransactionRepo appTransactionRepo;
     private final AppUserRepo appUserRepo;
     private final CategoryRepo categoryRepo;
 
-    public List<AppTransactionDto> fetchAll(AppTransactionFilter filter) {
-        List<AppTransaction> result = appTransactionRepo.findAll(findAllFilter(filter));
-        return result.stream().map(AppTransactionMapper::toDto).toList();
+    public ApiPage<AppTransactionDto> fetchAll(AppTransactionFilter filter, Pageable pageable) {
+        PaginationUtility.validateSort(pageable, SORTABLE);
+        Page<AppTransactionDto> page = appTransactionRepo.findAll(findAllFilter(filter), pageable)
+                .map(AppTransactionMapper::toDto);
+        return PageMapper.toDto(page);
     }
 
     public AppTransactionDto fetchOne(int id,int userId ) {
@@ -79,7 +89,7 @@ public class AppTransactionService {
     }
 
     private Specification<AppTransaction> findAllFilter(AppTransactionFilter filter) {
-        Integer userId = Objects.requireNonNull(filter.getCurrentlyLoggedInUser(), "userId is required");
+        Integer userId = Objects.requireNonNull(filter.appGetUser(), "userId is required");
 
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();

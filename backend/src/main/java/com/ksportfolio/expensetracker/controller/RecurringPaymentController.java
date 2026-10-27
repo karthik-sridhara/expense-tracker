@@ -4,16 +4,18 @@ import com.ksportfolio.expensetracker.dto.auth.AppUserDetails;
 import com.ksportfolio.expensetracker.dto.recurringpayment.RecurringPaymentDto;
 import com.ksportfolio.expensetracker.dto.recurringpayment.RecurringPaymentFilter;
 import com.ksportfolio.expensetracker.dto.recurringpayment.RecurringPaymentRequestDto;
+import com.ksportfolio.expensetracker.dto.response.ApiPage;
 import com.ksportfolio.expensetracker.dto.response.ApiResponse;
 import com.ksportfolio.expensetracker.service.RecurringPaymentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,13 +25,15 @@ public class RecurringPaymentController {
     private final RecurringPaymentService recurringPaymentService;
 
     @GetMapping(version = "1.0")
-    public ResponseEntity<ApiResponse<List<RecurringPaymentDto>>> getAll(
+    public ResponseEntity<ApiResponse<ApiPage<RecurringPaymentDto>>> getAll(
             @AuthenticationPrincipal AppUserDetails user,
-            RecurringPaymentFilter filter
+            @Valid @ModelAttribute RecurringPaymentFilter filter,
+            @PageableDefault(size = 20, sort = "modifiedAt", direction = Sort.Direction.DESC)
+            Pageable pageable
     ) {
-        filter.setCurrentlyLoggedInUser(user.getUserId());
+        filter.appSetUser(user.getUserId());
         return new ApiResponse<>("Recurring payments retrieved successfully",
-                recurringPaymentService.getAllByUser(filter)).toResponseEntity();
+                recurringPaymentService.getAllByUser(filter, pageable)).toResponseEntity();
     }
 
     @GetMapping(value = "/{id}", version = "1.0")

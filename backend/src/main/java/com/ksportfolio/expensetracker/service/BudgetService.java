@@ -51,7 +51,7 @@ public class BudgetService {
 
     public ApiPage<BudgetDto> getAllByUser(BudgetFilter filter, Pageable  pageable) {
         PaginationUtility.validateSort(pageable, SORTABLE);
-        filter.setUser(appContextService.getUserId());
+        filter.appSetUser(appContextService.getUserId());
         Specification<Budget> spec = buildSpecification(filter);
         Page<BudgetDto> page = budgetRepo.findAll(spec,pageable).map(BudgetMapper::toDto);
         return PageMapper.toDto(page);
@@ -110,7 +110,7 @@ public class BudgetService {
     }
 
     private Specification<Budget> buildSpecification(BudgetFilter filter) {
-        Integer userId = Objects.requireNonNull(filter.getUserId(), "userId is required");
+        Integer userId = Objects.requireNonNull(filter.appGetUser(), "userId is required");
 
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();

@@ -16,8 +16,13 @@ import com.ksportfolio.expensetracker.repository.AppUserRepo;
 import com.ksportfolio.expensetracker.repository.CategoryRepo;
 import com.ksportfolio.expensetracker.repository.PaymentRepo;
 import com.ksportfolio.expensetracker.utility.DBUtility;
+import com.ksportfolio.expensetracker.dto.response.ApiPage;
+import com.ksportfolio.expensetracker.mapper.PageMapper;
+import com.ksportfolio.expensetracker.utility.PaginationUtility;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,11 +31,14 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class PaymentService {
+
+    private static final Set<String> SORTABLE = Set.of("name", "amount", "dueDate", "createdAt", "modifiedAt");
 
     private final PaymentRepo paymentRepo;
     private final CategoryRepo categoryRepo;
@@ -38,12 +46,12 @@ public class PaymentService {
     private final AppTransactionRepo transactionRepo;
     private final AppContextService appContextService;
 
-    public List<PaymentDto> getAll(PaymentFilter filter) {
-        filter.setUserId(appContextService.getUserId());   // never trust the client for this
-        return paymentRepo.findAll(withFilter(filter))
-                .stream()
-                .map(PaymentMapper::toDto)
-                .toList();
+    public ApiPage<PaymentDto> getAll(PaymentFilter filter, Pageable pageable) {
+        PaginationUtility.validateSort(pageable, SORTABLE);
+        filter.appSetUser(appContextService.getUserId());   // never trust the client for this
+        Page<PaymentDto> page = paymentRepo.findAll(withFilter(filter), pageable)
+                .map(PaymentMapper::toDto);
+        return PageMapper.toDto(page);
     }
 
     public PaymentDto getByIdAndUserId(Integer id) {
@@ -122,7 +130,7 @@ public class PaymentService {
     }
 
     public static Specification<Payment> withFilter(PaymentFilter f) {
-        Integer userId = Objects.requireNonNull(f.getUserId(), "userId is required");
+        Integer userId = Objects.requireNonNull(f.appGetUser(), "userId is required");
 
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
