@@ -18,3 +18,25 @@
   --color-primary-900: #134e4a;
   --color-primary-950: #042f2e;
 }
+
+/*
+ * Material Symbols base styles. Defined in the `base` layer (instead of using
+ * Google's unlayered `.material-symbols-outlined` class) so Tailwind utilities
+ * like `text-4xl` can override the font size.
+ */
+@layer base {
+  .google-icon {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 1.5rem;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+  }
+}

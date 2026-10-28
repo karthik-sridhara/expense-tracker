@@ -19,13 +19,14 @@ import { AppDatetimeService } from '../../common/service/app-datetime';
 import { AppCurrencyService } from '../../common/service/app-currency';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { HttpParams } from '@angular/common/http';
-import { SvgIcon } from '../../common/ui/svg-icon';
+import { GoogleIcon } from '../../common/ui/google-icon';
+import { GoogleIconService } from '../../common/service/google-icon.service';
 import { ToastService } from '../../common/component/toast/toast-service';
 import { UiMenu } from '../../common/ui/menu';
 import { AppPagination, PaginationChange } from '../../common/component/app-pagination/app-pagination';
 
 @Component({
-  imports: [Button, Input, AppSelect,AppTable,ReactiveFormsModule,SvgIcon,UiMenu,AppPagination],
+  imports: [Button, Input, AppSelect,AppTable,ReactiveFormsModule,GoogleIcon,UiMenu,AppPagination],
   selector: 'app-budget',
   styleUrl: './budget.css',
   templateUrl: './budget.html',
@@ -66,7 +67,8 @@ export class Budget implements OnInit{
     private appDatetimeService: AppDatetimeService,
     private appCurrencyService: AppCurrencyService,
     private toastService: ToastService,
-    private _destory$: DestroyRef
+    private _destory$: DestroyRef,
+    protected googleIconService: GoogleIconService
   ){
     this.loadDurationType();
     this.loadBudgetColDefs();

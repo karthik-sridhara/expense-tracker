@@ -13,9 +13,10 @@ import { CategoryService } from '../category.service';
 import { AppSessionService } from '../../../common/service/app-session';
 import { Role } from '../../../common/enum/role';
 import { ToastService } from '../../../common/component/toast/toast-service';
+import { GoogleIconPicker } from '../../../common/ui/google-icon-picker';
 
 @Component({
-  imports: [AppFormControl, Input , ReactiveFormsModule,Button,CheckBox, Textarea],
+  imports: [AppFormControl, Input , ReactiveFormsModule,Button,CheckBox, Textarea, GoogleIconPicker],
   selector: 'app-manage-category',
   styleUrl: './manage-category.css',
   templateUrl: './manage-category.html',

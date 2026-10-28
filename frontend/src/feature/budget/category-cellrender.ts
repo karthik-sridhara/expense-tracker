@@ -1,19 +1,22 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import type { ICellRendererAngularComp } from 'ag-grid-angular';
 import type { ICellRendererParams } from 'ag-grid-community';
-import { SvgIcon } from '../../common/ui/svg-icon';
+import { GoogleIcon } from '../../common/ui/google-icon';
 import { Category } from '../../common/interface/category/category';
+import { GoogleIconService } from '../../common/service/google-icon.service';
+import { GoogleIconConfig } from '../../common/interface/app/google-icon.model';
 
 
 @Component({
   selector: 'app-table-category-cell-renderer',
-  imports: [SvgIcon],
+  imports: [GoogleIcon],
   template: `
     <div class="flex h-full items-center gap-2" [title]="category?.description ?? ''">
-      @if (category?.icon) {
-        <ui-svg-icon
-          [src]="'/icons' + category!.icon"
-          class="h-5 w-5 shrink-0 text-slate-500 dark:text-slate-400"
+      @if (icon) {
+        <ui-google-icon
+          [name]="icon.name"
+          [fill]="icon.fill"
+          class="shrink-0 text-2xl text-slate-500 dark:text-slate-400"
         />
       }
       <div class="min-w-0 leading-tight">
@@ -34,7 +37,10 @@ import { Category } from '../../common/interface/category/category';
   `,
 })
 export class CategoryCellRenderer implements ICellRendererAngularComp {
+  private readonly googleIconService = inject(GoogleIconService);
+
   category: Category | null = null;
+  icon: GoogleIconConfig | null = null;
 
   agInit(params: ICellRendererParams<any, Category>): void {
     this.updateParams(params);
@@ -47,5 +53,6 @@ export class CategoryCellRenderer implements ICellRendererAngularComp {
 
   private updateParams(params: ICellRendererParams<any, Category>): void {
     this.category = params.value ?? null;
+    this.icon = this.googleIconService.parseGoogleIconValue(this.category?.icon);
   }
 }
