@@ -65,10 +65,13 @@
             >
                 <div class="flex items-start justify-between gap-3">
                     <div class="flex min-w-0 items-center gap-2">
-                        @if (budget.category?.icon) {
-                            <ui-svg-icon
-                                [src]="'/icons' + budget.category.icon"
-                                class="h-5 w-5 shrink-0 text-slate-500 dark:text-slate-400"
+                        @let icon = googleIconService.parseGoogleIconValue(budget.category?.icon);
+                        @if (icon) {
+                            <ui-google-icon
+                                [name]="icon.name"
+                                [fill]="icon.fill"
+                                [opticalSize]="40"
+                                class="shrink-0 text-3xl text-slate-500 dark:text-slate-400"
                             />
                         }
                         <div class="min-w-0 leading-tight">

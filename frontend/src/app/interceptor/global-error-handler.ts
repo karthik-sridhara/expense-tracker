@@ -17,34 +17,46 @@ export class GlobalErrorHandler implements ErrorHandler {
     private readonly router = inject(Router);
     private readonly appSessionService = inject(AppSessionService);
     private readonly recentBackendErrors = new Map<string, number>();
-    private readonly duplicateWindowMs = 3_000;
+    private readonly duplicateWindowMs = 2_000;
 
     handleError(error: unknown): void {
-
         if (error instanceof HttpErrorResponse) {
             this.handleBackendError(error);
         }else{
-            const applicationError = error instanceof Error
-                ? error
-                : new Error(String(error));
-
-            console.groupCollapsed(
-                `[Application Error] ${applicationError.message}`
-            );
-            console.error(applicationError);
-            console.error('Stack trace:', applicationError.stack ?? 'Unavailable');
-            console.groupEnd();
+            this.handleApplicationError(error);
         }
+    }
+
+    private handleApplicationError(error: unknown): void {
+        const applicationError = error instanceof Error
+            ? error
+            : new Error(String(error));
+
+        console.groupCollapsed(
+            `[Application Error] ${applicationError.message}`
+        );
+        console.error(error);
+        console.error('Stack trace:', applicationError.stack ?? 'Unavailable');
+        console.groupEnd();
+    }
+
+    private logBackendError(error: HttpErrorResponse): void {
+        console.groupCollapsed(
+            `[Network Error] ${error.message}`
+        );
+        console.error(error);
+        console.groupEnd();
     }
 
     private handleBackendError(error: HttpErrorResponse): void {
         const url = error.url ?? 'Unknown URL';
 
         if(!url.includes('/api/')) {
+            this.logBackendError(error);
             return;
         }
         const backendError:ApiError = error.error;
-        if (this.isDuplicateBackendError(backendError)) {
+        if (this.isDuplicateBackendError(error,backendError)) {
             return;
         }
         if (
@@ -109,9 +121,9 @@ export class GlobalErrorHandler implements ErrorHandler {
 
     }
 
-    private isDuplicateBackendError(error: ApiError): boolean {
-        const code = error?.code ?? 'UNKNOWN';
-        const key = `${error.httpStatus}:${code}`;
+    private isDuplicateBackendError(error: HttpErrorResponse,backendError:ApiError): boolean {
+        const code = backendError?.code ?? error.status;
+        const key = `${backendError?.httpStatus ?? error.statusText}:${code}`;
         const now = Date.now();
         const previousTime = this.recentBackendErrors.get(key);
         

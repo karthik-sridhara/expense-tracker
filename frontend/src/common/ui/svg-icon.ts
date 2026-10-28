@@ -1,14 +1,13 @@
 import {
   Component,
   ElementRef,
-  ErrorHandler,
   inject,
   input,
   Renderer2,
 } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-import { catchError, of, switchMap } from 'rxjs';
+import { switchMap } from 'rxjs';
+import { SvgIconRegistry } from '../service/svg-icon-registry';
 
 /**
  * Loads an SVG file as inline markup so its color can be controlled with
@@ -30,22 +29,14 @@ import { catchError, of, switchMap } from 'rxjs';
 export class SvgIcon {
     readonly src = input.required<string>();
 
-    private readonly http = inject(HttpClient);
+    private readonly registry = inject(SvgIconRegistry);
     private readonly host = inject(ElementRef<HTMLElement>);
     private readonly renderer = inject(Renderer2);
-    private readonly errorHandler = inject(ErrorHandler);
 
     constructor() {
         toObservable(this.src)
         .pipe(
-            switchMap((src) =>
-            this.http.get(src, { responseType: 'text' }).pipe(
-                catchError((err) => {
-                    this.errorHandler.handleError(err);
-                    return of(null);
-                })
-            )
-            ),
+            switchMap((src) => this.registry.get(src)),
             takeUntilDestroyed()
         )
         .subscribe((svgText) => this.render(svgText));

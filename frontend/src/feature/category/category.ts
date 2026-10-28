@@ -19,9 +19,11 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { HttpParams } from '@angular/common/http';
 import { AppSelect } from "../../common/ui/select";
 import { AppPagination, PaginationChange } from '../../common/component/app-pagination/app-pagination';
+import { GoogleIcon } from '../../common/ui/google-icon';
+import { GoogleIconService } from '../../common/service/google-icon.service';
 
 @Component({
-  imports: [SvgIcon, UiMenu, Input, Button, ReactiveFormsModule, AppSelect, AppPagination],
+  imports: [SvgIcon, UiMenu, Input, Button, ReactiveFormsModule, AppSelect, AppPagination, GoogleIcon],
   selector: 'app-category',
   styleUrl: './category.css',
   templateUrl: './category.html',
@@ -30,7 +32,6 @@ import { AppPagination, PaginationChange } from '../../common/component/app-pagi
   }
 })
 export class Category implements OnInit{
-
   categories = signal<CategoryModel[]>([]); 
   userRole = signal<string>('unknown');
   page = signal(0);
@@ -47,7 +48,8 @@ export class Category implements OnInit{
     private dialogService: DialogService,
     private appSessionService:AppSessionService,
     private toastService:ToastService,
-    private _destory$: DestroyRef
+    private _destory$: DestroyRef,
+    protected readonly googleIconService: GoogleIconService
   ) {
     this.userRole.set(this.appSessionService.getUser()!.role);
     this.createFilterFormControls();

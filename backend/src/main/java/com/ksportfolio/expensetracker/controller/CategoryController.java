@@ -56,7 +56,7 @@ public class CategoryController {
     @GetMapping(version = "1.0")
     public ResponseEntity<ApiResponse<ApiPage<CategoryDto>>> getCategoriesForUser(
         @Valid @ModelAttribute CategoryFilter filter,
-        @PageableDefault(size = 20, sort = "modifiedAt", direction = Sort.Direction.ASC)
+        @PageableDefault(size = 20, sort = "modifiedAt", direction = Sort.Direction.DESC)
         Pageable pageable
     ) {
         ApiResponse<ApiPage<CategoryDto>> response = new ApiResponse<>(
