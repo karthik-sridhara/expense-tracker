@@ -8,7 +8,7 @@ import { AppTable } from '../../common/component/app-table/app-table';
 import { BudgetService } from './budget.service';
 import { debounceTime, distinctUntilChanged, take } from 'rxjs';
 import { ActionsCellRenderer, TableAction } from '../../common/component/app-table/cell-renderer/actions';
-import { CategoryCellRenderer } from './category-cellrender';
+import { CategoryCellRenderer } from '../category/category-cellrender';
 import { ManageBudget } from './manage-budget/manage-budget';
 import { BudgetDialogData, BudgetDialogResult } from '../../common/interface/budget/budget-dialog';
 import { DialogType, MessageDialogKind, MessageDialogTheme } from '../../common/enum/dialog';

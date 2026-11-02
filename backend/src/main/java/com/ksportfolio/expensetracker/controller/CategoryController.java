@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/categories")
@@ -62,6 +64,17 @@ public class CategoryController {
         ApiResponse<ApiPage<CategoryDto>> response = new ApiResponse<>(
                 "Categories retrieved successfully",
                 categoryService.getAllByUser(filter, pageable)
+        );
+        return response.toResponseEntity();
+    }
+
+    @GetMapping(version = "1.0",value = "/pagination/disabled")
+    public ResponseEntity<ApiResponse<List<CategoryDto>>> getCategoriesForUser(
+        @Valid @ModelAttribute CategoryFilter filter
+    ) {
+        ApiResponse<List<CategoryDto>> response = new ApiResponse<>(
+            "Categories retrieved successfully",
+            categoryService.getAllByUser(filter)
         );
         return response.toResponseEntity();
     }

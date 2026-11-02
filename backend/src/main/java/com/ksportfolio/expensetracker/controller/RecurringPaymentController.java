@@ -26,10 +26,10 @@ public class RecurringPaymentController {
 
     @GetMapping(version = "1.0")
     public ResponseEntity<ApiResponse<ApiPage<RecurringPaymentDto>>> getAll(
-            @AuthenticationPrincipal AppUserDetails user,
-            @Valid @ModelAttribute RecurringPaymentFilter filter,
-            @PageableDefault(size = 20, sort = "modifiedAt", direction = Sort.Direction.DESC)
-            Pageable pageable
+        @AuthenticationPrincipal AppUserDetails user,
+        @Valid @ModelAttribute RecurringPaymentFilter filter,
+        @PageableDefault(size = 20, sort = "modifiedAt", direction = Sort.Direction.DESC)
+        Pageable pageable
     ) {
         filter.appSetUser(user.getUserId());
         return new ApiResponse<>("Recurring payments retrieved successfully",

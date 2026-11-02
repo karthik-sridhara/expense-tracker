@@ -58,6 +58,12 @@ public class CategoryService {
         return PageMapper.toDto(page);
     }
 
+    public List<CategoryDto> getAllByUser(CategoryFilter categoryFilter) {
+        categoryFilter.appSetUser(appContextService.getUserId());
+        return  categoryRepo.findAll(filter(categoryFilter))
+                .stream().map(CategoryMapper::toDto).toList();
+    }
+
     @Transactional
     public void addUserCategory(CategoryRequestDto dto) {
         Integer userId = appContextService.getUserId();

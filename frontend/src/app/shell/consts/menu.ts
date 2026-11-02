@@ -38,6 +38,12 @@ export const MENUS:SideMenu[] = [
       icon: '/icons/pending_actions.svg'
     },
     {
+      id: 'recurring-payment',
+      name: 'Recurring Payment',
+      route: '/recurring-payments',
+      icon: '/icons/autorenew.svg'
+    },
+    {
       id: 'settings',
       name: 'Setting',
       route: '/settings',
@@ -47,6 +53,6 @@ export const MENUS:SideMenu[] = [
 
 export const MENUS_BY_ROLE: Record<string, Set<string>> = {
   'ADMIN': new Set(['category', 'settings', 'user']),
-  'USER': new Set(['dashboard', 'transaction', 'category', 'budget', 'settings', 'payment']),
-  'EMPLOYEE': new Set(['dashboard', 'transaction', 'category', 'budget', 'settings', 'payment'])
+  'USER': new Set(['dashboard', 'transaction', 'category', 'budget', 'settings', 'payment','recurring-payment']),
+  'EMPLOYEE': new Set(['dashboard', 'transaction', 'category', 'budget', 'settings', 'payment','recurring-payment'])
 };

@@ -1,0 +1,10 @@
+#recurring-payment-app-table {
+    height: calc(100vh - 350px) ;
+    min-height: 300px;
+}
+
+@media screen and (min-width: 1024px) {
+    #recurring-payment-app-table {
+        height: calc(100vh - 302px);
+    }
+}

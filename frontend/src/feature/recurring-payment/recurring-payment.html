@@ -1,0 +1,181 @@
+<div class="mx-auto w-full max-w-7xl">
+    <header class="mb-6">
+        <h1 class="text-2xl font-semibold text-slate-950 dark:text-white">
+            Recurring Payments
+        </h1>
+        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            Manage payments that repeat on a schedule.
+        </p>
+    </header>
+
+    <section id="filter" class="mb-4 flex flex-wrap items-center gap-2 lg:flex-nowrap">
+        <div class="relative w-full lg:w-auto">
+            <label for="recurring-payment-search" class="sr-only">
+                Search recurring payments
+            </label>
+            <ui-input
+                type="search"
+                name="recurring-payment-search"
+                placeholder="Search recurring payments..."
+                class="w-full ps-0! lg:w-65"
+                icon="/icons/search.svg"
+                iconPosition="prefix"
+                [formControl]="searchTextFormControl"
+            />
+        </div>
+
+        <label for="recurringPaymentCategory" class="sr-only">Category</label>
+        <select uiSelect id="recurringPaymentCategory"
+            class="flex-1 lg:w-44 lg:flex-none"
+            [formControl]="categoryFormControl"
+        >
+            <option value="ALL">All Categories</option>
+            @for (category of categories(); track category.id) {
+                <option [value]="category.id">{{ category.name }}</option>
+            }
+        </select>
+
+        <label for="recurringPaymentType" class="sr-only">Recurring</label>
+        <select uiSelect id="recurringPaymentType"
+            class="flex-1 lg:w-40 lg:flex-none"
+            [formControl]="recurringFormControl"
+        >
+            <option value="ALL">All</option>
+            @for (type of recurringTypes; track type.value) {
+                <option [value]="type.value">{{ type.label }}</option>
+            }
+        </select>
+
+        <label for="recurringPaymentActive" class="sr-only">Status</label>
+        <select uiSelect id="recurringPaymentActive"
+            class="flex-1 lg:w-36 lg:flex-none"
+            [formControl]="activeFormControl"
+        >
+            <option value="ALL">All Status</option>
+            <option value="true">Active</option>
+            <option value="false">Inactive</option>
+        </select>
+
+        <button
+            uiButton
+            type="button"
+            icon="/icons/add_box_fill.svg"
+            label="Add Payment"
+            class="ps-0! flex-1 lg:flex-none lg:ml-auto"
+            (click)="onAdd()"
+        >
+            Add Payment
+        </button>
+    </section>
+
+    <section id="table" class="hidden md:block">
+        <app-table
+            id="recurring-payment-app-table"
+            [colDefs]="recurringPaymentColDefs()"
+            [rowData]="recurringPaymentRowData()"
+        />
+    </section>
+
+    <section id="cards" class="md:hidden grid grid-cols-1 gap-3">
+        @for (payment of recurringPaymentRowData(); track payment.id) {
+            <article
+                class="rounded-md border border-slate-200 bg-white p-4 shadow-sm
+                    dark:border-slate-800 dark:bg-slate-900"
+            >
+                <div class="flex items-start justify-between gap-3">
+                    <div class="flex min-w-0 items-center gap-2">
+                        @let icon = googleIconService.parseGoogleIconValue(payment.category?.icon);
+                        @if (icon) {
+                            <ui-google-icon
+                                [name]="icon.name"
+                                [fill]="icon.fill"
+                                [opticalSize]="40"
+                                class="shrink-0 text-3xl text-slate-500 dark:text-slate-400"
+                            />
+                        }
+                        <div class="min-w-0 leading-tight">
+                            <div
+                                class="truncate font-medium text-slate-900 dark:text-slate-100"
+                                [title]="payment.name"
+                            >
+                                {{ payment.name }}
+                            </div>
+                            <div
+                                class="truncate text-xs text-slate-500 dark:text-slate-400"
+                                [title]="payment.description ?? payment.category?.name"
+                            >
+                                {{ payment.description ?? payment.category?.name }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex shrink-0 items-center gap-1">
+                        <span
+                            class="rounded-full px-2 py-0.5 text-xs font-medium"
+                            [class]="payment.active
+                                ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
+                                : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'"
+                        >
+                            {{ payment.active ? 'Active' : 'Inactive' }}
+                        </span>
+
+                        <ui-menu
+                            aria-label="Recurring payment actions"
+                            [menuItems]="recurringPaymentMenuItems"
+                            [data]="payment"
+                            buttonIcon="/icons/more_vert.svg"
+                            buttonColor="default"
+                            buttonIconClass="h-5! w-5! p-0!"
+                            buttonClass="h-9! w-9! shrink-0 p-0!"
+                        />
+                    </div>
+                </div>
+
+                <dl class="mt-3 grid grid-cols-2 gap-y-2 text-sm">
+                    <dt class="text-slate-500 dark:text-slate-400">Category</dt>
+                    <dd class="text-right font-medium text-slate-900 dark:text-slate-100">
+                        {{ payment.category?.name }}
+                    </dd>
+
+                    <dt class="text-slate-500 dark:text-slate-400">Amount</dt>
+                    <dd class="text-right font-medium text-slate-900 dark:text-slate-100">
+                        {{ formatCurrency(payment.amount) }}
+                    </dd>
+
+                    <dt class="text-slate-500 dark:text-slate-400">Recurring</dt>
+                    <dd class="text-right font-medium text-slate-900 dark:text-slate-100">
+                        {{ payment.recurring }}
+                    </dd>
+
+                    <dt class="text-slate-500 dark:text-slate-400">Schedule</dt>
+                    <dd class="text-right text-slate-900 dark:text-slate-100">
+                        {{ getSchedule(payment) }}
+                    </dd>
+
+                    <dt class="text-slate-500 dark:text-slate-400">End Date</dt>
+                    <dd class="text-right text-slate-900 dark:text-slate-100">
+                        {{ formatEndDate(payment.endDate) }}
+                    </dd>
+
+                    <dt class="text-slate-500 dark:text-slate-400">Last Updated</dt>
+                    <dd class="text-right text-slate-500 dark:text-slate-400">
+                        {{ formatDate(payment.modifiedAt ?? payment.createdAt) }}
+                    </dd>
+                </dl>
+            </article>
+        } @empty {
+            <p class="py-8 text-center text-sm text-slate-500 dark:text-slate-400">
+                No recurring payments found.
+            </p>
+        }
+    </section>
+
+    <app-pagination
+        class="mt-4 block"
+        [page]="page()"
+        [size]="pageSize()"
+        [totalElements]="totalElements()"
+        [totalPages]="totalPages()"
+        (paginationChange)="onPaginationChange($event)"
+    />
+</div>

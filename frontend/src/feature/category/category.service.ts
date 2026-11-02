@@ -25,6 +25,12 @@ export class CategoryService {
         return this.http.get<ApiResponse<Page<Category>>>(API_ENDPOINTS.MANAGE_CATEGORIES, { params });
     }
 
+    getCategoriesWithoutPagination(params?: HttpParams): Observable<ApiResponse<Category[]>> {
+        return this.http.get<ApiResponse<Category[]>>(
+            API_ENDPOINTS.GET_CATEGORIES_WITHOUT_PAGINATION, { params }
+        );
+    }
+
     private getEndpointForCategory(isUniversal: boolean): string {
         const currentUser = this.appSessionService.getUser();
         let endpoint = API_ENDPOINTS.MANAGE_CATEGORIES;
