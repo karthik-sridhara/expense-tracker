@@ -93,13 +93,11 @@ export class ManageBudget implements OnInit {
     private getCategories(): void {
         const params = new HttpParams()
         .set('isIncome', false)
-        .set('isActive', true)
-        .set('page', 0)
-        .set('size', 1000);
+        .set('isActive', true);
 
-        this.categoryService.getCategories(params)
+        this.categoryService.getCategoriesWithoutPagination(params)
             .pipe(take(1))
-            .subscribe(response => this.categories.set(response.data.content));
+            .subscribe(response => this.categories.set(response.data));
     }
 
     private add(): void {
