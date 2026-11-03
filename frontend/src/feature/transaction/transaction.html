@@ -1,0 +1,174 @@
+<div class="mx-auto w-full max-w-7xl">
+    <header class="mb-6">
+        <h1 class="text-2xl font-semibold text-slate-950 dark:text-white">
+            Transactions
+        </h1>
+        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            View your income and expense transactions.
+        </p>
+    </header>
+
+    <section id="filter" class="mb-4 grid grid-cols-2 items-center gap-2 md:grid-cols-4 xl:flex xl:flex-nowrap">
+        <div class="relative col-span-2 xl:w-auto">
+            <label for="transaction-search" class="sr-only">
+                Search transactions
+            </label>
+            <ui-input
+                type="search"
+                name="transaction-search"
+                placeholder="Search transactions..."
+                class="w-full ps-0! xl:w-56"
+                icon="/icons/search.svg"
+                iconPosition="prefix"
+                [formControl]="searchTextFormControl"
+            />
+        </div>
+
+        <label for="transactionCategory" class="sr-only">Category</label>
+        <select uiSelect id="transactionCategory"
+            class="w-full xl:w-40"
+            [formControl]="categoryFormControl"
+        >
+            <option value="ALL">All Categories</option>
+            @for (category of categories(); track category.id) {
+                <option [value]="category.id">{{ category.name }}</option>
+            }
+        </select>
+
+        <label for="transactionType" class="sr-only">Type</label>
+        <select uiSelect id="transactionType"
+            class="w-full xl:w-32"
+            [formControl]="typeFormControl"
+        >
+            <option value="ALL">All Types</option>
+            <option value="true">Income</option>
+            <option value="false">Expense</option>
+        </select>
+
+        <div class="flex min-w-0 items-center gap-2 xl:w-48">
+            <label for="transaction-from-date" class="shrink-0 text-sm text-slate-500 dark:text-slate-400">From</label>
+            <ui-input
+                type="date"
+                name="transaction-from-date"
+                class="min-w-0 flex-1"
+                [max]="toDateFormControl.value || today"
+                [formControl]="fromDateFormControl"
+            />
+        </div>
+
+        <div class="flex min-w-0 items-center gap-2 xl:w-48">
+            <label for="transaction-to-date" class="shrink-0 text-sm text-slate-500 dark:text-slate-400">To</label>
+            <ui-input
+                type="date"
+                name="transaction-to-date"
+                class="min-w-0 flex-1"
+                [min]="fromDateFormControl.value || null"
+                [max]="today"
+                [formControl]="toDateFormControl"
+            />
+        </div>
+
+        <button
+            uiButton
+            type="button"
+            icon="/icons/add_box_fill.svg"
+            label="Add Transaction"
+            class="ps-0! col-span-2 xl:ml-auto xl:shrink-0"
+            (click)="onAdd()"
+        >
+            Add Transaction
+        </button>
+    </section>
+
+    <section id="table" class="hidden md:block">
+        <app-table
+            id="transaction-app-table"
+            [colDefs]="transactionColDefs()"
+            [rowData]="transactionRowData()"
+        />
+    </section>
+
+    <section id="cards" class="md:hidden grid grid-cols-1 gap-3">
+        @for (transaction of transactionRowData(); track transaction.id) {
+            <article
+                class="rounded-md border border-slate-200 bg-white p-4 shadow-sm
+                    dark:border-slate-800 dark:bg-slate-900"
+            >
+                <div class="flex items-start justify-between gap-3">
+                    <div class="flex min-w-0 items-center gap-2">
+                        @let icon = googleIconService.parseGoogleIconValue(transaction.category?.icon);
+                        @if (icon) {
+                            <ui-google-icon
+                                [name]="icon.name"
+                                [fill]="icon.fill"
+                                [opticalSize]="40"
+                                class="shrink-0 text-3xl text-slate-500 dark:text-slate-400"
+                            />
+                        }
+                        <div class="min-w-0 leading-tight">
+                            <div
+                                class="truncate font-medium text-slate-900 dark:text-slate-100"
+                                [title]="transaction.name"
+                            >
+                                {{ transaction.name }}
+                            </div>
+                            <div
+                                class="truncate text-xs text-slate-500 dark:text-slate-400"
+                                [title]="transaction.description ?? transaction.category?.name"
+                            >
+                                {{ transaction.description ?? transaction.category?.name }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex shrink-0 items-center gap-1">
+                        <span class="font-semibold text-slate-900 dark:text-slate-100">
+                            {{ formatCurrency(transaction.amount) }}
+                        </span>
+
+                        <ui-menu
+                            aria-label="Transaction actions"
+                            [menuItems]="transactionMenuItems"
+                            [data]="transaction"
+                            buttonIcon="/icons/more_vert.svg"
+                            buttonColor="default"
+                            buttonIconClass="h-5! w-5! p-0!"
+                            buttonClass="h-9! w-9! shrink-0 p-0!"
+                        />
+                    </div>
+                </div>
+
+                <dl class="mt-3 grid grid-cols-2 gap-y-2 text-sm">
+                    <dt class="text-slate-500 dark:text-slate-400">Category</dt>
+                    <dd class="text-right font-medium text-slate-900 dark:text-slate-100">
+                        {{ transaction.category?.name }}
+                    </dd>
+
+                    <dt class="text-slate-500 dark:text-slate-400">Date</dt>
+                    <dd class="text-right text-slate-900 dark:text-slate-100">
+                        {{ formatDateOnly(transaction.transactionDate) }}
+                    </dd>
+
+                    <dt class="text-slate-500 dark:text-slate-400">Last Updated</dt>
+                    <dd class="text-right text-slate-500 dark:text-slate-400">
+                        {{ formatDate(transaction.modifiedAt ?? transaction.createdAt) }}
+                    </dd>
+                </dl>
+            </article>
+        } @empty {
+            <p class="py-8 text-center text-sm text-slate-500 dark:text-slate-400">
+                No transactions found.
+            </p>
+        }
+    </section>
+
+    <app-pagination
+        class="mt-4 block"
+        [page]="page()"
+        [size]="pageSize()"
+        [pageSizeOptions]="[20,50,100]"
+        [totalElements]="totalElements()"
+        [totalPages]="totalPages()"
+        (paginationChange)="onPaginationChange($event)"
+    />
+</div>

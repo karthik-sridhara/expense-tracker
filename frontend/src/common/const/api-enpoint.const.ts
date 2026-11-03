@@ -4,6 +4,7 @@ const AUTH = '/api/auth';
 const BUDGET = '/api/budgets';
 const USERS = '/api/users'; 
 const RECURRING_PAYMENTS = '/api/recurring-payments';
+const TRANSACTIONS = '/api/transactions';
 export const API_ENDPOINTS = {
     LOGIN: `${AUTH}/login`,
     REGISTERATION: `${AUTH}/registration`,
@@ -13,5 +14,6 @@ export const API_ENDPOINTS = {
     MANAGE_ADMIN_CATEGORIES: `${CATEGORIES}/admin`,
     MANAGE_BUDGETS: BUDGET,
     MANAGE_ADMIN_USERS: `${USERS}/admin`,
-    MANAGE_RECURRING_PAYMENTS: RECURRING_PAYMENTS
+    MANAGE_RECURRING_PAYMENTS: RECURRING_PAYMENTS,
+    MANAGE_TRANSACTIONS: TRANSACTIONS
 }
