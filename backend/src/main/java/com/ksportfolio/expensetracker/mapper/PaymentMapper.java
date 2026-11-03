@@ -14,7 +14,9 @@ public class PaymentMapper {
                 p.getCategory().getName(),
                 p.getDueDate(),
                 p.getAmount(),
-                p.getTransaction() != null
+                p.getTransaction() != null,
+                p.getCreatedAt(),
+                p.getModifiedAt()
         );
     }
 }
