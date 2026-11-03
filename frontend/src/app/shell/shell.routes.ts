@@ -26,6 +26,12 @@ export const SHELL_ROUTES: Routes = [
         ).then(m => m.Budget) 
     },
     { 
+        path: 'payments', 
+        loadComponent: () => import(
+            '../../feature/payment/payment'
+        ).then(m => m.Payment) 
+    },
+    { 
         path: 'recurring-payments', 
         loadComponent: () => import(
             '../../feature/recurring-payment/recurring-payment'

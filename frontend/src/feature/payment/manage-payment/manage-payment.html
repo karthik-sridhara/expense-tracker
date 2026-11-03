@@ -1,0 +1,53 @@
+<header class="border-b border-slate-200 px-6 py-5 dark:border-slate-800 dark:bg-slate-950 bg-white">
+    <h2 class="text-lg font-semibold">
+        {{ data.mode === 'add' ? 'Add payment' : 'Edit payment' }}
+    </h2>
+    <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+        Plan a payment that is due on a specific date.
+    </p>
+</header>
+
+<form id="payment-form"
+    class="grid flex-1 grid-cols-1 content-start gap-x-4 gap-y-1 overflow-auto bg-white px-6 py-5 md:grid-cols-2 dark:bg-slate-950"
+    [formGroup]="paymentForm" (ngSubmit)="save()">
+    <form-control class="md:col-span-2" name="Name" [control]="nameControl">
+        <label for="payment-name" class="mb-1.5 block text-sm font-medium">Name</label>
+        <ui-input name="payment-name" placeholder="For example, Electricity bill" formControlName="name" />
+    </form-control>
+
+    <form-control class="md:col-span-2" name="Description" [control]="descriptionControl">
+        <label for="payment-description" class="mb-1.5 block text-sm font-medium">Description</label>
+        <ui-textarea name="payment-description" [rows]="3" [maxLength]="300"
+            placeholder="Optional notes about this payment" formControlName="description" />
+    </form-control>
+
+    <form-control name="Category" [control]="categoryControl">
+        <label for="payment-category" class="mb-1.5 block text-sm font-medium">Category</label>
+        <select uiSelect id="payment-category" class="w-full" formControlName="category">
+            <option [ngValue]="null" disabled>Select category</option>
+            @for (category of categories(); track category.id) {
+            <option [ngValue]="category.id">{{ category.name }}</option>
+            }
+        </select>
+    </form-control>
+
+    <form-control name="Amount" [control]="amountControl">
+        <label for="payment-amount" class="mb-1.5 block text-sm font-medium">Amount</label>
+        <ui-input name="payment-amount" type="number" placeholder="0.00" formControlName="amount" />
+    </form-control>
+
+    <form-control name="Due date" [control]="dueDateControl">
+        <label for="payment-due-date" class="mb-1.5 block text-sm font-medium">Due date</label>
+        <ui-input name="payment-due-date" type="date" formControlName="dueDate" />
+    </form-control>
+</form>
+
+<footer
+    class="flex justify-end gap-3 border-t border-slate-200 bg-slate-100 px-6 py-4 dark:border-slate-800 dark:bg-slate-900">
+    <button uiButton type="button" variant="outline" color="default" size="md" (click)="cancel()">
+        Cancel
+    </button>
+    <button uiButton type="submit" form="payment-form" variant="filled" size="md">
+        {{ data.mode === 'add' ? 'Add payment' : 'Save' }}
+    </button>
+</footer>
