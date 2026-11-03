@@ -8,6 +8,12 @@ export const SHELL_ROUTES: Routes = [
         ).then(m => m.Dashboard) 
     },
     { 
+        path: 'transactions', 
+        loadComponent: () => import(
+            '../../feature/transaction/transaction'
+        ).then(m => m.Transaction) 
+    },
+    { 
         path: 'categories', 
         loadComponent: () => import(
             '../../feature/category/category'

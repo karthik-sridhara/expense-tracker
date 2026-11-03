@@ -1,0 +1,53 @@
+<header class="border-b border-slate-200 px-6 py-5 dark:border-slate-800 dark:bg-slate-950 bg-white">
+    <h2 class="text-lg font-semibold">
+        {{ data.mode === 'add' ? 'Add transaction' : 'Edit transaction' }}
+    </h2>
+    <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+        Record an income or expense transaction.
+    </p>
+</header>
+
+<form id="transaction-form"
+    class="grid flex-1 grid-cols-1 content-start gap-x-4 gap-y-1 overflow-auto bg-white px-6 py-5 md:grid-cols-2 dark:bg-slate-950"
+    [formGroup]="transactionForm" (ngSubmit)="save()">
+    <form-control class="md:col-span-2" name="Name" [control]="nameControl">
+        <label for="transaction-name" class="mb-1.5 block text-sm font-medium">Name</label>
+        <ui-input name="transaction-name" placeholder="For example, Groceries" formControlName="name" />
+    </form-control>
+
+    <form-control class="md:col-span-2" name="Description" [control]="descriptionControl">
+        <label for="transaction-description" class="mb-1.5 block text-sm font-medium">Description</label>
+        <ui-textarea name="transaction-description" [rows]="3" [maxLength]="300"
+            placeholder="Optional notes about this transaction" formControlName="description" />
+    </form-control>
+
+    <form-control name="Category" [control]="categoryControl">
+        <label for="transaction-category" class="mb-1.5 block text-sm font-medium">Category</label>
+        <select uiSelect id="transaction-category" class="w-full" formControlName="category">
+            <option [ngValue]="null" disabled>Select category</option>
+            @for (category of categories(); track category.id) {
+            <option [ngValue]="category.id">{{ category.name }}</option>
+            }
+        </select>
+    </form-control>
+
+    <form-control name="Amount" [control]="amountControl">
+        <label for="transaction-amount" class="mb-1.5 block text-sm font-medium">Amount</label>
+        <ui-input name="transaction-amount" type="number" placeholder="0.00" formControlName="amount" />
+    </form-control>
+
+    <form-control name="Date" [control]="transactionDateControl">
+        <label for="transaction-date" class="mb-1.5 block text-sm font-medium">Date</label>
+        <ui-input name="transaction-date" type="datetime-local" [max]="maxDateTime" formControlName="transactionDate" />
+    </form-control>
+</form>
+
+<footer
+    class="flex justify-end gap-3 border-t border-slate-200 bg-slate-100 px-6 py-4 dark:border-slate-800 dark:bg-slate-900">
+    <button uiButton type="button" variant="outline" color="default" size="md" (click)="cancel()">
+        Cancel
+    </button>
+    <button uiButton type="submit" form="transaction-form" variant="filled" size="md">
+        {{ data.mode === 'add' ? 'Add transaction' : 'Save' }}
+    </button>
+</footer>

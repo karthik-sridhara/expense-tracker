@@ -37,6 +37,8 @@ import { NgTemplateOutlet } from "@angular/common";
                 [name]="name()"
                 [id]="name()"
                 [autocomplete]="autocomplete()"
+                [attr.max]="max()"
+                [attr.min]="min()"
                 [value]="value() ?? ''"
                 (input)="onInput($event)"
                 (blur)="onTouched()"
@@ -82,6 +84,8 @@ export class Input implements ControlValueAccessor {
     readonly required = input<boolean>(false);
     readonly name = input<string>('');
     readonly autocomplete = input<string | null>(null);
+    readonly max = input<string | null>(null);
+    readonly min = input<string | null>(null);
     readonly value = model<string | null>(null);
     readonly actionIcon = input<string | null>(null);
     readonly action = output<boolean>();

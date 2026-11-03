@@ -40,8 +40,8 @@ public class AppTransactionController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<AppTransactionDto>> fetchOne(
-            @AuthenticationPrincipal AppUserDetails user,
-            @PathVariable Integer id
+        @AuthenticationPrincipal AppUserDetails user,
+        @PathVariable Integer id
     ) {
         return new ApiResponse<>(
                 "Transaction Details",
@@ -51,8 +51,8 @@ public class AppTransactionController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<AppTransactionDto>> create(
-            @AuthenticationPrincipal AppUserDetails user,
-            @Valid @RequestBody AppTransactionRequestDto request
+        @AuthenticationPrincipal AppUserDetails user,
+        @Valid @RequestBody AppTransactionRequestDto request
     ) {
         return new ApiResponse<>(
                 "Transaction Created",
@@ -62,9 +62,9 @@ public class AppTransactionController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<AppTransactionDto>> update(
-            @AuthenticationPrincipal AppUserDetails user,
-            @PathVariable Integer id,
-            @Valid @RequestBody AppTransactionRequestDto request
+        @AuthenticationPrincipal AppUserDetails user,
+        @PathVariable Integer id,
+        @Valid @RequestBody AppTransactionRequestDto request
     ) {
         return new ApiResponse<>(
                 "Transaction Updated",
@@ -74,8 +74,8 @@ public class AppTransactionController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(
-            @AuthenticationPrincipal AppUserDetails user,
-            @PathVariable Integer id
+        @AuthenticationPrincipal AppUserDetails user,
+        @PathVariable Integer id
     ) {
         appTransactionService.delete(user.getUserId(), id);
         return new ApiResponse<Void>("Transaction Deleted", null).toResponseEntity();
