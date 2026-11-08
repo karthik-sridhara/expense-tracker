@@ -70,7 +70,7 @@ public class PaymentService {
     @Transactional
     public void update(Integer id, PaymentRequestDto request) {
         Integer userId = appContextService.getUserId();
-        Payment payment = getOwned(id, userId);
+        Payment payment = getOwnedForUpdate(id, userId);
         if(payment.getTransaction()!=null) {
             throw new BusinessLogicException(ErrorCode.CANNOT_UPDATE_PAYMENT);
         }
@@ -80,7 +80,7 @@ public class PaymentService {
 
     @Transactional
     public ApiMessage delete(Integer id) {
-        Payment payment = getOwned(id, appContextService.getUserId());
+        Payment payment = getOwnedForUpdate(id, appContextService.getUserId());
         AppTransaction tx = payment.getTransaction();
         paymentRepo.delete(payment);
         if(tx != null) {
@@ -98,7 +98,7 @@ public class PaymentService {
     @Transactional
     public void complete(Integer id, Instant transactionDate) {
         Integer userId = appContextService.getUserId();
-        Payment payment = getOwned(id, userId);
+        Payment payment = getOwnedForUpdate(id, userId);
         if (payment.getTransaction() != null) {
             throw new BusinessLogicException(ErrorCode.PAYMENT_ALREADY_COMPLETED, id);
         }
@@ -116,6 +116,11 @@ public class PaymentService {
 
     private Payment getOwned(Integer id, Integer userId) {
         return paymentRepo.findByIdAndUserId(id, userId)
+                .orElseThrow(() -> new BusinessLogicException(ErrorCode.PAYMENT_NOT_FOUND, id));
+    }
+
+    private Payment getOwnedForUpdate(Integer id, Integer userId) {
+        return paymentRepo.findByIdAndUserIdForUpdate(id, userId)
                 .orElseThrow(() -> new BusinessLogicException(ErrorCode.PAYMENT_NOT_FOUND, id));
     }
 

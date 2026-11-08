@@ -66,7 +66,11 @@ public class PaymentController {
     @DeleteMapping(value = "/{id}", version = "1.0")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable("id") Integer id) {
         ApiMessage message = paymentService.delete(id);
-        return new ApiResponse<Void>("Payment deleted successfully", null,List.of(message),null).toResponseEntity();
+        List<ApiMessage> messages = null;
+        if(message!=null){
+            messages = List.of(message);
+        }
+        return new ApiResponse<Void>("Payment deleted successfully", null,messages,null).toResponseEntity();
     }
 
     @PostMapping(value = "/{id}/complete", version = "1.0")

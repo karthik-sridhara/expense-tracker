@@ -105,3 +105,10 @@ CREATE TABLE PAYMENT (
 ALTER TABLE APP_USER
 ADD reset_password BIT NOT NULL
 CONSTRAINT DF_APP_USER_ResetPassword DEFAULT 0;
+
+
+ALTER TABLE RECURRING_PAYMENT ADD lastGeneratedDate DATE NULL;
+
+CREATE UNIQUE INDEX UX_payment_recurring_due
+  ON PAYMENT(recurring_payment_id, due_date)
+  WHERE recurring_payment_id IS NOT NULL;
