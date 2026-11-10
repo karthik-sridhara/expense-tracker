@@ -1,8 +1,6 @@
 package com.ksportfolio.expensetracker.dto.response;
 
 import lombok.Getter;
-import org.springframework.http.ResponseEntity;
-
 import java.util.Map;
 
 @Getter

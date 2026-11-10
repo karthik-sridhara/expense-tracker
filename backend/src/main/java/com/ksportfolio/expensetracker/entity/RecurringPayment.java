@@ -69,4 +69,8 @@ public class RecurringPayment extends BaseEntity {
 
     @Column(name = "endDate")
     private LocalDate endDate;
+
+    /** Every occurrence with a due date on or before this has already been generated as a Payment. */
+    @Column(name = "lastGeneratedDate")
+    private LocalDate lastGeneratedDate;
 }
