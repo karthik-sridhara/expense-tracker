@@ -26,6 +26,11 @@ app:
   config:
     cors:
       origin: http://localhost:4200, http://localhost:3000
+  recurring:
+    cron: "0 5 0 * * *"              # nightly at 00:05 in the zone below
+    zone: Pacific/Kiritimati         # UTC+14, first zone to start a new day (cron + generation "today")
+    validation-zone: Etc/GMT+12      # UTC-12, last zone (used for "date in the past?" checks)
+    run-on-startup: true             # catch up missed runs when the app starts
   logging:
     dir: logs
     level:

@@ -1,5 +1,6 @@
 package com.ksportfolio.expensetracker.service;
 
+import com.ksportfolio.expensetracker.dto.app.AppClock;
 import com.ksportfolio.expensetracker.constant.ErrorCode;
 import com.ksportfolio.expensetracker.dto.recurringpayment.RecurringPaymentDto;
 import com.ksportfolio.expensetracker.dto.recurringpayment.RecurringPaymentFilter;
@@ -10,6 +11,7 @@ import com.ksportfolio.expensetracker.exception.BusinessLogicException;
 import com.ksportfolio.expensetracker.mapper.RecurringPaymentMapper;
 import com.ksportfolio.expensetracker.repository.AppUserRepo;
 import com.ksportfolio.expensetracker.repository.CategoryRepo;
+import com.ksportfolio.expensetracker.repository.PaymentRepo;
 import com.ksportfolio.expensetracker.repository.RecurringPaymentRepo;
 import com.ksportfolio.expensetracker.utility.DBUtility;
 import com.ksportfolio.expensetracker.dto.response.ApiPage;
@@ -39,6 +41,9 @@ public class RecurringPaymentService {
     private final RecurringPaymentRepo recurringPaymentRepo;
     private final AppUserRepo appUserRepo;
     private final CategoryRepo categoryRepo;
+    private final PaymentRepo paymentRepo;
+    private final RecurringPaymentGenerator generator;
+    private final AppClock appClock;
 
     public ApiPage<RecurringPaymentDto> getAllByUser(RecurringPaymentFilter filter, Pageable pageable) {
         PaginationUtility.validateSort(pageable, SORTABLE);
@@ -57,14 +62,23 @@ public class RecurringPaymentService {
         payment.setUser(appUserRepo.getReferenceById(userId));
         payment.setActive(true);
         applyRequest(payment, request, userId);
-        return RecurringPaymentMapper.toDto(recurringPaymentRepo.save(payment));
+        payment.setLastGeneratedDate(appClock.generationToday().minusDays(1));
+        payment = recurringPaymentRepo.save(payment);
+        generator.generateFor(payment);   // first payment appears now if it's within the lead window
+        return RecurringPaymentMapper.toDto(payment);
     }
 
     @Transactional
     public RecurringPaymentDto update(Integer userId, Integer id, RecurringPaymentRequestDto request) {
         RecurringPayment payment = getOwned(id, userId);
         applyRequest(payment, request, userId);
-        return RecurringPaymentMapper.toDto(recurringPaymentRepo.save(payment));
+        // schedule may have changed: drop upcoming uncompleted payments and regenerate from today
+        LocalDate today = appClock.generationToday();
+        paymentRepo.deleteUncompletedGenerated(payment.getId(), today);
+        payment.setLastGeneratedDate(today.minusDays(1));
+        payment = recurringPaymentRepo.save(payment);
+        generator.generateFor(payment);
+        return RecurringPaymentMapper.toDto(payment);
     }
 
     @Transactional
@@ -77,17 +91,26 @@ public class RecurringPaymentService {
     @Transactional
     public RecurringPaymentDto resume(Integer userId, Integer id) {
         RecurringPayment payment = getOwned(id, userId);
-        if (payment.getEndDate() != null && payment.getEndDate().isBefore(LocalDate.now())) {
+        if (payment.getEndDate() != null && payment.getEndDate().isBefore(appClock.validationToday())) {
             throw new BusinessLogicException(ErrorCode.INVALID_RECURRING_SCHEDULE,
                     "end date has already passed; update the end date before resuming");
         }
         payment.setActive(true);
-        return RecurringPaymentMapper.toDto(recurringPaymentRepo.save(payment));
+        // skip occurrences that fell inside the paused period
+        LocalDate yesterday = appClock.generationToday().minusDays(1);
+        if (payment.getLastGeneratedDate() == null || payment.getLastGeneratedDate().isBefore(yesterday)) {
+            payment.setLastGeneratedDate(yesterday);
+        }
+        payment = recurringPaymentRepo.save(payment);
+        generator.generateFor(payment);
+        return RecurringPaymentMapper.toDto(payment);
     }
 
     @Transactional
     public void delete(Integer userId, Integer id) {
-        recurringPaymentRepo.delete(getOwned(id, userId));
+        RecurringPayment payment = getOwned(id, userId);
+        paymentRepo.detachFromRecurring(payment.getId());   // keep generated payments as history
+        recurringPaymentRepo.delete(payment);
     }
 
     // ---------- helpers ----------
@@ -130,7 +153,7 @@ public class RecurringPaymentService {
                 if (day == null || month == null) fail("yearly payments require both day and month");
             }
         }
-        if (r.getEndDate() != null && r.getEndDate().isBefore(LocalDate.now())) {
+        if (r.getEndDate() != null && r.getEndDate().isBefore(appClock.validationToday())) {
             fail("end date cannot be in the past");
         }
     }
