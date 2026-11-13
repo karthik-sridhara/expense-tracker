@@ -1,6 +1,5 @@
 package com.ksportfolio.expensetracker.mapper;
 
-import com.ksportfolio.expensetracker.constant.AppUserConstant;
 import com.ksportfolio.expensetracker.dto.appuser.AppUserDto;
 import com.ksportfolio.expensetracker.dto.appuser.AppUserRequestDto;
 import com.ksportfolio.expensetracker.dto.auth.RegisterRequestDto;
@@ -12,43 +11,29 @@ public class AppUserMapper {
     public static AppUserDto toDto(AppUser entity) {
         AppUserDto dto = new AppUserDto();
         dto.setId(entity.getId());
-        dto.setName(entity.getName());
-        dto.setGender(entity.getGender() ? AppUserConstant.male : AppUserConstant.female);
-        dto.setDob(entity.getDob());
         dto.setEmail(entity.getEmail());
         dto.setRole(entity.getRole());
         dto.setCreatedAt(entity.getCreatedAt());
         dto.setModifiedAt(entity.getModifiedAt());
-        dto.setCreatedBy(entity.getCreatedBy());
-        dto.setModifiedBy(entity.getModifiedBy());
         return dto;
     }
 
     public  static AppUser toEntity(RegisterRequestDto dto, Role role) {
         AppUser entity = new AppUser();
-        entity.setName(dto.getName());
-        entity.setDob(dto.getDob());
         entity.setEmail(dto.getEmail());
-        entity.setGender(AppUserConstant.male == dto.getGender().charAt(0));
         entity.setRole(role);
         return entity;
     }
 
     public  static AppUser toEntity(AppUserRequestDto dto, Role role) {
         AppUser entity = new AppUser();
-        entity.setName(dto.getName());
-        entity.setDob(dto.getDob());
         entity.setEmail(dto.getEmail());
-        entity.setGender(AppUserConstant.male == dto.getGender().charAt(0));
         entity.setRole(role);
         return entity;
     }
 
     public static AppUser updateEntity(AppUser entity, AppUserRequestDto dto, Role role) {
-        entity.setName(dto.getName());
-        entity.setDob(dto.getDob());
         entity.setEmail(dto.getEmail());
-        entity.setGender(AppUserConstant.male == dto.getGender().charAt(0));
         entity.setRole(role);
         return entity;
     }

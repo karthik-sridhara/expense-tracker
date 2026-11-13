@@ -13,11 +13,6 @@ public class RegisterRequestDto {
     @Size(min = 1, max = 100)
     String name;
     @NotNull
-    @Pattern(regexp = "[MF]", message = "Gender must be M or F")
-    String gender;
-    @NotNull
-    LocalDate dob;
-    @NotNull
     @Email
     String email;
     @NotNull

@@ -12,13 +12,8 @@ import java.time.LocalDate;
 @Setter
 public class AppUserDto {
     Integer id;
-    String name;
-    Character gender;
-    LocalDate dob;
     String email;
     Role role;
-    Integer createdBy;
     Instant createdAt;
-    Integer modifiedBy;
     Instant modifiedAt;
 }

@@ -55,7 +55,7 @@ public class AppUserService {
 
     @Transactional
     public void registerUser(RegisterRequestDto request) {
-        boolean isExist = appUserRepo.existsByEmail(request.getEmail());
+        boolean isExist = isEmailUsed(request.getEmail());
         if (isExist) {
             throw new BusinessLogicException(ErrorCode.EMAIL_ALREADY_EXIST, request.getEmail());
         }
@@ -66,25 +66,19 @@ public class AppUserService {
     }
 
     @Transactional
-    public void createUser(AppUserRequestDto request) {
-        boolean isExist = appUserRepo.existsByEmail(request.getEmail());
-        if (isExist) {
-            throw new BusinessLogicException(ErrorCode.EMAIL_ALREADY_EXIST, request.getEmail());
-        }
-        Role role = roleRepo.getReferenceById(request.getRole());
-        AppUser user = AppUserMapper.toEntity(request,role);
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setPasswordExpired(true);
-        appUserRepo.save(user);
-    }
-
-    @Transactional
     public void deleteUser(Integer id) {
         AppUser user = getUser(id);
         appUserRepo.delete(user);
     }
 
     public boolean checkEmail(String email) {
+        return isEmailUsed(email);
+    }
+
+    private boolean isEmailUsed(String email) {
+        if(email == null) {
+            return false;
+        }
         email =  email.trim();
         return appUserRepo.existsByEmail(email);
     }
@@ -99,24 +93,24 @@ public class AppUserService {
         if(!request.getNewPassword().equals(request.getConfirmPassword()))
             throw new BusinessLogicException(ErrorCode.NEW_AND_CONFIRM_PASSWORD);
         String encodedPassword = passwordEncoder.encode(request.getNewPassword());
-        appUserRepo.changePassword(id, encodedPassword);
+        appUserRepo.changePassword(id, encodedPassword,false);
+    }
+
+    @Transactional
+    public void changePasswordByAdmin(ChangePasswordRequest request,Integer id) {
+        if(!request.getNewPassword().equals(request.getConfirmPassword()))
+            throw new BusinessLogicException(ErrorCode.NEW_AND_CONFIRM_PASSWORD);
+        String encodedPassword = passwordEncoder.encode(request.getNewPassword());
+        int noOfRowUpdated = appUserRepo.changePassword(id, encodedPassword,true);
+        if(noOfRowUpdated != 1) {
+            throw new BusinessLogicException(ErrorCode.USER_NOT_FOUND, id);
+        }
     }
 
     @Transactional
     public void updateUser(AppUserRequestDto request, Integer id) {
-        updateUserInternal(request, id);
-    }
-
-    @Transactional
-    public void updateCurrentUser(AppUserRequestDto request) {
-        Integer userId = appContextService.getUserId();
-        request.setRole(AppConstant.ROLE_USER);
-        updateUserInternal(request, userId);
-    }
-
-    private void updateUserInternal(AppUserRequestDto request, Integer id) {
         AppUser user = getUser(id);
-
+        request.setEmail(request.getEmail().trim());
         boolean emailExists = appUserRepo.existsByEmailAndIdNot(request.getEmail(), id);
         if (emailExists) {
             throw new BusinessLogicException(
@@ -124,7 +118,6 @@ public class AppUserService {
                 request.getEmail()
             );
         }
-
         Role role = roleRepo.getReferenceById(request.getRole());
         AppUserMapper.updateEntity(user, request, role);
         appUserRepo.save(user);

@@ -14,15 +14,13 @@ public class AppUserDetails implements UserDetails {
     private final String password;
     private final Integer userId;
     private final String roleId;
-    private final String name;
     private final Boolean passwordExpired;
     private Boolean _credentialsNonExpired = true;
 
-    public AppUserDetails(Integer userId, String email, String password, String name, String roleId, Boolean passwordExpired) {
+    public AppUserDetails(Integer userId, String email, String password, String roleId, Boolean passwordExpired) {
         this.userId = userId;
         this.username = email;
         this.password = password;
-        this.name = name;
         this.roleId = roleId;
         this.passwordExpired = passwordExpired;
     }

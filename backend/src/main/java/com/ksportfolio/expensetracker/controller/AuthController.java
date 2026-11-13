@@ -5,7 +5,7 @@ import com.ksportfolio.expensetracker.dto.auth.*;
 import com.ksportfolio.expensetracker.dto.response.ApiResponse;
 import com.ksportfolio.expensetracker.exception.BusinessLogicException;
 import com.ksportfolio.expensetracker.service.AppUserService;
-import com.ksportfolio.expensetracker.service.AuthService;
+import com.ksportfolio.expensetracker.security.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -1,4 +1,4 @@
-package com.ksportfolio.expensetracker.service;
+package com.ksportfolio.expensetracker.security;
 
 import com.ksportfolio.expensetracker.constant.AppConstant;
 import com.ksportfolio.expensetracker.dto.auth.AppUserDetails;
@@ -34,7 +34,6 @@ public class JwtService {
                 .subject(principal.getUsername())
                 .claim(AppConstant.TOKEN_CLAIM_USERID, principal.getUserId())
                 .claim(AppConstant.TOKEN_CLAIM_ROLE, principal.getRoleId())
-                .claim(AppConstant.TOKEN_CLAIM_NAME, principal.getName())
                 .claim(AppConstant.TOKEN_CLAIM_PASSWORD_EXPIRED,principal.getPasswordExpired())
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(expiry))

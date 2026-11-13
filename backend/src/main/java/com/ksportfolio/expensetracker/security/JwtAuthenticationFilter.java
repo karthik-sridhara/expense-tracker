@@ -2,7 +2,6 @@ package com.ksportfolio.expensetracker.security;
 
 import com.ksportfolio.expensetracker.constant.AppConstant;
 import com.ksportfolio.expensetracker.dto.auth.AppUserDetails;
-import com.ksportfolio.expensetracker.service.JwtService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -46,7 +45,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             Claims claims = jwtService.extractClaims(token);
             String email = claims.getSubject();
             String role = claims.get(AppConstant.TOKEN_CLAIM_ROLE, String.class);
-            String name = claims.get(AppConstant.TOKEN_CLAIM_NAME, String.class);
             Integer userId = claims.get(AppConstant.TOKEN_CLAIM_USERID, Integer.class);
             Boolean passwordExpired = claims.get(AppConstant.TOKEN_CLAIM_PASSWORD_EXPIRED, Boolean.class);
             boolean isTokenExpired = claims.getExpiration().before(new Date());
@@ -57,7 +55,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             userId,
                             email,
                             null,
-                            name,
                             role,
                             passwordExpired
                     );

@@ -10,7 +10,6 @@ public class LoginResponseDto {
     private String token;
     private final Integer userId;
     private final String email;
-    private final String name;
     private final String role;
     private final boolean passwordExpired;
 }
