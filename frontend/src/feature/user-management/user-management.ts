@@ -5,7 +5,6 @@ import { debounceTime, distinctUntilChanged, merge, take } from "rxjs";
 import type { ColDef } from "ag-grid-community";
 import { Input } from "../../common/ui/input";
 import { AppSelect } from "../../common/ui/select";
-import { Button } from "../../common/ui/button";
 import { AppTable } from "../../common/component/app-table/app-table";
 import { Role } from "../../common/enum/role";
 import { UserManagementService } from "./user-management.service";
@@ -16,16 +15,18 @@ import { MessageDialogData, MessageDialogResult } from "../../common/interface/a
 import { ToastService } from "../../common/component/toast/toast-service";
 import { DialogService } from "../../common/component/app-dialog/app-dialog.service";
 import { DialogType, MessageDialogKind, MessageDialogTheme } from "../../common/enum/dialog";
-import { UserDialogData, UserDialogResult } from "../../common/interface/user-management/user-dialog";
+import { UserDialogResult } from "../../common/interface/user-management/user-dialog";
 import { ManageUser } from "./manage-user/manage-user";
+import { ResetPassword } from "./reset-password/reset-password";
 import { ActionsCellRenderer, TableAction } from "../../common/component/app-table/cell-renderer/actions";
 import { AppPagination, PaginationChange } from "../../common/component/app-pagination/app-pagination";
+import { TitleCasePipe } from "@angular/common";
 
 
 @Component({
     selector: 'user-management',
     templateUrl: './user-management.html',
-    imports: [Input, AppSelect, Button, AppTable, ReactiveFormsModule, AppPagination],
+    imports: [Input, AppSelect,  AppTable, ReactiveFormsModule, AppPagination],
     styles: [`
         #user-app-table {
             height: calc(100vh - 402px);
@@ -73,17 +74,24 @@ export class UserManagement implements OnInit {
     }
 
     private loadRoles() {
-        this.roles = Object.entries(Role).map(([label, value]) => ({ label, value }));
+        this.roles = Object.entries(Role).map(([key, value]) => {
+            const label = new TitleCasePipe().transform(key);
+            return { label: label, value: value  };
+        });
     }
 
     private loadUserColDefs() {
         this.userColDefs.set([
             { headerName: 'Name', field: 'name', flex: 1},
             { headerName: 'Email', field: 'email', flex: 1 },
-            { headerName: 'Gender', field: 'gender', flex: 1 },
+            { 
+                headerName: 'Gender', field: 'gender', flex: 1 ,
+                valueFormatter: (params) => params.value ? params.value : '-'
+            },
             { 
                 headerName: 'DOB', field: 'dob', flex: 1 , 
-                valueFormatter: (params) => this.appDateTimeService.formatDateOnly(params.value),
+                valueFormatter: (params) => params.value ? 
+                    this.appDateTimeService.formatDateOnly(params.value) : '-',
             },
             {
                 headerName: 'Role',
@@ -101,10 +109,11 @@ export class UserManagement implements OnInit {
                 cellRendererParams: {
                     actions: [
                         { icon: '/icons/edit_fill.svg', name: 'Edit', onClick: (row) => this.onEdit(row) },
-                        { icon: '/icons/delete_fill.svg', name: 'Delete', onClick: (row) => this.onDelete(row) },
+                        { icon: '/icons/lock_reset_fill.svg', name: 'Reset Password', onClick: (row) => this.onResetPassword(row) },
+                        { icon: '/icons/delete_fill.svg', name: 'Delete', onClick: (row) => this.onDelete(row) }
                     ] satisfies TableAction[],
                 },
-                minWidth: 110, sortable: false, filter: false, resizable: false,
+                minWidth: 150, sortable: false, filter: false, resizable: false,
             },
         ]);
     }
@@ -155,13 +164,16 @@ export class UserManagement implements OnInit {
         this.getUsers();
     }
 
-
-    onAddUser() {
-        this.openDialog({ mode: 'add', user: null });
-    }
-
     private onEdit(row: User) {
-        this.openDialog({ mode: 'edit', user: row });
+        this.dialogService.open<ManageUser, User, UserDialogResult>(ManageUser, {
+            data: row,
+            type: DialogType.Modal,
+            ariaLabel:'Edit user',
+        }).afterClosed().pipe(take(1)).subscribe((result) => {
+            if (result?.saved) {
+                this.getUsers();
+            }
+        });
     }
 
     private onDelete(row: User) {
@@ -191,15 +203,12 @@ export class UserManagement implements OnInit {
         });
     }
 
-    private openDialog(data: UserDialogData) {
-        this.dialogService.open<ManageUser, UserDialogData, UserDialogResult>(ManageUser, {
-            data,
-            type: DialogType.Sidepop,
-            ariaLabel: data.mode === 'add' ? 'Add user' : 'Edit user',
-        }).afterClosed().pipe(take(1)).subscribe((result) => {
-            if (result?.saved) {
-                this.getUsers();
-            }
+    private onResetPassword(row: User) {
+        this.dialogService.open<ResetPassword, User, UserDialogResult>(ResetPassword, {
+            data: row,
+            type: DialogType.Modal,
+            closeOnBackdrop: false,
+            ariaLabel: 'Reset password',
         });
     }
 }

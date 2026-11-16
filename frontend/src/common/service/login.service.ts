@@ -31,7 +31,6 @@ export class LoginService {
             {
                 userId: response.userId,
                 email: response.email,
-                name: response.name,
                 role: response.role
             }
         );

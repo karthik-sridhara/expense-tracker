@@ -9,7 +9,7 @@
     <form [formGroup]="loginForm" (ngSubmit)="login()">
         @if (errorMessage()!=null) {
             <ui-message-banner
-                class="mb-4 min-h-10 block"
+                class="mb-4 h-10 block"
                 [type]="MessageBannerType.Error"
                 [text]="errorMessage()!"
             />

@@ -11,6 +11,7 @@ import { ThemeToggle } from '../../../../common/ui/theme-toggle';
 import { DialogService } from '../../../../common/component/app-dialog/app-dialog.service';
 import { ProfileDialogComponent } from '../profile-dialog';
 import { DialogType } from '../../../../common/enum/dialog';
+import { Role } from '../../../../common/enum/role';
 
 
 
@@ -35,7 +36,7 @@ export class Header {
 
   notificationCount = signal<number>(3);
   profileName!: string;
-  profileRole!: string;
+  profileRole!: Role;
   searchControl!:FormControl;
   showSearchClose = signal<boolean>(false);
 
@@ -45,10 +46,8 @@ export class Header {
     private dialogService:DialogService
   ) {
     const user = this.appSession.getUser();
-    this.profileName = user?.name || '';
-    this.profileRole = user?.role || '';
-
-
+    this.profileName = 'M';
+    this.profileRole = user!.role;
     this.searchControl = this.fb.control('');
     this.searchControl.valueChanges
     .pipe(

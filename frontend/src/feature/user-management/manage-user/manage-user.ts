@@ -3,15 +3,16 @@ import { DIALOG_DATA } from '../../../common/interface/app/app-dialog';
 import { DialogRef } from '../../../common/component/app-dialog/app-dialog-ref';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UserUpsertRequest } from '../../../common/interface/user-management/user-upsert';
-import { UserDialogData, UserDialogResult } from '../../../common/interface/user-management/user-dialog';
+import { UserDialogResult } from '../../../common/interface/user-management/user-dialog';
 import { AppFormControl } from '../../../common/ui/form-control';
 import { Input } from '../../../common/ui/input';
 import { Button } from '../../../common/ui/button';
 import { AppSelect } from '../../../common/ui/select';
 import { UserManagementService } from '../user-management.service';
 import { Role } from '../../../common/enum/role';
-import { Gender } from '../../../common/enum/gender';
 import { ToastService } from '../../../common/component/toast/toast-service';
+import { TitleCasePipe } from '@angular/common';
+import { User } from '../../../common/interface/user-management/user-management';
 
 @Component({
   imports: [AppFormControl, Input, ReactiveFormsModule, Button, AppSelect],
@@ -22,17 +23,12 @@ import { ToastService } from '../../../common/component/toast/toast-service';
   },
 })
 export class ManageUser {
-    readonly data = inject(DIALOG_DATA) as UserDialogData;
+    readonly data = inject(DIALOG_DATA) as User;
 
-    readonly nameControl!: FormControl<string>;
-    readonly genderControl!: FormControl<string>;
-    readonly dobControl!: FormControl<string>;
     readonly emailControl!: FormControl<string>;
     readonly roleControl!: FormControl<string>;
-    readonly passwordControl!: FormControl<string>;
     readonly userForm!: FormGroup;
 
-    genders: { label: string; value: string }[] = [];
     roles: { label: string; value: string }[] = [];
 
     constructor(
@@ -41,48 +37,27 @@ export class ManageUser {
         private userManagementService: UserManagementService,
         private toastService: ToastService,
     ) {
-        const user = this.data.user;
-
-        this.genders = Object.entries(Gender).map(([label, value]) => ({ label, value }));
-        this.roles = Object.entries(Role).map(([label, value]) => ({ label, value }));
-        console.log(this.genders, this.roles, user);
-        this.nameControl = this.formBuilder.nonNullable.control(user?.name ?? '', [
-            Validators.required,
-            Validators.maxLength(100),
-        ]);
-
-        this.genderControl = this.formBuilder.nonNullable.control(user?.gender ?? '', [
-            Validators.required,
-        ]);
-
-        this.dobControl = this.formBuilder.nonNullable.control(user?.dob ?? '', [
-            Validators.required,
-        ]);
-
-        this.emailControl = this.formBuilder.nonNullable.control(user?.email ?? '', [
+        this.roles = Object.entries(Role).map(([key, value]) => {
+            const label = new TitleCasePipe().transform(key);
+            return { label: label, value: value  };
+        });
+        
+        this.emailControl = this.formBuilder.nonNullable.control('', [
             Validators.required,
             Validators.email,
             Validators.maxLength(100),
         ]);
 
-        this.roleControl = this.formBuilder.nonNullable.control(user?.role?.id ?? '', [
+        this.roleControl = this.formBuilder.nonNullable.control('', [
             Validators.required,
         ]);
 
-        // Password required when adding; optional on edit (blank = keep current password)
-        this.passwordControl = this.formBuilder.nonNullable.control(
-            '',
-            [Validators.required, Validators.minLength(8)]
-        );
-
         this.userForm = this.formBuilder.group({
-            name: this.nameControl,
-            gender: this.genderControl,
-            dob: this.dobControl,
             email: this.emailControl,
             role: this.roleControl,
-            password: this.passwordControl,
+            version: this.formBuilder.nonNullable.control(0)
         });
+        this.loadUser(this.data!.id);
     }
 
     cancel(): void {
@@ -94,31 +69,27 @@ export class ManageUser {
             this.userForm.markAllAsTouched();
             return;
         }
-        if (this.data.mode === 'add') {
-            this.add();
-        } else {
-            this.edit();
-        }
-    }
-
-    private add(): void {
-        const value: UserUpsertRequest = this.userForm.getRawValue();
-        this.userManagementService.addUser(value).subscribe({
-            next: () => {
-                this.dialogRef.close({ saved: true });
-                this.toastService.showSuccess('User added successfully');
-            },
-        });
+        this.edit();
     }
 
     private edit(): void {
         const value: UserUpsertRequest = this.userForm.getRawValue();
         
-        const userId = this.data.user!.id;
+        const userId = this.data!.id;
         this.userManagementService.editUser(userId, value).subscribe({
             next: () => {
                 this.dialogRef.close({ saved: true });
                 this.toastService.showSuccess('User updated successfully');
+            },
+        });
+    }
+
+    private loadUser(userId:number): void {
+        this.userManagementService.getUser(userId).subscribe({
+            next: (data) => {
+                const user = data.data;
+                this.userForm.patchValue(user);
+                this.roleControl.setValue(user.role.id);
             },
         });
     }
