@@ -29,10 +29,10 @@ public interface AppUserRepo extends JpaRepository<AppUser, Integer>, JpaSpecifi
     List<AppUser> findAll(Specification<AppUser> spec);
 
     @Override
-    @EntityGraph(attributePaths="role")
+    @EntityGraph(attributePaths={"role","profile"})
     Page<AppUser> findAll(Specification<AppUser> spec, Pageable pageable);
 
     @Modifying
-    @Query("UPDATE AppUser a SET a.password = :newPassword,a.passwordExpired = :passwordExpired WHERE a.id = :userId")
+    @Query("UPDATE VERSIONED AppUser a SET a.password = :newPassword,a.passwordExpired = :passwordExpired WHERE a.id = :userId")
     int changePassword(@Param("userId") Integer userId, @Param("newPassword") String newPassword, @Param("passwordExpired") Boolean passwordExpired);
 }

@@ -9,8 +9,10 @@ import com.ksportfolio.expensetracker.dto.auth.ChangePasswordRequest;
 import com.ksportfolio.expensetracker.dto.auth.RegisterRequestDto;
 import com.ksportfolio.expensetracker.entity.AppUser;
 import com.ksportfolio.expensetracker.entity.Role;
+import com.ksportfolio.expensetracker.entity.UserProfile;
 import com.ksportfolio.expensetracker.exception.BusinessLogicException;
 import com.ksportfolio.expensetracker.mapper.AppUserMapper;
+import com.ksportfolio.expensetracker.mapper.UserProfileMapper;
 import com.ksportfolio.expensetracker.repository.AppUserRepo;
 import com.ksportfolio.expensetracker.repository.RoleRepo;
 import com.ksportfolio.expensetracker.dto.response.ApiPage;
@@ -45,12 +47,16 @@ public class AppUserService {
     public ApiPage<AppUserDto> getUsers(AppUserFilter filter, Pageable pageable) {
         PaginationUtility.validateSort(pageable, SORTABLE);
         Page<AppUserDto> page = appUserRepo.findAll(getFilterForFindAll(filter), pageable)
-                .map(AppUserMapper::toDto);
+                .map(AppUserMapper::toDtoWithProfile);
         return PageMapper.toDto(page);
     }
 
-    public AppUserDto getUserById(Integer id) {
-        return AppUserMapper.toDto(getUser(id));
+    public AppUserDto getUser(Integer id) {
+        return AppUserMapper.toDto(getUserInternal(id));
+    }
+
+    public AppUserDto getUserWithProfile(Integer id) {
+        return AppUserMapper.toDtoWithProfile(getUserInternal(id));
     }
 
     @Transactional
@@ -61,13 +67,17 @@ public class AppUserService {
         }
         Role role = roleRepo.getReferenceById(AppConstant.ROLE_USER);
         AppUser user = AppUserMapper.toEntity(request,role);
+        UserProfile profile = UserProfileMapper.toEntity(request,user);
+        profile.setCurrency("INR");
+        profile.setTimezone("UTC");
+        user.setProfile(profile);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         appUserRepo.save(user);
     }
 
     @Transactional
     public void deleteUser(Integer id) {
-        AppUser user = getUser(id);
+        AppUser user = getUserInternal(id);
         appUserRepo.delete(user);
     }
 
@@ -85,7 +95,7 @@ public class AppUserService {
 
     @Transactional
     public void changePassword(ChangePasswordRequest request,Integer id) {
-        AppUser user = getUser(id);
+        AppUser user = getUserInternal(id);
         if(!passwordEncoder.matches(request.getCurrentPassword(),user.getPassword()))
             throw new BusinessLogicException(ErrorCode.PASSWORD_MISMATCH);
         if(passwordEncoder.matches(request.getNewPassword(),user.getPassword()))
@@ -109,7 +119,7 @@ public class AppUserService {
 
     @Transactional
     public void updateUser(AppUserRequestDto request, Integer id) {
-        AppUser user = getUser(id);
+        AppUser user = getUserInternal(id);
         request.setEmail(request.getEmail().trim());
         boolean emailExists = appUserRepo.existsByEmailAndIdNot(request.getEmail(), id);
         if (emailExists) {
@@ -117,13 +127,15 @@ public class AppUserService {
                 ErrorCode.EMAIL_ALREADY_EXIST,
                 request.getEmail()
             );
+        }else if (!user.getVersion().equals(request.getVersion())) {
+            throw new BusinessLogicException(ErrorCode.CONCURRENT_UPDATE);
         }
         Role role = roleRepo.getReferenceById(request.getRole());
         AppUserMapper.updateEntity(user, request, role);
         appUserRepo.save(user);
     }
 
-    private AppUser getUser(Integer id) {
+    private AppUser getUserInternal(Integer id) {
         return appUserRepo.findById(id).orElseThrow(
             () -> new BusinessLogicException(ErrorCode.USER_NOT_FOUND, id)
         );
@@ -149,7 +161,7 @@ public class AppUserService {
                 predicates.add(
                     cb.or(
                         cb.like(cb.lower(root.get("email")),searchPattern),
-                        cb.like(cb.lower(root.get("name")),searchPattern)
+                        cb.like(cb.lower(root.get("profile").get("name")),searchPattern)
                     )
                 );
             }

@@ -11,10 +11,12 @@ import lombok.Setter;
 public class AppUserRequestDto {
     @NotNull
     @Email
-    String email;
+    private String email;
     @NotNull
     @Pattern(regexp = "ADMIN|EMPLOYEE|USER", message = "role must be one of: admin, employee, user")
-    String role;
+    private String role;
+    @NotNull
+    private Integer version;
 }
 
 

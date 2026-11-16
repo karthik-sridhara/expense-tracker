@@ -35,4 +35,12 @@ public class AppUser extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "role", nullable = false)
     private Role role;
+
+    @NotNull
+    @OneToOne(fetch = FetchType.LAZY,optional = false,mappedBy = "user",cascade = CascadeType.ALL)
+    private UserProfile profile;
+
+    @Version
+    @Column(name = "row_version")
+    private Integer version;
 }

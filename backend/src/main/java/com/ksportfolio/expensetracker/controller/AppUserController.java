@@ -42,7 +42,7 @@ public class AppUserController {
     @GetMapping(value="/admin/{userId}",version = "1.0")
     public ResponseEntity<ApiResponse<AppUserDto>> getUser(@PathVariable Integer userId) {
         ApiResponse<AppUserDto> response = new ApiResponse<>(
-                "User retrieved successfully", appUserService.getUserById(userId)
+                "User retrieved successfully", appUserService.getUser(userId)
         );
         return response.toResponseEntity();
     }
@@ -96,7 +96,7 @@ public class AppUserController {
     public ResponseEntity<ApiResponse<AppUserDto>> getCurrentUser(
         @AuthenticationPrincipal AppUserDetails userDetails
     ) {
-        AppUserDto user = appUserService.getUserById(userDetails.getUserId());
+        AppUserDto user = appUserService.getUserWithProfile(userDetails.getUserId());
         ApiResponse<AppUserDto> response = new ApiResponse<>(
                 "User retrieved successfully",
                 user
