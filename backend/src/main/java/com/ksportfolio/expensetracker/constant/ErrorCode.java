@@ -18,6 +18,10 @@ public enum ErrorCode {
     UNAUTHORIZED("ERR-1010", HttpStatus.UNAUTHORIZED, "Unauthorized"),
     NO_RESOURCE_FOUND("ERR-1011", HttpStatus.NOT_FOUND, "No resource found for {0} {1}"),
     BAD_REQUEST("ERR-1012", HttpStatus.BAD_REQUEST, "Bad request"),
+    FAIL_TO_SAVE_FILE("ERR-1013", HttpStatus.INTERNAL_SERVER_ERROR, "Failed to save file {0}."),
+    FILE_NOT_FOUND("ERR-1014", HttpStatus.NOT_FOUND, "File not found {0}."),
+    FAIL_TO_DELETE_FILE("ERR-1015", HttpStatus.CONFLICT, "Failed to delete file {0}."),
+    FILE_TOO_LARGE("ERR-1016", HttpStatus.PAYLOAD_TOO_LARGE, "File size exceeds the maximum allowed limit"),
     INTERNAL_ERROR("ERR-1999", HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"),
 
     USER_NOT_FOUND("ERR-2000", HttpStatus.BAD_REQUEST,"User not found with id: {0}"),
@@ -40,6 +44,10 @@ public enum ErrorCode {
     PAYMENT_ALREADY_COMPLETED("ERR-2017", HttpStatus.BAD_REQUEST, "Payment already completed with id: {0}"),
     CANNOT_UPDATE_PAYMENT("ERR-2018", HttpStatus.BAD_REQUEST, "Cannot update payment which already completed"),
     INVALID_SORT_FIELD("ERR-2019", HttpStatus.BAD_REQUEST, "Invalid sort field: {0}"),
+    CONCURRENT_UPDATE("ERR-2020", HttpStatus.CONFLICT, "This record was modified by someone else. Please reload the page and try again"),
+    PROFILE_NOT_FOUND("ERR-2021", HttpStatus.NOT_FOUND, "Profile not found with id: {0}"),
+    FILE_IS_EMPTY("ERR-2022", HttpStatus.BAD_REQUEST, "File is empty"),
+    NO_PROFILE_IMAGE("ERR-2022", HttpStatus.NOT_FOUND, "Profile image not found for user: {0}"),
     ;
 
     private final String code;

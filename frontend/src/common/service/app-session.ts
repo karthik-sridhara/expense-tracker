@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, signal, WritableSignal } from "@angular/core";
 import { LocalStorageService } from "./local-storage";
 import { LocalStorageKey } from "../enum/local-storage-key";
 import { LoggedUser } from "../interface/login/logged-user";
@@ -7,7 +7,7 @@ import { LoggedUser } from "../interface/login/logged-user";
 export class AppSessionService {
 
     private token: string | null = null;
-    private user: LoggedUser | null = null;
+    private user: WritableSignal<LoggedUser | null> = signal(null);
     
     isAuthenticated(): boolean {
         return !!this.getToken() && !!this.getUser();
@@ -21,17 +21,17 @@ export class AppSessionService {
     }
 
     getUser(): LoggedUser | null {
-        if (!this.user) {
+        if (!this.user()) {
             const userData = LocalStorageService.getItem(LocalStorageKey.USER);
             if (userData) {
-                this.user = userData as LoggedUser;
+                this.user.set(userData as LoggedUser);
             }
         }
-        return this.user;
+        return this.user();
     }
 
     setSession(token: string, user: LoggedUser): void {
-        this.user = user;
+        this.user.set(user);
         this.token = token;
         LocalStorageService.setValue(LocalStorageKey.AUTH_TOKEN, token);
         LocalStorageService.setItem(LocalStorageKey.USER, user);
@@ -39,7 +39,7 @@ export class AppSessionService {
 
     clearSession(): void {
         this.token = null;
-        this.user = null;
+        this.user.set(null);
         LocalStorageService.remove(LocalStorageKey.AUTH_TOKEN);
         LocalStorageService.remove(LocalStorageKey.USER);
     }

@@ -11,7 +11,6 @@ public class AppUserDetailsMapper {
                 entity.getId(),
                 entity.getEmail(),
                 entity.getPassword(),
-                entity.getName(),
                 entity.getRole().getId(),
                 entity.getPasswordExpired()
         );

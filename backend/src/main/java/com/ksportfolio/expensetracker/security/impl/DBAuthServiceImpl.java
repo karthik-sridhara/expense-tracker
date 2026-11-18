@@ -1,15 +1,14 @@
-package com.ksportfolio.expensetracker.service.impl;
+package com.ksportfolio.expensetracker.security.impl;
 
 import com.ksportfolio.expensetracker.dto.auth.AppUserDetails;
 import com.ksportfolio.expensetracker.dto.auth.LoginResponseDto;
-import com.ksportfolio.expensetracker.service.AuthService;
-import com.ksportfolio.expensetracker.service.JwtService;
+import com.ksportfolio.expensetracker.security.AuthService;
+import com.ksportfolio.expensetracker.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +26,6 @@ public class DBAuthServiceImpl implements AuthService {
             jwtService.generateToken(userDetails),
             userDetails.getUserId(),
             userDetails.getUsername(),
-            userDetails.getName(),
             userDetails.getRoleId(),
             userDetails.getPasswordExpired()
         );

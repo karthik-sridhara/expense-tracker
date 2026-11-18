@@ -1,4 +1,4 @@
-package com.ksportfolio.expensetracker.service;
+package com.ksportfolio.expensetracker.security;
 
 import com.ksportfolio.expensetracker.dto.auth.LoginResponseDto;
 

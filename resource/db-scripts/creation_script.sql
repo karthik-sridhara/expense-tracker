@@ -112,3 +112,33 @@ ALTER TABLE RECURRING_PAYMENT ADD lastGeneratedDate DATE NULL;
 CREATE UNIQUE INDEX UX_payment_recurring_due
   ON PAYMENT(recurring_payment_id, due_date)
   WHERE recurring_payment_id IS NOT NULL;
+
+
+CREATE TABLE USER_PROFILE (
+    user_id INT NOT NULL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    image_path VARCHAR(255) NULL,
+    image_type VARCHAR(50) NULL,
+    gender CHAR(1) NULL,
+    dob DATE NULL,
+    income DECIMAL(12,2) NULL,
+    currency CHAR(3) NOT NULL,
+    timezone VARCHAR(50) NOT NULL,
+    created_at DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    modified_at DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    CONSTRAINT CK_UserProfile_Gender CHECK (gender IN ('M', 'F', 'O')),
+    CONSTRAINT FK_UserProfile_User FOREIGN KEY (user_id) REFERENCES APP_USER(id) ON DELETE CASCADE
+);
+
+
+CREATE TABLE APP_USER (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL,
+    role VARCHAR(30) NOT NULL,
+    created_at DATETIME2  NOT NULL DEFAULT SYSUTCDATETIME(),
+    modified_at DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    reset_password BIT NOT NULL DEFAULT 0,
+    row_version INT NOT NULL DEFAULT 1,
+    CONSTRAINT FK_AppUser_Role FOREIGN KEY (role) REFERENCES ROLE(id)
+);

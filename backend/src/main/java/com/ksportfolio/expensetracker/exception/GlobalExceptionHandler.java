@@ -1,19 +1,23 @@
 package com.ksportfolio.expensetracker.exception;
 
+import com.ksportfolio.expensetracker.constant.AppConstant;
 import com.ksportfolio.expensetracker.constant.ErrorCode;
 import com.ksportfolio.expensetracker.dto.response.ApiError;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import tools.jackson.databind.exc.InvalidFormatException;
 
@@ -23,10 +27,15 @@ import java.util.*;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    private String traceId() {
+        String id = MDC.get(AppConstant.Trace_ID);
+        return id != null ? id : UUID.randomUUID().toString();
+    }
+
     @ExceptionHandler(BusinessLogicException.class)
     public ResponseEntity<ApiError> handleApiException(BusinessLogicException ex, HttpServletRequest request) {
 
-        String traceId = UUID.randomUUID().toString();
+        String traceId = traceId();
         log.warn("[{}] {} - {}", traceId, ex.getErrorCode().getCode(), ex.getMessage());
 
         ApiError error = new ApiError(
@@ -40,7 +49,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ApiError> handleMethodNotSupported(HttpRequestMethodNotSupportedException ex, HttpServletRequest request) {
-        String traceId = UUID.randomUUID().toString();
+        String traceId = traceId();
 
         log.warn("[{}] {} - {}", traceId, ErrorCode.HTTP_METHOD_NOT_SUPPORTED.getCode(), ex.getMessage());
 
@@ -53,7 +62,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiError> handleUnreadableBody(HttpMessageNotReadableException ex, HttpServletRequest request) {
-        String traceId = UUID.randomUUID().toString();
+        String traceId = traceId();
         ErrorCode errorCode = ErrorCode.MALFORMED_REQUEST_BODY;
         String message = ErrorCode.MALFORMED_REQUEST_BODY.formatMessage();
 
@@ -77,11 +86,25 @@ public class GlobalExceptionHandler {
         return error.toResponseEntity();
     }
 
+    @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
+    public ResponseEntity<ApiError> handleOptimisticLock(
+        ObjectOptimisticLockingFailureException ex,
+        HttpServletRequest request
+    ) {
+        String traceId = traceId();
+        log.warn("{} - {} on {} {}",ErrorCode.CONCURRENT_UPDATE.getCode(),
+                ex.getPersistentClassName(), request.getMethod(), request.getRequestURI());
 
+        ApiError error = new ApiError(
+                ErrorCode.CONCURRENT_UPDATE,
+                traceId
+        );
+        return error.toResponseEntity();
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
-        String traceId = UUID.randomUUID().toString();
+        String traceId = traceId();
         Map<String, Object> fieldErrors = new HashMap<>();
         for (FieldError fe : ex.getBindingResult().getFieldErrors()) {
             fieldErrors.put(fe.getField(), fe.getDefaultMessage());
@@ -98,7 +121,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ApiError> handleDataIntegrity(DataIntegrityViolationException ex, HttpServletRequest request) {
-        String traceId = UUID.randomUUID().toString();
+        String traceId = traceId();
         log.error("[{}] {} - {}", traceId, ErrorCode.DATA_INTEGRITY_VIOLATION.getCode(), ex.getMessage());
 
         ApiError error = new ApiError(
@@ -110,7 +133,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ApiError> handleNoResourceFound(NoResourceFoundException ex, HttpServletRequest request) {
-        String traceId = UUID.randomUUID().toString();
+        String traceId = traceId();
         String message = ErrorCode.NO_RESOURCE_FOUND.formatMessage(request.getMethod(), ex.getResourcePath());
 
         log.warn("[{}] {} - {}", traceId, ErrorCode.NO_RESOURCE_FOUND.getCode(), message);
@@ -125,7 +148,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGeneral(Exception ex, HttpServletRequest request) {
-        String traceId = UUID.randomUUID().toString();
+        String traceId = traceId();
         log.error("[{}] Unhandled exception", traceId, ex); // full stack trace goes server-side only
 
         ApiError error = new ApiError(
@@ -135,12 +158,21 @@ public class GlobalExceptionHandler {
         return error.toResponseEntity();
     }
 
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ApiError> handleMaxUploadSize(MaxUploadSizeExceededException ex, HttpServletRequest request) {
+        String traceId = traceId();
+        log.warn("{} - {} on {} {}", ErrorCode.FILE_TOO_LARGE.getCode(),
+                ex.getMessage(), request.getMethod(), request.getRequestURI());
+
+        ApiError error = new ApiError(ErrorCode.FILE_TOO_LARGE, traceId);
+        return error.toResponseEntity();
+    }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ApiError> handleMethodArgumentTypeMismatch(
             MethodArgumentTypeMismatchException exception
     ) {
-        String traceId = UUID.randomUUID().toString();
+        String traceId = traceId();
         String message;
         Class<?> requiredType = exception.getRequiredType();
 

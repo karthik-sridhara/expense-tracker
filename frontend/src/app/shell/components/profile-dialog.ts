@@ -1,12 +1,9 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { UpperCasePipe } from '@angular/common';
 import { DialogRef } from '../../../common/component/app-dialog/app-dialog-ref';
 import { AppSessionService } from '../../../common/service/app-session';
 import { LoginService } from '../../../common/service/login.service';
 import { Button } from '../../../common/ui/button';
-import { SvgIcon } from '../../../common/ui/svg-icon';
-import { ThemeToggle } from '../../../common/ui/theme-toggle';
 
 @Component({
   selector: 'app-profile-dialog',
@@ -17,7 +14,7 @@ import { ThemeToggle } from '../../../common/ui/theme-toggle';
         {{ initial() }}
       </span>
       <div class="min-w-0">
-        <p class="truncate text-sm font-semibold text-slate-900 dark:text-white">{{ user()?.name }}</p>
+        <p class="truncate text-sm font-semibold text-slate-900 dark:text-white">{{ 'HARD' }}</p>
         <p class="truncate text-xs text-slate-500 dark:text-slate-400">{{ user()?.email }}</p>
         <p class="truncate text-xs text-slate-500 dark:text-slate-400">{{ user()?.role }}</p>
       </div>
@@ -64,7 +61,7 @@ export class ProfileDialogComponent {
   private readonly router = inject(Router);
 
   protected readonly user = computed(() => this.appSession.getUser());
-  protected readonly initial = computed(() => this.user()?.name?.charAt(0)?.toUpperCase() ?? '');
+  protected readonly initial = signal('M');
 
   protected goToSettings(): void {
     this.dialogRef.close();

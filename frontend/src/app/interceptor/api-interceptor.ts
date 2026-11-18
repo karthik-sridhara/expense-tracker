@@ -8,13 +8,12 @@ export const apiInterceptor: HttpInterceptorFn = (request, next) => {
     if (!request.url.startsWith('/api/')) {
         return next(request);
     }
-
     const appSessionService = inject(AppSessionService);
     const token = appSessionService.getToken();
     const loaderService = inject(LoaderService);
 
     const headers: Record<string, string> = {
-        Accept: 'application/json'
+        Accept: request.headers.get('Accept') ?? 'application/json'
     };
 
     if (token) {
