@@ -1,6 +1,5 @@
 package com.ksportfolio.expensetracker.entity;
 
-import com.ksportfolio.expensetracker.mapper.DurationTypeConverter;
 import com.ksportfolio.expensetracker.mapper.GenderConverter;
 import com.ksportfolio.expensetracker.type.Gender;
 import jakarta.persistence.*;
@@ -32,8 +31,11 @@ public class UserProfile {
     @Column(name = "name", nullable = false, length = 100)
     private String name;
 
-    @Column(name = "image", length = 255)
-    private String image;
+    @Column(name = "image_path", length = 255)
+    private String imagePath;
+
+    @Column(name = "image_type", length = 50)
+    private String imageType;
 
     @Column(name = "gender", length = 1)
     @Convert(converter = GenderConverter.class)

@@ -22,6 +22,10 @@ spring:
         physical_naming_strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
         jdbc:
           time_zone: UTC
+  spring:
+    servlet:
+      multipart:
+        max-file-size: 2MB
 app:
   config:
     cors:
@@ -37,6 +41,10 @@ app:
       root: INFO
       app: TRACE
       audit: INFO
+  storage:
+    type: local
+    location:
+      local: ${LOCAL_STORE_LOCATION}
 springdoc:
   swagger-ui:
     enabled: ${SWAGGER_DOC:false}

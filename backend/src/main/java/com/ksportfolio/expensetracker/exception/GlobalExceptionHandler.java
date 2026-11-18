@@ -17,6 +17,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import tools.jackson.databind.exc.InvalidFormatException;
 
@@ -157,6 +158,15 @@ public class GlobalExceptionHandler {
         return error.toResponseEntity();
     }
 
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ApiError> handleMaxUploadSize(MaxUploadSizeExceededException ex, HttpServletRequest request) {
+        String traceId = traceId();
+        log.warn("{} - {} on {} {}", ErrorCode.FILE_TOO_LARGE.getCode(),
+                ex.getMessage(), request.getMethod(), request.getRequestURI());
+
+        ApiError error = new ApiError(ErrorCode.FILE_TOO_LARGE, traceId);
+        return error.toResponseEntity();
+    }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ApiError> handleMethodArgumentTypeMismatch(

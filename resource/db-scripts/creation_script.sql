@@ -117,7 +117,8 @@ CREATE UNIQUE INDEX UX_payment_recurring_due
 CREATE TABLE USER_PROFILE (
     user_id INT NOT NULL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    image VARCHAR(255) NULL,
+    image_path VARCHAR(255) NULL,
+    image_type VARCHAR(50) NULL,
     gender CHAR(1) NULL,
     dob DATE NULL,
     income DECIMAL(12,2) NULL,
